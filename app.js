@@ -304,28 +304,16 @@ function renderBible() {
 
 // --- INTERACTION ---
 function handleVerseClick(e, vNum) {
-    if (e.ctrlKey) {
-        // Multi-selection for notes
-        const idx = state.selectedVerses.indexOf(vNum);
-        if (idx > -1) state.selectedVerses.splice(idx, 1);
-        else state.selectedVerses.push(vNum);
+    // Primary Action: Toggle Selection (for marking colors OR importing to notes)
+    const idx = state.selectedVerses.indexOf(vNum);
+    if (idx > -1) {
+        state.selectedVerses.splice(idx, 1);
     } else {
-        // Toggle Highlight (Standard click)
-        const verseKey = `${state.currentVersion}_${state.currentBook}_${state.currentChapter}_${vNum}`;
-        
-        if (state.selectedHighlightColor === 'none') {
-            delete state.highlights[verseKey];
+        if (e.ctrlKey) {
+            state.selectedVerses.push(vNum);
         } else {
-            // If already has this color, remove it. Otherwise, apply color.
-            if (state.highlights[verseKey] === state.selectedHighlightColor) {
-                delete state.highlights[verseKey];
-            } else {
-                state.highlights[verseKey] = state.selectedHighlightColor;
-            }
+            state.selectedVerses = [vNum];
         }
-        
-        // Also update selection state for visual feedback if needed
-        state.selectedVerses = [vNum];
     }
     
     state.selectedVerses.sort((a, b) => a - b);
@@ -652,22 +640,38 @@ function setupEventListeners() {
             const color = dot.getAttribute('data-color');
             state.selectedHighlightColor = color;
             
-            // Update UI selection
+            // ACTION: If there are selected verses, APPLY color to them
+            if (state.selectedVerses.length > 0) {
+                state.selectedVerses.forEach(vNum => {
+                    const verseKey = `${state.currentVersion}_${state.currentBook}_${state.currentChapter}_${vNum}`;
+                    if (color === 'none') {
+                        delete state.highlights[verseKey];
+                    } else {
+                        state.highlights[verseKey] = color;
+                    }
+                });
+                
+                // Clear selection after applying color (Better UX)
+                state.selectedVerses = [];
+                renderBible();
+                saveState();
+            }
+            
+            // Update UI selection on dots
             document.querySelectorAll('.palette-dot').forEach(d => d.classList.remove('active'));
             dot.classList.add('active');
             
             const dotIndicator = document.getElementById('current-highlight-dot');
             if (dotIndicator) {
                 dotIndicator.className = 'color-dot ' + (color === 'none' ? 'clear' : color);
-                // If it's clear, maybe add an icon or just make it subtle
                 if (color === 'none') {
                     dotIndicator.style.backgroundColor = '#f1f5f9';
                     dotIndicator.innerHTML = '<i data-lucide="droplet-off" style="width:10px; height:10px; color:#718096;"></i>';
-                    lucide.createIcons();
                 } else {
                     dotIndicator.style.backgroundColor = '';
                     dotIndicator.innerHTML = '';
                 }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
             
             highlightPalette.style.display = 'none';
