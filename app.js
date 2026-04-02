@@ -509,14 +509,6 @@ function setupEventListeners() {
         applyFontSizeSelected(e.target.value);
     });
 
-    document.getElementById('btn-font-increase').addEventListener('click', () => {
-        adjustSelectionFontSize(2);
-    });
-
-    document.getElementById('btn-font-decrease').addEventListener('click', () => {
-        adjustSelectionFontSize(-2);
-    });
-
     document.getElementById('btn-clear-format').addEventListener('click', () => {
         document.execCommand('removeFormat', false, null);
         // Also clear our custom spans if possible
