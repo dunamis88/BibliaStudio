@@ -286,7 +286,9 @@ function renderBible() {
         
         // HIGHLIGHT LOGIC
         const verseKey = `${state.currentVersion}_${state.currentBook}_${state.currentChapter}_${vNum}`;
-        const color = state.highlights[verseKey];
+        const hData = state.highlights[verseKey];
+        // Migration support: handle string or object
+        const color = (typeof hData === 'object') ? hData.c : hData;
         const highlightClass = color && color !== 'none' ? ` h-${color}` : '';
         
         return `
@@ -647,7 +649,8 @@ function setupEventListeners() {
                     if (color === 'none') {
                         delete state.highlights[verseKey];
                     } else {
-                        state.highlights[verseKey] = color;
+                        // Store AS OBJECT to include timestamp (t) and color (c)
+                        state.highlights[verseKey] = { c: color, t: Date.now() };
                     }
                 });
                 
@@ -1551,6 +1554,86 @@ function updateBibleToolbarOverflow() {
 
 window.addEventListener('load', updateToolbarOverflow);
 window.addEventListener('resize', updateToolbarOverflow);
+
+
+function renderHighlightsBrowser(sortBy = 'book') {
+    const list = document.getElementById('highlights-list');
+    list.innerHTML = '';
+    
+    // Convert current highlights to array
+    const hArray = [];
+    for (const key in state.highlights) {
+        const parts = key.split('_'); // version_book_chapter_verse
+        const hData = state.highlights[key];
+        const color = typeof hData === 'object' ? hData.c : hData;
+        const timestamp = typeof hData === 'object' ? hData.t : 0;
+        
+        hArray.push({
+            key,
+            version: parts[0],
+            bookId: parseInt(parts[1]),
+            chapter: parseInt(parts[2]),
+            verse: parseInt(parts[3]),
+            color: color,
+            time: timestamp
+        });
+    }
+
+    if (hArray.length === 0) {
+        list.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--secondary); opacity: 0.6;">Tu colección de marcadores está vacía.</div>';
+        return;
+    }
+
+    // Sort
+    if (sortBy === 'book') {
+        hArray.sort((a,b) => a.bookId - b.bookId || a.chapter - b.chapter || a.verse - b.verse);
+    } else {
+        hArray.sort((a,b) => (b.time || 0) - (a.time || 0));
+    }
+
+    hArray.forEach(h => {
+        const book = BOOKS.find(b => b.id === h.bookId);
+        const item = document.createElement('div');
+        item.className = `highlight-list-item h-${h.color}`;
+        item.innerHTML = `
+            <div class="h-item-details">
+                <span class="h-item-ref">${book ? book.n : 'Libro'} ${h.chapter}:${h.verse}</span>
+                <span class="h-item-meta">${h.version} • ${h.time ? new Date(h.time).toLocaleDateString() : 'Fecha desconocida'}</span>
+            </div>
+            <i data-lucide="chevron-right" style="width: 16px; opacity: 0.5;"></i>
+        `;
+        item.onclick = () => {
+            state.currentVersion = h.version;
+            state.currentBook = h.bookId;
+            state.currentChapter = h.chapter;
+            state.selectedVerses = [h.verse];
+            saveState();
+            updateUIState();
+            renderBible();
+            document.getElementById('highlights-overlay').style.display = 'none';
+        };
+        list.appendChild(item);
+    });
+    lucide.createIcons();
+}
+
+// Additional Event Listeners for Highlights
+document.getElementById('btn-browse-highlights').addEventListener('click', () => {
+    document.getElementById('highlights-overlay').style.display = 'flex';
+    renderHighlightsBrowser('book');
+});
+
+document.getElementById('sort-h-book').onclick = () => {
+    document.querySelectorAll('.sort-mini-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sort-h-book').classList.add('active');
+    renderHighlightsBrowser('book');
+};
+
+document.getElementById('sort-h-date').onclick = () => {
+    document.querySelectorAll('.sort-mini-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sort-h-date').classList.add('active');
+    renderHighlightsBrowser('date');
+};
 
 // Start app
 init();

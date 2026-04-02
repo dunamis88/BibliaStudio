@@ -32,8 +32,11 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button class="icon-btn" id="btn-search-notes" title="Buscar Mis Notas">
+                    <button class="icon-btn" id="btn-browse-notes" title="Mis Reflexiones">
                         <i data-lucide="notebook-tabs"></i>
+                    </button>
+                    <button class="icon-btn" id="btn-browse-highlights" title="Versículos Marcados">
+                        <i data-lucide="highlighter"></i>
                     </button>
                     
                     <div id="user-profile" class="user-profile-menu" style="display: none; cursor: pointer;" onclick="logout()">
@@ -375,6 +378,28 @@
             <button class="menu-item" data-size="100%">Original</button>
             <div class="menu-divider"></div>
             <button class="menu-item delete" id="btn-delete-image"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <!-- Highlights Browser Modal -->
+        <div id="highlights-overlay" class="overlay" style="display: none;">
+            <div class="notes-browser-card highlights-browser-card">
+                <header class="modal-header">
+                    <div class="modal-title-group">
+                        <h1 class="master-title">Versículos Marcados</h1>
+                        <h3>COLECCIÓN • ESTUDIOS • MEMORIA</h3>
+                    </div>
+                    <div class="header-actions" style="gap: 15px;">
+                        <div class="sort-controls" style="display: flex; gap: 4px; background: #f0f0f0; padding: 4px; border-radius: 10px;">
+                            <button class="sort-mini-btn active" id="sort-h-book">LIBRO</button>
+                            <button class="sort-mini-btn" id="sort-h-date">FECHA</button>
+                        </div>
+                        <button class="icon-btn" onclick="document.getElementById('highlights-overlay').style.display='none'"><i data-lucide="x"></i></button>
+                    </div>
+                </header>
+                <div class="notes-list-stack highlights-stack" id="highlights-list">
+                    <!-- Highlights list injected here -->
+                </div>
+            </div>
         </div>
 
         <!-- Tooltip for Cross References -->
