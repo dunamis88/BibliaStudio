@@ -42,6 +42,9 @@ async function init() {
     
     // Load engine and bibles
     await initBibleEngine();
+    
+    // Observers for responsivity
+    initToolbarObservers();
 
     // Initial history anchor
     navigateTo(state.currentVersion, state.currentBook, state.currentChapter);
@@ -1260,42 +1263,79 @@ function updateToolbarOverflow() {
     updateBibleToolbarOverflow();
 }
 
+// Professional Toolbar Overflow Implementation
+let notesToolbarObserver = null;
+let bibleToolbarObserver = null;
+
+function initToolbarObservers() {
+    const notesToolbar = document.querySelector('.editor-toolbar');
+    if (notesToolbar) {
+        notesToolbarObserver = new ResizeObserver(() => {
+            debounce(updateNotesToolbarOverflow, 50)();
+        });
+        notesToolbarObserver.observe(notesToolbar);
+    }
+
+    const bibleToolbar = document.querySelector('.bible-toolbar');
+    if (bibleToolbar) {
+        bibleToolbarObserver = new ResizeObserver(() => {
+            debounce(updateBibleToolbarOverflow, 50)();
+        });
+        bibleToolbarObserver.observe(bibleToolbar);
+    }
+}
+
+// Global debounce helper
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 function updateNotesToolbarOverflow() {
     const toolbar = document.querySelector('.editor-toolbar');
-    if (!toolbar) return;
-    
     const container = document.getElementById('toolbar-more-container');
     const dropdown = document.querySelector('.more-tools-grid');
-    if (!container || !dropdown) return;
-    
-    // Restore all to toolbar for measurement
+    if (!toolbar || !container || !dropdown) return;
+
+    // 1. Restore all items to toolbar for accurate measurement
     const overflowItems = Array.from(dropdown.children);
     overflowItems.forEach(item => toolbar.insertBefore(item, container));
     container.style.display = 'none';
 
-    // Must yield to browser to render flex layout before measuring
-    requestAnimationFrame(() => {
-        const toolbarWidth = toolbar.offsetWidth;
-        const items = Array.from(toolbar.children).filter(el => el !== container);
-        const moreBtnWidth = 50; 
+    // 2. Measure and hide
+    const toolbarWidth = toolbar.clientWidth;
+    const moreBtnWidth = 45; 
+    let currentX = 0;
+    let firstHiddenIndex = -1;
+    const gap = 8; // CSS Gap
 
-        let firstOverflowIndex = -1;
+    const items = Array.from(toolbar.children).filter(el => el !== container);
+    
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const itemWidth = item.offsetWidth;
         
-        items.forEach((item, index) => {
-            if (item.offsetLeft + item.offsetWidth > (toolbarWidth - moreBtnWidth) && firstOverflowIndex === -1) {
-                firstOverflowIndex = index;
-            }
-        });
-        
-        if (firstOverflowIndex !== -1) {
-            for (let i = firstOverflowIndex; i < items.length; i++) {
-                dropdown.appendChild(items[i]);
-            }
-            container.style.display = 'flex';
+        if (currentX + itemWidth > (toolbarWidth - moreBtnWidth)) {
+            firstHiddenIndex = i;
+            break;
         }
-        
+        currentX += (itemWidth + gap);
+    }
+
+    if (firstHiddenIndex !== -1) {
+        for (let i = firstHiddenIndex; i < items.length; i++) {
+            dropdown.appendChild(items[i]);
+        }
+        container.style.display = 'flex';
         if (typeof lucide !== 'undefined') lucide.createIcons();
-    });
+    }
 }
 
 function updateBibleToolbarOverflow() {
