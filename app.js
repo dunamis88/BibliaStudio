@@ -160,6 +160,16 @@ async function loadBible(url, type, name) {
     }
 }
 
+function normalizeText(text) {
+    if (!text) return "";
+    return text.toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Remove accents
+        .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "") // Remove common punctuation
+        .trim();
+}
+
 function cleanText(text, version) {
     if (!text) return "";
     let clean = String(text);
@@ -1231,9 +1241,11 @@ function performBibleSearch(query) {
     const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
     const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text') || k.toLowerCase().includes('vtext')) || keys[3]);
 
+    const normalizedQuery = normalizeText(query);
     const results = bible.data.filter(v => {
-        const text = String(v[tKey] || "").toLowerCase();
-        return text.includes(query.toLowerCase());
+        const text = String(v[tKey] || "");
+        const normalizedVerse = normalizeText(text);
+        return normalizedVerse.includes(normalizedQuery);
     }).slice(0, 50); // Smaller limit for dropdown performance
 
     if (results.length === 0) {
