@@ -400,15 +400,28 @@ function updateEditorToolbarState() {
 
     const computedStyle = window.getComputedStyle(node);
     
-    // Update Font Size Dropdown
+    // Update Font Size Dropdown - handle sub-pixels by rounding
     const fontSize = computedStyle.fontSize;
     const selectSize = document.getElementById('select-font-size');
     if (selectSize) {
-        // Try to find the closest matching option
-        const sizeVal = parseInt(fontSize) + 'px';
-        const hasOption = Array.from(selectSize.options).some(opt => opt.value === sizeVal);
+        const numericSize = Math.round(parseFloat(fontSize));
+        const sizeVal = numericSize + 'px';
+        const options = Array.from(selectSize.options);
+        const hasOption = options.some(opt => opt.value === sizeVal);
         if (hasOption) {
             selectSize.value = sizeVal;
+        } else {
+            // Fallback: If not an exact match, find the closest one
+            let closest = options[0];
+            let minDiff = Math.abs(parseInt(closest.value) - numericSize);
+            options.forEach(opt => {
+                let diff = Math.abs(parseInt(opt.value) - numericSize);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = opt;
+                }
+            });
+            if (minDiff < 3) selectSize.value = closest.value;
         }
     }
 
@@ -419,9 +432,6 @@ function updateEditorToolbarState() {
         const hasOption = Array.from(selectFont.options).some(opt => opt.value === fontFamily);
         if (hasOption) selectFont.value = fontFamily;
     }
-    
-    // Toggle active state for bold/italic etc buttons if they existed
-    // (Current UI doesn't have active state for those yet, but good for future)
 }
 
 function applyFontSizeSelected(size) {
@@ -432,11 +442,10 @@ function applyFontSizeSelected(size) {
     if (!activeContainer) return;
 
     if (selection.isCollapsed) {
-        // Insertion Point Case
         const range = selection.getRangeAt(0);
         const span = document.createElement('span');
         span.style.fontSize = size;
-        span.innerHTML = '&#8203;'; // Zero-width space to hold the style
+        span.innerHTML = '&#8203;'; 
         range.insertNode(span);
         
         const nextRange = document.createRange();
@@ -445,16 +454,17 @@ function applyFontSizeSelected(size) {
         selection.removeAllRanges();
         selection.addRange(nextRange);
     } else {
-        // Range Selection Case
+        // MUST BE FALSE for the font tag marker to work
+        document.execCommand('styleWithCSS', false, false);
         document.execCommand('fontSize', false, '7');
+        
         const hooks = document.querySelectorAll('font[size="7"]');
         hooks.forEach(hook => {
             if (activeContainer.contains(hook)) {
                 const span = document.createElement('span');
                 span.style.fontSize = size;
+                // Preserve internal structure but flatten font-size spans
                 span.innerHTML = hook.innerHTML;
-                
-                // Clear inner font-size spans to avoid double styling
                 span.querySelectorAll('span[style*="font-size"]').forEach(inner => {
                     inner.style.fontSize = '';
                 });
@@ -483,7 +493,8 @@ function adjustSelectionFontSize(delta) {
 }
 
 function setupEventListeners() {
-    document.execCommand('styleWithCSS', false, true);
+    // Ensure legacy behavior for font-sizing marker trick
+    document.execCommand('styleWithCSS', false, false);
 
     // Toolbar selections
     document.getElementById('select-font-family').addEventListener('change', (e) => {
