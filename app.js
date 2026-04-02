@@ -524,25 +524,30 @@ function setupEventListeners() {
         editor.focus();
     });
 
-    // Editor Selection Change Tracking
-    editor.addEventListener('keyup', updateEditorToolbarState);
-    editor.addEventListener('click', updateEditorToolbarState);
-
-    // Keyboard Shortcuts
-    editor.addEventListener('keydown', (e) => {
-        if (e.ctrlKey) {
-            if (e.key === '=' || e.key === '+') {
-                e.preventDefault();
-                adjustSelectionFontSize(2);
-            }
-            if (e.key === '-') {
-                e.preventDefault();
-                adjustSelectionFontSize(-2);
-            }
-            if (e.key === 'b') {
-                // Bold is handled by browser but we can ensure it stays in sync
-                setTimeout(updateEditorToolbarState, 10);
-            }
+    // Editor selection change tracking for main editor, title and subtitle
+    const editableAreas = ['editor', 'active-note-title', 'active-note-subtitle'];
+    editableAreas.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('keyup', updateEditorToolbarState);
+            el.addEventListener('click', updateEditorToolbarState);
+            
+            // Keyboard Shortcuts for all editable areas
+            el.addEventListener('keydown', (e) => {
+                if (e.ctrlKey) {
+                    if (e.key === '=' || e.key === '+') {
+                        e.preventDefault();
+                        adjustSelectionFontSize(2);
+                    }
+                    if (e.key === '-') {
+                        e.preventDefault();
+                        adjustSelectionFontSize(-2);
+                    }
+                    if (e.key === 'b') {
+                        setTimeout(updateEditorToolbarState, 10);
+                    }
+                }
+            });
         }
     });
 
