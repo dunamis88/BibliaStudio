@@ -715,7 +715,7 @@ function setupEventListeners() {
 
     // Filter Notes
     document.getElementById('notes-filter').addEventListener('input', (e) => {
-        renderNotesBrowser(e.target.value.toLowerCase());
+        renderNotesBrowser(normalizeText(e.target.value));
     });
 
     // Local Bible Zoom
@@ -777,7 +777,9 @@ function renderNotesBrowser(query = "") {
     const noteKeys = Object.keys(state.notes);
     const filtered = noteKeys.filter(key => {
         const note = state.notes[key];
-        return note.title.toLowerCase().includes(query) || (note.subtitle && note.subtitle.toLowerCase().includes(query));
+        const normalizedTitle = normalizeText(note.title);
+        const normalizedSubtitle = normalizeText(note.subtitle || "");
+        return normalizedTitle.includes(query) || normalizedSubtitle.includes(query);
     });
 
     filtered.sort((a,b) => b === 'default' ? 1 : a === 'default' ? -1 : 0);
