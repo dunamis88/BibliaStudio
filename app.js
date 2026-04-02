@@ -1593,14 +1593,38 @@ function renderHighlightsBrowser(sortBy = 'book') {
 
     hArray.forEach(h => {
         const book = BOOKS.find(b => b.id === h.bookId);
+        
+        // Fetch the actual verse text for the list
+        let verseText = "Cargando texto...";
+        const bible = bibleLibrary[h.version];
+        if (bible) {
+            const first = bible.data[0] || {};
+            const keys = Object.keys(first);
+            const isSql = bible.type === 'sqlite';
+            const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('id1')) || keys[0]);
+            const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('capitulo') || k.toLowerCase().includes('id2')) || keys[1]);
+            const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
+            const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text') || k.toLowerCase().includes('vtext')) || keys[3]);
+
+            const vData = bible.data.find(v => 
+                parseInt(v[bKey]) === h.bookId && 
+                parseInt(v[cKey]) === h.chapter && 
+                parseInt(v[vKey]) === h.verse
+            );
+            if (vData) verseText = cleanText(vData[tKey], h.version);
+        }
+
         const item = document.createElement('div');
         item.className = `highlight-list-item h-${h.color}`;
         item.innerHTML = `
             <div class="h-item-details">
-                <span class="h-item-ref">${book ? book.n : 'Libro'} ${h.chapter}:${h.verse}</span>
-                <span class="h-item-meta">${h.version} • ${h.time ? new Date(h.time).toLocaleDateString() : 'Fecha desconocida'}</span>
+                <div class="h-item-header">
+                    <span class="h-item-ref">${book ? book.n : 'Libro'} ${h.chapter}:${h.verse}</span>
+                    <span class="h-item-meta">${h.version} • ${h.time ? new Date(h.time).toLocaleDateString() : 'Fecha desconocida'}</span>
+                </div>
+                <div class="h-item-text">"${verseText}"</div>
             </div>
-            <i data-lucide="chevron-right" style="width: 16px; opacity: 0.5;"></i>
+            <i data-lucide="external-link" style="width: 16px; opacity: 0.3; flex-shrink: 0;"></i>
         `;
         item.onclick = () => {
             state.currentVersion = h.version;
