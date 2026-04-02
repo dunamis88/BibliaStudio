@@ -1,4 +1,38 @@
 // --- CONSTANTS ---
+// Failsafe global login
+function loginWithGoogle() {
+    alert("Intentando conectar con Google...");
+    const btn = document.getElementById('btn-login');
+    if (btn) { btn.style.opacity = '0.5'; btn.disabled = true; }
+    
+    const resetBtn = function() {
+        if (btn) { btn.style.opacity = '1'; btn.disabled = false; }
+    };
+    
+    const resetTimer = setTimeout(resetBtn, 10000);
+    const provider = new firebase.auth.GoogleAuthProvider();
+    
+    auth.signInWithPopup(provider)
+        .then(function() {
+            clearTimeout(resetTimer);
+            console.log("Login exitoso.");
+        })
+        .catch(function(err) {
+            clearTimeout(resetTimer);
+            resetBtn();
+            console.error("Error al iniciar sesión:", err);
+            if (err.code !== 'auth/popup-closed-by-user') {
+                alert('Error al iniciar sesión: ' + err.message);
+            }
+        });
+}
+
+function logout() {
+    if(confirm('¿Cerrar sesión en BibliaStudio?')) {
+        auth.signOut().then(() => location.reload());
+    }
+}
+
 const BOOKS = [{ id: 1, n: "Génesis", c: 50, nt: false }, { id: 2, n: "Éxodo", c: 40, nt: false }, { id: 3, n: "Levítico", c: 27, nt: false }, { id: 4, n: "Números", c: 36, nt: false }, { id: 5, n: "Deuteronomio", c: 34, nt: false }, { id: 6, n: "Josué", c: 24, nt: false }, { id: 7, n: "Jueces", c: 21, nt: false }, { id: 8, n: "Rut", c: 4, nt: false }, { id: 9, n: "1 Samuel", c: 31, nt: false }, { id: 10, n: "2 Samuel", c: 24, nt: false }, { id: 11, n: "1 Reyes", c: 22, nt: false }, { id: 12, n: "2 Reyes", c: 25, nt: false }, { id: 13, n: "1 Crónicas", c: 29, nt: false }, { id: 14, n: "2 Crónicas", c: 36, nt: false }, { id: 15, n: "Esdras", c: 10, nt: false }, { id: 16, n: "Nehemías", c: 13, nt: false }, { id: 17, n: "Ester", c: 10, nt: false }, { id: 18, n: "Job", c: 42, nt: false }, { id: 19, n: "Salmos", c: 150, nt: false }, { id: 20, n: "Proverbios", c: 31, nt: false }, { id: 21, n: "Eclesiastés", c: 12, nt: false }, { id: 22, n: "Cantares", c: 8, nt: false }, { id: 23, n: "Isaías", c: 66, nt: false }, { id: 24, n: "Jeremías", c: 52, nt: false }, { id: 25, n: "Lamentaciones", c: 5, nt: false }, { id: 26, n: "Ezequiel", c: 48, nt: false }, { id: 27, n: "Daniel", c: 12, nt: false }, { id: 28, n: "Oseas", c: 14, nt: false }, { id: 29, n: "Joel", c: 3, nt: false }, { id: 30, n: "Amós", c: 9, nt: false }, { id: 31, n: "Abdías", c: 1, nt: false }, { id: 32, n: "Jonás", c: 4, nt: false }, { id: 33, n: "Miqueas", c: 7, nt: false }, { id: 34, n: "Nahúm", c: 3, nt: false }, { id: 35, n: "Habacuc", c: 3, nt: false }, { id: 36, n: "Sofonías", c: 3, nt: false }, { id: 37, n: "Hageo", c: 2, nt: false }, { id: 38, n: "Zacarías", c: 14, nt: false }, { id: 39, n: "Malaquías", c: 4, nt: false }, { id: 40, n: "Mateo", c: 28, nt: true }, { id: 41, n: "Marcos", c: 16, nt: true }, { id: 42, n: "Lucas", c: 24, nt: true }, { id: 43, n: "Juan", c: 21, nt: true }, { id: 44, n: "Hechos", c: 28, nt: true }, { id: 45, n: "Romanos", c: 16, nt: true }, { id: 46, n: "1 Corintios", c: 16, nt: true }, { id: 47, n: "2 Corintios", c: 13, nt: true }, { id: 48, n: "Gálatas", c: 6, nt: true }, { id: 49, n: "Efesios", c: 6, nt: true }, { id: 50, n: "Filipenses", c: 4, nt: true }, { id: 51, n: "Colosenses", c: 4, nt: true }, { id: 52, n: "1 Tesalonicenses", c: 5, nt: true }, { id: 53, n: "2 Tesalonicenses", c: 3, nt: true }, { id: 54, n: "1 Timoteo", c: 6, nt: true }, { id: 55, n: "2 Timoteo", c: 4, nt: true }, { id: 56, n: "Tito", c: 3, nt: true }, { id: 57, n: "Filemón", c: 1, nt: true }, { id: 58, n: "Hebreos", c: 13, nt: true }, { id: 59, n: "Santiago", c: 5, nt: true }, { id: 60, n: "1 Pedro", c: 5, nt: true }, { id: 61, n: "2 Pedro", c: 3, nt: true }, { id: 62, n: "1 Juan", c: 5, nt: true }, { id: 63, n: "2 Juan", c: 1, nt: true }, { id: 64, n: "3 Juan", c: 1, nt: true }, { id: 65, n: "Judas", c: 1, nt: true }, { id: 66, n: "Apocalipsis", c: 22, nt: true }];
 
 const STORAGE_KEY = 'biblia_studio_v1';
@@ -60,6 +94,8 @@ function loadState() {
 
 function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    // Trigger cloud sync if logged in
+    syncNotesToCloud();
 }
 
 function updateUIState() {
@@ -498,7 +534,89 @@ function adjustSelectionFontSize(delta) {
     applyFontSizeSelected(newSize);
 }
 
+/* --- FIREBASE LOGIC --- */
+const firebaseConfig = {
+  apiKey: "AIzaSyDMo071Sh-uGx6M3CSVRHnSQCy8moVwzuY",
+  authDomain: "bibliastudio.firebaseapp.com",
+  projectId: "bibliastudio",
+  storageBucket: "bibliastudio.firebasestorage.app",
+  messagingSenderId: "165499952758",
+  appId: "1:165499952758:web:45dd0017bcb70fb9f1c957",
+  measurementId: "G-950T17KL6J"
+};
+
+// Initialize Firebase (Compat mode for Vanilla JS)
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Sync Notes to Firestore
+async function syncNotesToCloud() {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    try {
+        await db.collection('users').doc(user.uid).set({
+            notes: state.notes,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        console.log("Notas sincronizadas con la nube.");
+    } catch (error) {
+        console.error("Error al sincronizar con la nube:", error);
+    }
+}
+
+// Load Notes from Firestore
+async function loadNotesFromCloud(user) {
+    try {
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists && doc.data().notes) {
+            const cloudNotes = doc.data().notes;
+            // Merge logic: Simple replace for now, can be improved to selective merge
+            state.notes = cloudNotes;
+            saveState(); // Update local storage too
+            renderNotesList();
+            
+            // If there's an active note, re-render it if it exists in the cloud notes
+            if (state.activeNoteId && state.notes[state.activeNoteId]) {
+                openNote(state.activeNoteId);
+            }
+        }
+    } catch (error) {
+        console.error("Error al cargar notas de la nube:", error);
+    }
+}
+
+// Auth State Monitor
+auth.onAuthStateChanged(async (user) => {
+    const loginBtn = document.getElementById('btn-login');
+    const profileMenu = document.getElementById('user-profile');
+    const userName = document.getElementById('user-name');
+    const userPhoto = document.getElementById('user-photo');
+
+    if (user) {
+        // Logged In
+        loginBtn.style.display = 'none';
+        profileMenu.style.display = 'flex';
+        userName.textContent = user.displayName.split(' ')[0];
+        userPhoto.src = user.photoURL;
+        
+        // Load cloud notes
+        await loadNotesFromCloud(user);
+    } else {
+        // Logged Out
+        loginBtn.style.display = 'flex';
+        profileMenu.style.display = 'none';
+    }
+});
+
 function setupEventListeners() {
+    // 1. Firebase Auth Listeners (High Priority)
+    const loginBtn = document.getElementById('btn-login');
+    const logoutBtn = document.getElementById('btn-logout');
+    if (loginBtn) loginBtn.addEventListener('click', loginWithGoogle);
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
+
     // Ensure legacy behavior for font-sizing marker trick
     document.execCommand('styleWithCSS', false, false);
 
@@ -514,7 +632,6 @@ function setupEventListeners() {
 
     document.getElementById('btn-clear-format').addEventListener('click', () => {
         document.execCommand('removeFormat', false, null);
-        // Also clear our custom spans if possible
         const selection = window.getSelection();
         if (!selection.isCollapsed) {
             applyFontSizeSelected('inherit');
@@ -522,15 +639,13 @@ function setupEventListeners() {
         editor.focus();
     });
 
-    // Professional Toolbar Synchronization
     document.addEventListener('selectionchange', updateEditorToolbarState);
 
-    // Keyboard Shortcuts and local listeners for all editable areas
+    // Keyboard Shortcuts
     const editableAreas = ['editor', 'active-note-title', 'active-note-subtitle'];
     editableAreas.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            // Keydown for shortcuts
             el.addEventListener('keydown', (e) => {
                 if (e.ctrlKey) {
                     if (e.key === '=' || e.key === '+') {
@@ -541,49 +656,30 @@ function setupEventListeners() {
                         e.preventDefault();
                         adjustSelectionFontSize(-2);
                     }
-                    if (e.key === 'b') {
-                        setTimeout(updateEditorToolbarState, 10);
-                    }
                 }
             });
         }
     });
 
-    // Alignment Dropdown Toggle
+    // POPUPS AND DROPDOWNS
     const alignBtn = document.getElementById('btn-align');
     const alignPopup = document.getElementById('align-popup');
-    
-    alignBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        alignPopup.style.display = alignPopup.style.display === 'none' ? 'flex' : 'none';
-        document.getElementById('table-selector-popup').style.display = 'none';
-    });
-    
-    // Bible Search Input
     const bibleSearchInput = document.getElementById('bible-main-search');
     const bibleSearchDropdown = document.getElementById('bible-search-dropdown');
-    
-    if (bibleSearchInput) {
-        bibleSearchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            if (query.length >= 3) {
-                performBibleSearch(query);
-            } else {
-                bibleSearchDropdown.classList.remove('show');
-            }
-        });
 
-        bibleSearchInput.addEventListener('focus', () => {
-            if (bibleSearchInput.value.trim().length >= 3) {
-                bibleSearchDropdown.classList.add('show');
-            }
+    if (alignBtn) {
+        alignBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            alignPopup.style.display = alignPopup.style.display === 'none' ? 'flex' : 'none';
         });
     }
 
-    // Global click to close popups
+    // Global click closer
     document.addEventListener('click', (e) => {
-        alignPopup.style.display = 'none';
-        document.getElementById('table-selector-popup').style.display = 'none';
+        if (alignPopup) alignPopup.style.display = 'none';
+        const tablePopup = document.getElementById('table-selector-popup');
+        if (tablePopup) tablePopup.style.display = 'none';
+        
         document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
         
         // Close search dropdown if click is outside
@@ -591,6 +687,24 @@ function setupEventListeners() {
             bibleSearchDropdown.classList.remove('show');
         }
     });
+    
+    // Bible Search
+    if (bibleSearchInput) {
+        bibleSearchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            if (query.length >= 3) {
+                performBibleSearch(query);
+            } else {
+                if (bibleSearchDropdown) bibleSearchDropdown.classList.remove('show');
+            }
+        });
+
+        bibleSearchInput.addEventListener('focus', () => {
+            if (bibleSearchInput.value.trim().length >= 3) {
+                if (bibleSearchDropdown) bibleSearchDropdown.classList.add('show');
+            }
+        });
+    }
 
     alignPopup.addEventListener('click', (e) => e.stopPropagation());
     

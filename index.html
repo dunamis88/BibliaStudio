@@ -8,9 +8,9 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <!-- Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- SQL.js for SQLite Bibles -->
@@ -40,11 +40,11 @@
                         <img id="user-photo" src="" alt="Avatar" class="user-avatar">
                         <div class="user-details">
                             <span id="user-name">Usuario</span>
-                            <button id="btn-logout" class="icon-btn" title="Cerrar Sesión"><i data-lucide="log-out"></i></button>
+                            <button id="btn-logout" class="icon-btn" title="Cerrar Sesión" onclick="logout()"><i data-lucide="log-out"></i></button>
                         </div>
                     </div>
                     
-                    <button id="btn-login" class="icon-btn" title="Iniciar Sesión con Google">
+                    <button id="btn-login" class="icon-btn" title="Iniciar Sesión con Google" onclick="loginWithGoogle()">
                         <i data-lucide="user"></i>
                     </button>
                     
