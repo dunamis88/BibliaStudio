@@ -966,24 +966,6 @@ body.resizing {
     font-family: 'Outfit', sans-serif;
 }
 
-#btn-logout {
-    background: transparent !important;
-    border: none !important;
-    color: var(--text-muted) !important;
-    width: 28px !important;
-    height: 28px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 !important;
-    opacity: 0.6;
-}
-
-#btn-logout:hover {
-    opacity: 1;
-    color: var(--accent-red) !important;
-}
-
 .modal-search {
     background: var(--neutral);
     border: 1px solid var(--border-color);

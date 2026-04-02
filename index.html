@@ -36,11 +36,10 @@
                         <i data-lucide="notebook-tabs"></i>
                     </button>
                     
-                    <div id="user-profile" class="user-profile-menu" style="display: none;">
+                    <div id="user-profile" class="user-profile-menu" style="display: none; cursor: pointer;" onclick="logout()">
                         <img id="user-photo" src="" alt="Avatar" class="user-avatar">
-                        <div class="user-details">
+                        <div class="user-details" style="margin-right: 10px;">
                             <span id="user-name">Usuario</span>
-                            <button id="btn-logout" class="icon-btn" title="Cerrar Sesión" onclick="logout()"><i data-lucide="log-out"></i></button>
                         </div>
                     </div>
                     
