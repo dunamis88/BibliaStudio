@@ -43,9 +43,9 @@ let state = {
     currentChapter: 1,
     selectedVerses: [], // Array of verse numbers
     notes: {
-        'default': { title: "Reflexión Académica", subtitle: "Reflexión sobre el contexto original", content: "", date: new Date().toLocaleDateString() }
+        'initial': { title: "", subtitle: "", content: "", date: new Date().toLocaleDateString() }
     }, 
-    currentNoteId: 'default',
+    activeNoteId: 'initial',
     highlights: {}, // Key: verseId, Value: color
     splitPos: 50, // Percentage
     currentBibleFontSize: 18,
