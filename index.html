@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BibliaStudio - Academic Edition</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SQL.js for SQLite Bibles -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <!-- Global Header -->
+            <header class="app-header">
+                <div class="breadcrumb">
+                    <h1 class="main-logo-text">Biblia Studio</h1>
+                    <div class="header-divider" style="margin: 0 20px 0 30px;"></div>
+                    <div class="search-bar bible-search-main">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="bible-main-search" placeholder="Buscar versículo o palabra..." autocomplete="off">
+                        <div id="bible-search-dropdown" class="search-dropdown-menu"></div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="btn-search-notes" title="Buscar Mis Notas">
+                        <i data-lucide="notebook-tabs"></i>
+                    </button>
+                    <div class="header-divider"></div>
+                    <button class="icon-btn" id="btn-settings" title="Configuración">
+                        <i data-lucide="settings"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Split View Container -->
+            <div class="split-view" id="main-split">
+                <!-- Bible Reader Panel -->
+                <section class="bible-panel" id="bible-panel">
+                    <!-- Fixed Header Bar -->
+                    <div class="bible-header-sticky">
+                        <div class="bible-content-wrapper">
+                            <div class="bible-header-top">
+                                <!-- Controles Auxiliares Izquierda -->
+                                <div class="history-controls bible-adaptive-el">
+                                    <button class="tool-btn" id="btn-nav-back" title="Atrás"><i data-lucide="arrow-left"></i></button>
+                                    <button class="tool-btn" id="btn-nav-forward" title="Adelante"><i data-lucide="arrow-right"></i></button>
+                                    <div class="dropdown-container">
+                                        <button class="tool-btn" id="btn-nav-history" title="Historial"><i data-lucide="history"></i></button>
+                                        <div class="nav-dropdown" id="dropdown-history" style="min-width: 280px; padding: 12px;">
+                                            <div class="column-header">Puntos de Estudio Recientes</div>
+                                            <div id="history-items-list" class="history-list-compact"></div>
+                                        </div>
+                                    </div>
+                                    <div class="tool-divider"></div>
+                                </div>
+
+                                <!-- Selección Bíblica -->
+                                <div class="inline-nav">
+                                    <div class="dropdown-container">
+                                        <button class="nav-trigger" id="trigger-version">
+                                            <span id="current-version">RV60</span>
+                                            <i data-lucide="chevron-down"></i>
+                                        </button>
+                                        <div class="nav-dropdown" id="dropdown-version"></div>
+                                    </div>
+                                    <div class="dropdown-container">
+                                        <button class="nav-trigger" id="trigger-book">
+                                            <span id="current-book">Génesis</span>
+                                            <i data-lucide="chevron-down"></i>
+                                        </button>
+                                        <div class="nav-dropdown books-dropdown-menu" id="dropdown-book"></div>
+                                    </div>
+                                    <div class="dropdown-container">
+                                        <button class="nav-trigger" id="trigger-chapter">
+                                            <span id="current-chapter">1</span>
+                                            <i data-lucide="chevron-down"></i>
+                                        </button>
+                                        <div class="nav-dropdown chapters-dropdown-menu" id="dropdown-chapter"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Controles Auxiliares Derecha -->
+                                <div class="tool-divider bible-adaptive-el" style="margin: 0 16px;"></div>
+                                <div class="bible-local-controls bible-adaptive-el">
+                                    <button class="tool-btn" id="btn-bible-zoom-out" title="Achicar letra"><i data-lucide="minus"></i></button>
+                                    <span id="bible-size-label">18</span>
+                                    <button class="tool-btn" id="btn-bible-zoom-in" title="Agrandar letra"><i data-lucide="plus"></i></button>
+                                </div>
+
+                                <!-- Botón '...' para Biblia -->
+                                <div class="dropdown-container" id="bible-more-container" style="display: none; margin-left: auto;">
+                                    <button class="tool-btn" id="btn-bible-more" title="Opciones adicionales">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </button>
+                                    <div class="nav-dropdown" id="bible-more-dropdown" style="min-width: 180px; padding: 10px; right: 0; left: auto;">
+                                        <div class="bible-tools-grid"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scrollable Area -->
+                    <div class="bible-scroll-area">
+                        <div class="bible-content-wrapper">
+                            <div class="bible-header" style="margin-top: 0;">
+                                <span class="subtitle">Libro</span>
+                                <h1 id="bible-book-title">Libro</h1>
+                                <h2 id="bible-chapter-title">Capítulo 1</h2>
+                            </div>
+                            <div class="bible-verses" id="bible-verses-container">
+                                <div class="loading">Cargando Biblia...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Resizer Handle -->
+                <div class="resizer" id="main-resizer">
+                    <div class="resizer-knob"></div>
+                </div>
+
+                <!-- Notes Panel -->
+                <section class="notes-panel" id="notes-panel">
+                    <div class="notes-header">
+                        <div class="editor-toolbar">
+                            <!-- Grupo 1: Gestión de Nota -->
+                            <div class="tool-group">
+                                <button class="tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
+                                <div class="tool-divider"></div>
+                                <button class="tool-btn" title="Deshacer" data-command="undo"><i data-lucide="rotate-ccw"></i></button>
+                                <button class="tool-btn" title="Rehacer" data-command="redo"><i data-lucide="rotate-cw"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 2: Estilo de Texto -->
+                            <div class="tool-group">
+                                <button class="tool-btn" title="Negrita" data-command="bold"><i data-lucide="bold"></i></button>
+                                <button class="tool-btn" title="Itálica" data-command="italic"><i data-lucide="italic"></i></button>
+                                <button class="tool-btn" title="Subrayado" data-command="underline"><i data-lucide="underline"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 3: Fuente y Tamaño -->
+                            <div class="tool-group">
+                                <select class="tool-select" id="select-font-family" title="Fuente">
+                                    <option value="Inter">Sans</option>
+                                    <option value="Libre Baskerville">Serif</option>
+                                    <option value="Outfit">Modern</option>
+                                </select>
+                                <select class="tool-select" id="select-font-size" title="Tamaño">
+                                    <option value="9px">9</option>
+                                    <option value="10px">10</option>
+                                    <option value="11px">11</option>
+                                    <option value="12px">12</option>
+                                    <option value="13px">13</option>
+                                    <option value="14px">14</option>
+                                    <option value="16px" selected>16</option>
+                                    <option value="18px">18</option>
+                                    <option value="20px">20</option>
+                                    <option value="24px">24</option>
+                                    <option value="28px">28</option>
+                                    <option value="32px">32</option>
+                                    <option value="36px">36</option>
+                                    <option value="40px">40</option>
+                                    <option value="44px">44</option>
+                                    <option value="48px">48</option>
+                                    <option value="54px">54</option>
+                                    <option value="60px">60</option>
+                                    <option value="66px">66</option>
+                                    <option value="70px">70</option>
+                                </select>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 4: Alineación y Listas -->
+                            <div class="tool-group">
+                                <div style="position: relative;">
+                                    <button class="tool-btn" title="Alineación" id="btn-align"><i data-lucide="align-left"></i></button>
+                                    <div id="align-popup" class="tool-popup" style="display: none;">
+                                        <button class="tool-btn" data-command="justifyLeft"><i data-lucide="align-left"></i></button>
+                                        <button class="tool-btn" data-command="justifyCenter"><i data-lucide="align-center"></i></button>
+                                        <button class="tool-btn" data-command="justifyRight"><i data-lucide="align-right"></i></button>
+                                        <button class="tool-btn" data-command="justifyFull"><i data-lucide="align-justify"></i></button>
+                                    </div>
+                                </div>
+                                <button class="tool-btn" title="Lista Viñetas" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 5: Citas y Versículos -->
+                            <div class="tool-group">
+                                <button class="tool-btn" title="Insertar Cita" id="btn-insert-quote"><i data-lucide="quote"></i></button>
+                                <button class="tool-btn" title="Insertar Versículo" id="btn-import-verse"><i data-lucide="book-open"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 6: Multimedia e Impresión (Adaptativo) -->
+                            <div class="tool-group adaptive-group">
+                                <button class="tool-btn" title="Insertar Tabla" id="btn-insert-table"><i data-lucide="table"></i></button>
+                                <div id="table-selector-popup" class="table-grid-popup" style="display: none;">
+                                    <div class="table-grid-container" id="table-grid"></div>
+                                    <div class="table-grid-status">Insertar tabla <span id="table-dim">1x1</span></div>
+                                </div>
+                                <button class="tool-btn" title="Insertar Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
+                                <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                                
+                                <button class="tool-btn" title="YouTube" id="btn-insert-youtube">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube-custom"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 2-2h15a2 2 0 0 1 2 2 24.12 24.12 0 0 1 0 10 2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2Z"/><path d="m10 15 5-3-5-3z"/></svg>
+                                </button>
+                                
+                                <button class="tool-btn" title="Iframe Web" id="btn-insert-web"><i data-lucide="globe"></i></button>
+                                <button class="tool-btn" title="Imprimir Nota" id="btn-print-note"><i data-lucide="printer"></i></button>
+                            </div>
+                            
+                            <!-- Botón '...' para herramientas ocultas -->
+                            <div class="dropdown-container" id="toolbar-more-container" style="display: none; margin-left: auto;">
+                                <button class="tool-btn" id="btn-toolbar-more" title="Más herramientas">
+                                    <i data-lucide="more-horizontal"></i>
+                                </button>
+                                <div class="nav-dropdown" id="toolbar-more-dropdown" style="min-width: 180px; padding: 10px; right: 0; left: auto;">
+                                    <div class="more-tools-grid"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="notes-content">
+                        <div class="active-note-context">
+                            <h2 id="active-note-title" contenteditable="true" placeholder="Escribe el título aquí...">Escribe el título aquí...</h2>
+                            <div id="active-note-subtitle" contenteditable="true" class="verse-ref" placeholder="Escribe el subtítulo aquí...">Escribe el subtítulo aquí...</div>
+                        </div>
+                        <div id="editor" contenteditable="true" class="rich-editor">
+                            <!-- Content injected here -->
+                        </div>
+                    </div>
+                    <!-- Selection Toolbar for floating menu -->
+                    <div class="selection-fab" id="selection-fab" style="display: none;">
+                        <i data-lucide="plus"></i>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Unified Scripture Selector Modal -->
+        <div class="overlay" id="selection-overlay" style="display: none;">
+            <div class="selection-card unified-selector">
+                <header class="modal-header">
+                    <div class="modal-title-group">
+                        <h1 class="master-title">Seleccionar Escritura</h1>
+                        <h3>VERSIÓN • LIBRO • CAPÍTULO</h3>
+                    </div>
+                    <button class="icon-btn" onclick="document.getElementById('selection-overlay').style.display='none'"><i data-lucide="x"></i></button>
+                </header>
+                <div class="selector-body">
+                    <aside class="selector-sidebar" id="selector-versions">
+                        <!-- Versions list -->
+                    </aside>
+                    <main class="selector-main" id="selector-books">
+                        <!-- Books grid -->
+                    </main>
+                    <aside class="selector-sidebar chapters-pane" id="selector-chapters">
+                        <!-- Chapters grid -->
+                    </aside>
+                </div>
+                <footer class="modal-footer">
+                    <div class="selection-status">
+                        <span class="status-label">SELECCIÓN ACTUAL</span>
+                        <div id="selection-display">Génesis 1 (RV60)</div>
+                    </div>
+                    <div class="footer-actions">
+                        <button class="btn-cancel" onclick="document.getElementById('selection-overlay').style.display='none'">CANCELAR</button>
+                        <button class="btn-primary" id="btn-begin-reading">COMENZAR LECTURA</button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-overlay" class="overlay" style="display: none;">
+            <div class="settings-card">
+                <aside class="settings-sidebar">
+                    <div class="settings-nav-item active" data-tab="user">
+                        <i data-lucide="user"></i> <span>Usuario</span>
+                    </div>
+                    <div class="settings-nav-item" data-tab="interface">
+                        <i data-lucide="palette"></i> <span>Interfaz</span>
+                    </div>
+                    <div class="settings-nav-item" data-tab="privacy">
+                        <i data-lucide="shield"></i> <span>Privacidad</span>
+                    </div>
+                    <div class="settings-nav-item" data-tab="about">
+                        <i data-lucide="info"></i> <span>Acerca de</span>
+                    </div>
+                </aside>
+                <main class="settings-content">
+                    <header class="settings-header">
+                        <h3 id="settings-tab-title">Configuración de Usuario</h3>
+                        <button class="icon-btn" onclick="document.getElementById('settings-overlay').style.display='none'"><i data-lucide="x"></i></button>
+                    </header>
+                    <div class="settings-body">
+                        <p class="settings-placeholder">Personaliza tu experiencia de estudio académico.</p>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+
+        <!-- Notes Browser Modal -->
+        <div id="notes-overlay" class="overlay" style="display: none;">
+            <div class="notes-browser-card">
+                <header class="modal-header">
+                    <div class="modal-title-group">
+                        <h1 class="master-title">Biblia Studio</h1>
+                        <h3>Gestor de Notas</h3>
+                    </div>
+                    <div class="header-actions">
+                        <input type="search" placeholder="Buscar reflexiones..." class="modal-search" id="notes-filter">
+                        <button class="icon-btn" onclick="document.getElementById('notes-overlay').style.display='none'"><i data-lucide="x"></i></button>
+                    </div>
+                </header>
+                <div class="notes-list-stack" id="notes-list">
+                    <!-- Notes loaded as list items -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Resize Menu (Floating) -->
+        <div id="image-resize-menu" class="floating-menu" style="display: none;">
+            <button class="menu-item" data-size="25%">25%</button>
+            <button class="menu-item" data-size="50%">50%</button>
+            <button class="menu-item" data-size="75%">75%</button>
+            <button class="menu-item" data-size="100%">Original</button>
+            <div class="menu-divider"></div>
+            <button class="menu-item delete" id="btn-delete-image"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <!-- Tooltip for Cross References -->
+        <div id="tooltip" class="ref-tooltip" style="display: none;"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
