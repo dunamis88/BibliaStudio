@@ -1128,18 +1128,20 @@ body.resizing {
 
 /* Highlighter UI */
 .highlight-dot-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid !important;
+    place-items: center !important;
     width: 38px;
     height: 38px;
     background: white;
     border: 1px solid var(--border-color);
     border-radius: 10px;
     transition: var(--transition-fast);
-    padding: 0; /* Reset browser padding */
+    padding: 0 !important;
+    margin: 0 !important;
     outline: none;
-    line-height: 0; /* Reset line height for icons */
+    box-sizing: border-box !important;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 .highlight-dot-btn[title]:hover {
@@ -1149,11 +1151,15 @@ body.resizing {
 }
 
 .color-dot {
-    width: 22px; /* Slightly more balanced */
+    width: 22px;
     height: 22px;
     border-radius: 50%;
     border: 1px solid rgba(0,0,0,0.1);
     transition: var(--transition-fast);
+    display: block; /* Change to block as parent is grid centered */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
