@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- EDITOR HELPERS ---
 function updateEditorToolbarState() {
     const selection = window.getSelection();
-    if (!selection.rangeCount) return;
+    if (!selection.rangeCount || !selection.anchorNode) return;
 
     let node = selection.anchorNode;
     if (node.nodeType === 3) node = node.parentElement;
