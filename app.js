@@ -390,8 +390,100 @@ document.addEventListener('DOMContentLoaded', () => {
     // Buttons for Notes Deletion logic
 });
 
+// --- EDITOR HELPERS ---
+function updateEditorToolbarState() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    let node = selection.anchorNode;
+    if (node.nodeType === 3) node = node.parentElement;
+
+    const computedStyle = window.getComputedStyle(node);
+    
+    // Update Font Size Dropdown
+    const fontSize = computedStyle.fontSize;
+    const selectSize = document.getElementById('select-font-size');
+    if (selectSize) {
+        // Try to find the closest matching option
+        const sizeVal = parseInt(fontSize) + 'px';
+        const hasOption = Array.from(selectSize.options).some(opt => opt.value === sizeVal);
+        if (hasOption) {
+            selectSize.value = sizeVal;
+        }
+    }
+
+    // Update Font Family Dropdown
+    const fontFamily = computedStyle.fontFamily.split(',')[0].replace(/['"]/g, '');
+    const selectFont = document.getElementById('select-font-family');
+    if (selectFont) {
+        const hasOption = Array.from(selectFont.options).some(opt => opt.value === fontFamily);
+        if (hasOption) selectFont.value = fontFamily;
+    }
+    
+    // Toggle active state for bold/italic etc buttons if they existed
+    // (Current UI doesn't have active state for those yet, but good for future)
+}
+
+function applyFontSizeSelected(size) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const activeContainer = selection.anchorNode.parentElement.closest('[contenteditable="true"]');
+    if (!activeContainer) return;
+
+    if (selection.isCollapsed) {
+        // Insertion Point Case
+        const range = selection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.fontSize = size;
+        span.innerHTML = '&#8203;'; // Zero-width space to hold the style
+        range.insertNode(span);
+        
+        const nextRange = document.createRange();
+        nextRange.setStart(span.firstChild, 1);
+        nextRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(nextRange);
+    } else {
+        // Range Selection Case
+        document.execCommand('fontSize', false, '7');
+        const hooks = document.querySelectorAll('font[size="7"]');
+        hooks.forEach(hook => {
+            if (activeContainer.contains(hook)) {
+                const span = document.createElement('span');
+                span.style.fontSize = size;
+                span.innerHTML = hook.innerHTML;
+                
+                // Clear inner font-size spans to avoid double styling
+                span.querySelectorAll('span[style*="font-size"]').forEach(inner => {
+                    inner.style.fontSize = '';
+                });
+                
+                hook.parentNode.replaceChild(span, hook);
+            }
+        });
+    }
+    activeContainer.focus();
+    saveState();
+}
+
+function adjustSelectionFontSize(delta) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const node = selection.anchorNode.nodeType === 3 
+        ? selection.anchorNode.parentElement 
+        : selection.anchorNode;
+        
+    const currentSizeStr = window.getComputedStyle(node).fontSize;
+    const currentSize = parseInt(currentSizeStr);
+    const newSize = (currentSize + delta) + "px";
+    
+    applyFontSizeSelected(newSize);
+}
+
 function setupEventListeners() {
-    document.execCommand('styleWithCSS', false, false);
+    document.execCommand('styleWithCSS', false, true);
 
     // Toolbar selections
     document.getElementById('select-font-family').addEventListener('change', (e) => {
@@ -400,49 +492,47 @@ function setupEventListeners() {
     });
 
     document.getElementById('select-font-size').addEventListener('change', (e) => {
-        const size = e.target.value;
+        applyFontSizeSelected(e.target.value);
+    });
+
+    document.getElementById('btn-font-increase').addEventListener('click', () => {
+        adjustSelectionFontSize(2);
+    });
+
+    document.getElementById('btn-font-decrease').addEventListener('click', () => {
+        adjustSelectionFontSize(-2);
+    });
+
+    document.getElementById('btn-clear-format').addEventListener('click', () => {
+        document.execCommand('removeFormat', false, null);
+        // Also clear our custom spans if possible
         const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        // Find the active contenteditable container
-        const activeContainer = selection.anchorNode.parentElement.closest('[contenteditable="true"]');
-        if (!activeContainer) return;
-
-        if (selection.isCollapsed) {
-            // Case 1: Insertion Point
-            const range = selection.getRangeAt(0);
-            const span = document.createElement('span');
-            span.style.fontSize = size;
-            span.innerHTML = '&#8203;';
-            range.insertNode(span);
-            
-            const nextRange = document.createRange();
-            nextRange.setStart(span.firstChild, 1);
-            nextRange.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(nextRange);
-        } else {
-            // Case 2: Selected Text
-            document.execCommand('fontSize', false, '7');
-            
-            // Search globally for the hook to ensure we catch Titles and Subtitles too
-            const hooks = document.querySelectorAll('font[size="7"]');
-            hooks.forEach(hook => {
-                // Only process if the hook is within the active container
-                if (activeContainer.contains(hook)) {
-                    const span = document.createElement('span');
-                    span.style.fontSize = size;
-                    span.innerHTML = hook.innerHTML;
-                    
-                    span.querySelectorAll('span[style*="font-size"]').forEach(inner => {
-                        inner.style.fontSize = '';
-                    });
-                    
-                    hook.parentNode.replaceChild(span, hook);
-                }
-            });
+        if (!selection.isCollapsed) {
+            applyFontSizeSelected('inherit');
         }
-        activeContainer.focus();
+        editor.focus();
+    });
+
+    // Editor Selection Change Tracking
+    editor.addEventListener('keyup', updateEditorToolbarState);
+    editor.addEventListener('click', updateEditorToolbarState);
+
+    // Keyboard Shortcuts
+    editor.addEventListener('keydown', (e) => {
+        if (e.ctrlKey) {
+            if (e.key === '=' || e.key === '+') {
+                e.preventDefault();
+                adjustSelectionFontSize(2);
+            }
+            if (e.key === '-') {
+                e.preventDefault();
+                adjustSelectionFontSize(-2);
+            }
+            if (e.key === 'b') {
+                // Bold is handled by browser but we can ensure it stays in sync
+                setTimeout(updateEditorToolbarState, 10);
+            }
+        }
     });
 
     // Alignment Dropdown Toggle
