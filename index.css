@@ -467,10 +467,9 @@ body.resizing {
 }
 
 .highlighter-control-group {
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    padding: 2px 6px;
-    border-radius: 8px;
+    background: transparent;
+    border: none;
+    padding: 0;
     display: flex;
     align-items: center;
 }
@@ -1031,13 +1030,23 @@ body.resizing {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 38px; /* Slightly larger */
+    height: 38px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    transition: var(--transition-fast);
+}
+
+.highlight-dot-btn:hover {
+    background: var(--neutral);
+    border-color: var(--primary);
+    transform: translateY(-1px);
 }
 
 .color-dot {
-    width: 16px;
-    height: 16px;
+    width: 20px; /* Larger dot */
+    height: 20px;
     border-radius: 50%;
     border: 1px solid rgba(0,0,0,0.1);
     transition: var(--transition-fast);
