@@ -400,6 +400,9 @@ function updateEditorToolbarState() {
 
     const computedStyle = window.getComputedStyle(node);
     
+    // Only update if we are inside a contenteditable area
+    if (!node.closest('[contenteditable="true"]')) return;
+    
     // Update Font Size Dropdown - handle sub-pixels by rounding
     const fontSize = computedStyle.fontSize;
     const selectSize = document.getElementById('select-font-size');
@@ -421,7 +424,7 @@ function updateEditorToolbarState() {
                     closest = opt;
                 }
             });
-            if (minDiff < 3) selectSize.value = closest.value;
+            if (minDiff < 5) selectSize.value = closest.value;
         }
     }
 
@@ -524,15 +527,15 @@ function setupEventListeners() {
         editor.focus();
     });
 
-    // Editor selection change tracking for main editor, title and subtitle
+    // Professional Toolbar Synchronization
+    document.addEventListener('selectionchange', updateEditorToolbarState);
+
+    // Keyboard Shortcuts and local listeners for all editable areas
     const editableAreas = ['editor', 'active-note-title', 'active-note-subtitle'];
     editableAreas.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('keyup', updateEditorToolbarState);
-            el.addEventListener('click', updateEditorToolbarState);
-            
-            // Keyboard Shortcuts for all editable areas
+            // Keydown for shortcuts
             el.addEventListener('keydown', (e) => {
                 if (e.ctrlKey) {
                     if (e.key === '=' || e.key === '+') {
