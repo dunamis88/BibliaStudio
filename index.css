@@ -523,6 +523,8 @@ body.resizing {
     gap: 8px;
     flex-wrap: nowrap;
     position: relative;
+    width: 100%;
+    min-width: 0;
     /* overflow handled by JS moving elements */
 }
 

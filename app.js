@@ -1269,19 +1269,23 @@ let bibleToolbarObserver = null;
 
 function initToolbarObservers() {
     const notesToolbar = document.querySelector('.editor-toolbar');
-    if (notesToolbar) {
+    const notesHeader = document.querySelector('.notes-header');
+    if (notesHeader && notesToolbar) {
+        // Observe the parent (header) which defines the available space
         notesToolbarObserver = new ResizeObserver(() => {
-            debounce(updateNotesToolbarOverflow, 50)();
+            updateNotesToolbarOverflow();
         });
-        notesToolbarObserver.observe(notesToolbar);
+        notesToolbarObserver.observe(notesHeader);
     }
-
+    
+    // Also trigger on bible container resizer
     const bibleToolbar = document.querySelector('.bible-toolbar');
-    if (bibleToolbar) {
+    const bibleHeader = document.querySelector('.bible-header');
+    if (bibleHeader && bibleToolbar) {
         bibleToolbarObserver = new ResizeObserver(() => {
-            debounce(updateBibleToolbarOverflow, 50)();
+            updateBibleToolbarOverflow();
         });
-        bibleToolbarObserver.observe(bibleToolbar);
+        bibleToolbarObserver.observe(bibleHeader);
     }
 }
 
@@ -1304,29 +1308,25 @@ function updateNotesToolbarOverflow() {
     const dropdown = document.querySelector('.more-tools-grid');
     if (!toolbar || !container || !dropdown) return;
 
-    // 1. Restore all items to toolbar for accurate measurement
+    // Restore all to toolbar for measurement
     const overflowItems = Array.from(dropdown.children);
     overflowItems.forEach(item => toolbar.insertBefore(item, container));
     container.style.display = 'none';
 
-    // 2. Measure and hide
+    // Measure
     const toolbarWidth = toolbar.clientWidth;
     const moreBtnWidth = 45; 
-    let currentX = 0;
     let firstHiddenIndex = -1;
-    const gap = 8; // CSS Gap
 
     const items = Array.from(toolbar.children).filter(el => el !== container);
     
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        const itemWidth = item.offsetWidth;
-        
-        if (currentX + itemWidth > (toolbarWidth - moreBtnWidth)) {
+        // Standard industrial overflow check: offsetLeft + width vs container width
+        if (item.offsetLeft + item.offsetWidth > (toolbarWidth - moreBtnWidth)) {
             firstHiddenIndex = i;
             break;
         }
-        currentX += (itemWidth + gap);
     }
 
     if (firstHiddenIndex !== -1) {
