@@ -1,7 +1,6 @@
 // --- CONSTANTS ---
 // Failsafe global login
 function loginWithGoogle() {
-    alert("Intentando conectar con Google...");
     const btn = document.getElementById('btn-login');
     if (btn) { btn.style.opacity = '0.5'; btn.disabled = true; }
     
@@ -21,7 +20,7 @@ function loginWithGoogle() {
             clearTimeout(resetTimer);
             resetBtn();
             console.error("Error al iniciar sesión:", err);
-            if (err.code !== 'auth/popup-closed-by-user') {
+            if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
                 alert('Error al iniciar sesión: ' + err.message);
             }
         });
@@ -611,12 +610,8 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 function setupEventListeners() {
-    // 1. Firebase Auth Listeners (High Priority)
-    const loginBtn = document.getElementById('btn-login');
-    const logoutBtn = document.getElementById('btn-logout');
-    if (loginBtn) loginBtn.addEventListener('click', loginWithGoogle);
-    if (logoutBtn) logoutBtn.addEventListener('click', logout);
-
+    // 1. Firebase Auth (Handled by direct onclick in index.html for failsafe)
+    
     // Ensure legacy behavior for font-sizing marker trick
     document.execCommand('styleWithCSS', false, false);
 
