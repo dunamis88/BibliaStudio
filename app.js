@@ -1268,23 +1268,27 @@ function updateNotesToolbarOverflow() {
     const dropdown = document.querySelector('.more-tools-grid');
     if (!container || !dropdown) return;
     
+    // Initially move everything back to calculate
     const overflowItems = Array.from(dropdown.children);
     overflowItems.forEach(item => toolbar.insertBefore(item, container));
-    
     container.style.display = 'none';
-    const toolbarWidth = toolbar.offsetWidth;
+    
+    // Perform measurement
+    const toolbarRect = toolbar.getBoundingClientRect();
+    const toolbarWidth = toolbarRect.width;
     const items = Array.from(toolbar.children).filter(el => el !== container);
     
     let firstOverflowIndex = -1;
     const moreBtnWidth = 50; 
-    
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        if (item.offsetLeft + item.offsetWidth > toolbarWidth - moreBtnWidth) {
-            firstOverflowIndex = i;
-            break;
+
+    items.forEach((item, index) => {
+        const itemRect = item.getBoundingClientRect();
+        const rightEdge = itemRect.right - toolbarRect.left;
+        
+        if (rightEdge > (toolbarWidth - moreBtnWidth) && firstOverflowIndex === -1) {
+            firstOverflowIndex = index;
         }
-    }
+    });
     
     if (firstOverflowIndex !== -1) {
         for (let i = firstOverflowIndex; i < items.length; i++) {
