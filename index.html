@@ -103,6 +103,25 @@
                                 <!-- Controles Auxiliares Derecha -->
                                 <div class="tool-divider bible-adaptive-el" style="margin: 0 16px;"></div>
                                 <div class="bible-local-controls bible-adaptive-el">
+                                    <div class="dropdown-container" style="position: relative; display: inline-block;">
+                                        <button id="btn-highlight-picker" class="icon-btn highlight-dot-btn" title="Color de Marcado">
+                                            <span id="current-highlight-dot" class="color-dot yellow"></span>
+                                        </button>
+                                        <div id="highlight-palette" class="highlight-popup" style="display: none;">
+                                            <div class="palette-grid">
+                                                <div class="palette-dot yellow active" data-color="yellow" style="background-color: #fefcbf;"></div>
+                                                <div class="palette-dot green" data-color="green" style="background-color: #c6f6d5;"></div>
+                                                <div class="palette-dot blue" data-color="blue" style="background-color: #bee3f8;"></div>
+                                                <div class="palette-dot red" data-color="red" style="background-color: #fed7d7;"></div>
+                                                <div class="palette-dot purple" data-color="purple" style="background-color: #e9d8fd;"></div>
+                                                <div class="palette-dot orange" data-color="orange" style="background-color: #feebc8;"></div>
+                                                <div class="palette-dot clear" data-color="none" title="Limpiar Marcado">
+                                                    <i data-lucide="droplet-off" style="width: 14px; height: 14px; color: #718096;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tool-divider" style="height: 16px; margin: 0 8px;"></div>
                                     <button class="tool-btn" id="btn-bible-zoom-out" title="Achicar letra"><i data-lucide="minus"></i></button>
                                     <span id="bible-size-label">18</span>
                                     <button class="tool-btn" id="btn-bible-zoom-in" title="Agrandar letra"><i data-lucide="plus"></i></button>

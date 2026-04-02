@@ -46,7 +46,8 @@ let state = {
         'initial': { title: "", subtitle: "", content: "", date: new Date().toLocaleDateString() }
     }, 
     activeNoteId: 'initial',
-    highlights: {}, // Key: verseId, Value: color
+    highlights: {}, // Key: version_book_chapter_verse, Value: colorCode
+    selectedHighlightColor: 'yellow',
     splitPos: 50, // Percentage
     currentBibleFontSize: 18,
     // History
@@ -283,8 +284,15 @@ function renderBible() {
         const text = cleanText(v[tKey], state.currentVersion);
         const isActive = state.selectedVerses.includes(vNum);
         
+        // HIGHLIGHT LOGIC
+        const verseKey = `${state.currentVersion}_${state.currentBook}_${state.currentChapter}_${vNum}`;
+        const color = state.highlights[verseKey];
+        const highlightClass = color && color !== 'none' ? ` h-${color}` : '';
+        
         return `
-            <div class="verse ${isActive ? 'active' : ''}" data-verse="${vNum}" onclick="handleVerseClick(event, ${vNum})">
+            <div class="verse ${isActive ? 'active' : ''}${highlightClass}" 
+                 data-verse="${vNum}" 
+                 onclick="handleVerseClick(event, ${vNum})">
                 <span class="verse-num">${vNum}</span>
                 <span class="verse-body">${text}</span>
             </div>
@@ -297,16 +305,31 @@ function renderBible() {
 // --- INTERACTION ---
 function handleVerseClick(e, vNum) {
     if (e.ctrlKey) {
+        // Multi-selection for notes
         const idx = state.selectedVerses.indexOf(vNum);
         if (idx > -1) state.selectedVerses.splice(idx, 1);
         else state.selectedVerses.push(vNum);
     } else {
+        // Toggle Highlight (Standard click)
+        const verseKey = `${state.currentVersion}_${state.currentBook}_${state.currentChapter}_${vNum}`;
+        
+        if (state.selectedHighlightColor === 'none') {
+            delete state.highlights[verseKey];
+        } else {
+            // If already has this color, remove it. Otherwise, apply color.
+            if (state.highlights[verseKey] === state.selectedHighlightColor) {
+                delete state.highlights[verseKey];
+            } else {
+                state.highlights[verseKey] = state.selectedHighlightColor;
+            }
+        }
+        
+        // Also update selection state for visual feedback if needed
         state.selectedVerses = [vNum];
     }
     
     state.selectedVerses.sort((a, b) => a - b);
     renderBible();
-    // REMOVED: loadNoteForSelection() - Notes are now independent
     saveState();
 }
 
@@ -549,7 +572,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Sync Notes to Firestore
+// Sync Data to Firestore
 async function syncNotesToCloud() {
     const user = auth.currentUser;
     if (!user) return;
@@ -557,32 +580,34 @@ async function syncNotesToCloud() {
     try {
         await db.collection('users').doc(user.uid).set({
             notes: state.notes,
+            highlights: state.highlights,
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-        console.log("Notas sincronizadas con la nube.");
+        console.log("Datos sincronizados con la nube.");
     } catch (error) {
         console.error("Error al sincronizar con la nube:", error);
     }
 }
 
-// Load Notes from Firestore
+// Load Data from Firestore
 async function loadNotesFromCloud(user) {
     try {
         const doc = await db.collection('users').doc(user.uid).get();
-        if (doc.exists && doc.data().notes) {
-            const cloudNotes = doc.data().notes;
-            // Merge logic: Simple replace for now, can be improved to selective merge
-            state.notes = cloudNotes;
+        if (doc.exists) {
+            const data = doc.data();
+            if (data.notes) state.notes = data.notes;
+            if (data.highlights) state.highlights = data.highlights;
+            
             saveState(); // Update local storage too
             renderNotesList();
+            renderBibleViewer(); // Refresh highlights
             
-            // If there's an active note, re-render it if it exists in the cloud notes
             if (state.activeNoteId && state.notes[state.activeNoteId]) {
                 openNote(state.activeNoteId);
             }
         }
     } catch (error) {
-        console.error("Error al cargar notas de la nube:", error);
+        console.error("Error al cargar datos de la nube:", error);
     }
 }
 
@@ -610,9 +635,49 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 function setupEventListeners() {
-    // 1. Firebase Auth (Handled by direct onclick in index.html for failsafe)
+    // 1. Firebase Auth (Handled by direct onclick in index    // --- HIGHLIGHTER LOGIC ---
+    const btnHighlight = document.getElementById('btn-highlight-picker');
+    const highlightPalette = document.getElementById('highlight-palette');
     
-    // Ensure legacy behavior for font-sizing marker trick
+    if (btnHighlight) {
+        btnHighlight.onclick = (e) => {
+            e.stopPropagation();
+            highlightPalette.style.display = highlightPalette.style.display === 'none' ? 'block' : 'none';
+        };
+    }
+
+    document.querySelectorAll('.palette-dot').forEach(dot => {
+        dot.onclick = (e) => {
+            e.stopPropagation();
+            const color = dot.getAttribute('data-color');
+            state.selectedHighlightColor = color;
+            
+            // Update UI selection
+            document.querySelectorAll('.palette-dot').forEach(d => d.classList.remove('active'));
+            dot.classList.add('active');
+            
+            const dotIndicator = document.getElementById('current-highlight-dot');
+            if (dotIndicator) {
+                dotIndicator.className = 'color-dot ' + (color === 'none' ? 'clear' : color);
+                // If it's clear, maybe add an icon or just make it subtle
+                if (color === 'none') {
+                    dotIndicator.style.backgroundColor = '#f1f5f9';
+                    dotIndicator.innerHTML = '<i data-lucide="droplet-off" style="width:10px; height:10px; color:#718096;"></i>';
+                    lucide.createIcons();
+                } else {
+                    dotIndicator.style.backgroundColor = '';
+                    dotIndicator.innerHTML = '';
+                }
+            }
+            
+            highlightPalette.style.display = 'none';
+        };
+    });
+
+    // Close palette when clicking outside
+    window.addEventListener('click', () => {
+        if (highlightPalette) highlightPalette.style.display = 'none';
+    });
     document.execCommand('styleWithCSS', false, false);
 
     // Toolbar selections
@@ -1171,11 +1236,16 @@ function renderHistoryDropdown() {
 
     state.fullHistory.forEach(h => {
         const bObj = BOOKS.find(b => b.id === h.b);
+        if (!bObj) return;
+
         const item = document.createElement('div');
         item.className = 'history-item';
         item.innerHTML = `
-            <span>${bObj.n} ${h.c}</span>
-            <span class="history-item-version">${h.v}</span>
+            <div class="history-item-info">
+                <span class="history-item-ref">${bObj.n} ${h.c}</span>
+                <span class="history-item-version">${h.v}</span>
+            </div>
+            <span class="history-item-time">${new Date(h.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
         `;
         item.onclick = () => {
             navigateTo(h.v, h.b, h.c);

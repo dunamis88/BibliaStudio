@@ -1018,6 +1018,87 @@ body.resizing {
     background: #ffffff;
 }
 
+/* Highlighter UI */
+.highlight-dot-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: var(--transition-fast);
+}
+
+.highlight-popup {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    z-index: 1001;
+    backdrop-filter: blur(8px);
+    width: 140px;
+    animation: modalIn 0.2s ease-out;
+}
+
+.palette-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.palette-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.palette-dot:hover {
+    transform: scale(1.15);
+}
+
+.palette-dot.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(26, 54, 93, 0.1);
+}
+
+.palette-dot.clear {
+    background-color: #f1f5f9;
+}
+
+/* Color Classes for Verses */
+.verse.h-yellow { background-color: #fefcbf; border-radius: 4px; }
+.verse.h-green { background-color: #c6f6d5; border-radius: 4px; }
+.verse.h-blue { background-color: #bee3f8; border-radius: 4px; }
+.verse.h-red { background-color: #fed7d7; border-radius: 4px; }
+.verse.h-purple { background-color: #e9d8fd; border-radius: 4px; }
+.verse.h-orange { background-color: #feebc8; border-radius: 4px; }
+
+/* Interactive Verse Hover */
+.verse {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.verse:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
 .note-item-list {
     display: flex;
     align-items: center;
