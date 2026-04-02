@@ -989,9 +989,9 @@ function setupEventListeners() {
     }
 
     // Notes Browser Toggle
-    const searchNotesBtn = document.getElementById('btn-search-notes');
-    if (searchNotesBtn) {
-        searchNotesBtn.addEventListener('click', (e) => {
+    const browseNotesBtn = document.getElementById('btn-browse-notes');
+    if (browseNotesBtn) {
+        browseNotesBtn.addEventListener('click', (e) => {
             console.log("Opening Notes Browser...");
             renderNotesBrowser();
             document.getElementById('notes-overlay').style.display = 'flex';
