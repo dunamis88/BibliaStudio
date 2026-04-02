@@ -46,6 +46,22 @@ body {
 /* Sidebar Removed */
 
 /* Main Workspace */
+.bible-panel, .notes-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--card-bg);
+}
+
+.notes-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Importante para delegar el scroll al hijo */
+}
+
 .main-workspace {
     flex: 1;
     display: flex;
@@ -639,6 +655,17 @@ body.resizing {
     font-size: 15px;
     line-height: 1.6;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.rich-editor::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rich-editor::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
 }
 
 /* Modals Overlay */
