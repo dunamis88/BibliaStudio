@@ -530,6 +530,7 @@ body.resizing {
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-shrink: 0;
 }
 
 .tool-divider {
@@ -537,6 +538,7 @@ body.resizing {
     height: 24px;
     background-color: var(--border-color);
     margin: 0 4px;
+    flex-shrink: 0;
 }
 
 .tool-btn {
@@ -1180,13 +1182,10 @@ blockquote {
     }
 
     .notes-panel {
-        border-left: none !important;
-    }
-
-    .notes-content {
         padding: 0 !important;
         height: auto !important;
         overflow: visible !important;
+        border-left: none !important;
     }
 
     .active-note-context {

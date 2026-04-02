@@ -1268,35 +1268,34 @@ function updateNotesToolbarOverflow() {
     const dropdown = document.querySelector('.more-tools-grid');
     if (!container || !dropdown) return;
     
-    // Initially move everything back to calculate
+    // Restore all to toolbar for measurement
     const overflowItems = Array.from(dropdown.children);
     overflowItems.forEach(item => toolbar.insertBefore(item, container));
     container.style.display = 'none';
-    
-    // Perform measurement
-    const toolbarRect = toolbar.getBoundingClientRect();
-    const toolbarWidth = toolbarRect.width;
-    const items = Array.from(toolbar.children).filter(el => el !== container);
-    
-    let firstOverflowIndex = -1;
-    const moreBtnWidth = 50; 
 
-    items.forEach((item, index) => {
-        const itemRect = item.getBoundingClientRect();
-        const rightEdge = itemRect.right - toolbarRect.left;
+    // Must yield to browser to render flex layout before measuring
+    requestAnimationFrame(() => {
+        const toolbarWidth = toolbar.offsetWidth;
+        const items = Array.from(toolbar.children).filter(el => el !== container);
+        const moreBtnWidth = 50; 
+
+        let firstOverflowIndex = -1;
         
-        if (rightEdge > (toolbarWidth - moreBtnWidth) && firstOverflowIndex === -1) {
-            firstOverflowIndex = index;
+        items.forEach((item, index) => {
+            if (item.offsetLeft + item.offsetWidth > (toolbarWidth - moreBtnWidth) && firstOverflowIndex === -1) {
+                firstOverflowIndex = index;
+            }
+        });
+        
+        if (firstOverflowIndex !== -1) {
+            for (let i = firstOverflowIndex; i < items.length; i++) {
+                dropdown.appendChild(items[i]);
+            }
+            container.style.display = 'flex';
         }
-    });
-    
-    if (firstOverflowIndex !== -1) {
-        for (let i = firstOverflowIndex; i < items.length; i++) {
-            dropdown.appendChild(items[i]);
-        }
-        container.style.display = 'flex';
+        
         if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
+    });
 }
 
 function updateBibleToolbarOverflow() {
