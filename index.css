@@ -248,7 +248,7 @@ body {
 .bible-header-sticky {
     position: sticky;
     top: 0;
-    z-index: 500; /* Lead stacking context */
+    z-index: 500; /* High, but lower than app-header */
     background: white;
     border-bottom: 1px solid var(--border-color);
     display: flex;
@@ -256,7 +256,6 @@ body {
     padding: 0 10px;
     height: 68px;
     flex-shrink: 0;
-    /* Remove any overflow that traps dropdowns */
     overflow: visible !important;
 }
 
