@@ -495,19 +495,17 @@ function applyFontSize(sizeValue, labelValue) {
 
 function applyFontSizeSelected(size) {
     const selection = window.getSelection();
-    if (!selection.rangeCount) return;
+    if (!selection || !selection.rangeCount) return;
 
-    const editor = document.getElementById('editor');
-    if (!editor) return;
+    const editorElem = document.getElementById('editor');
+    if (!editorElem) return;
 
     const range = selection.getRangeAt(0);
 
-    // Standard high-reliability method for pixels in contenteditable
     if (selection.isCollapsed) {
-        // Insertion mode: Create a span with the size and put the cursor inside
         const span = document.createElement('span');
         span.style.fontSize = size;
-        span.innerHTML = '&#8203;'; // Zero-width space
+        span.innerHTML = '&#8203;'; 
         range.insertNode(span);
         
         const newRange = document.createRange();
@@ -516,28 +514,34 @@ function applyFontSizeSelected(size) {
         selection.removeAllRanges();
         selection.addRange(newRange);
     } else {
-        // Selection mode: Use execCommand as a baseline to wrap, then fix
+        // Force high-quality CSS spans
         document.execCommand('styleWithCSS', false, true);
-        document.execCommand('fontSize', false, '7'); // Marker size
+        document.execCommand('fontSize', false, '7'); 
 
-        // Replace all 'font' or 'span' markers with the solid pixel size
-        const markers = editor.querySelectorAll('font[size="7"], span[style*="font-size: xxx-large"]');
-        markers.forEach(marker => {
-            const span = document.createElement('span');
-            span.style.fontSize = size;
-            span.innerHTML = marker.innerHTML;
-            
-            // Auto-clean nested font-sizes to avoid "span soup"
-            span.querySelectorAll('span[style*="font-size"]').forEach(child => {
-                child.style.fontSize = 'inherit';
-            });
-            
-            marker.parentNode.replaceChild(span, marker);
+        // Scan all children for the '7' or 'xxx-large' marker
+        // We use a more aggressive search for anything matching the marker
+        const allPotential = editorElem.querySelectorAll('font[size="7"], span');
+        allPotential.forEach(el => {
+            const isFontMarker = el.tagName === 'FONT' && el.getAttribute('size') === '7';
+            const isSpanMarker = el.tagName === 'SPAN' && (el.style.fontSize === 'xxx-large' || el.style.fontSize.includes('large'));
+
+            if (isFontMarker || isSpanMarker) {
+                const finalSpan = document.createElement('span');
+                finalSpan.style.fontSize = size;
+                finalSpan.innerHTML = el.innerHTML;
+                
+                // Deep clean to prevent nesting issues
+                finalSpan.querySelectorAll('span[style*="font-size"]').forEach(child => {
+                    child.style.fontSize = 'inherit';
+                });
+                
+                el.parentNode.replaceChild(finalSpan, el);
+            }
         });
     }
     
     saveState();
-    editor.focus();
+    editorElem.focus();
 }
 
 function adjustSelectionFontSize(delta) {
