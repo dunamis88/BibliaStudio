@@ -1167,7 +1167,7 @@ body.resizing {
     top: 0;
     z-index: 500;
     width: 100%;
-    height: 64px; /* Matches notes-header exactly */
+    height: 64px;
     background-color: #ffffff;
     border-bottom: 1px solid var(--border-color);
     display: flex;
@@ -1181,8 +1181,8 @@ body.resizing {
     align-items: center;
     flex: 1;
     height: 100%;
-    padding: 0 16px;
-    gap: 8px; /* Slightly tighter for cleaner look */
+    padding: 0 16px; /* Space for items, arrows float over padding */
+    gap: 8px;
     box-sizing: border-box;
     font-family: 'Outfit', sans-serif;
     overflow-x: auto;
@@ -1194,45 +1194,58 @@ body.resizing {
 
 .bible-toolbar-std::-webkit-scrollbar { display: none; }
 
-/* Scroll Arrow Buttons (Organic Floating Glassmorphism) */
+/* Scroll Arrow Buttons (Absolute Edge Position) */
 .std-scroll-btn {
-    width: 24px; /* Thinner */
-    height: 40px; /* Not full height, feels more organic */
-    margin: 0 4px;
+    position: absolute;
+    width: 22px; /* Slimmer */
+    height: 36px;
     border: none;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 8px; /* Rounded and soft */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 6px;
     display: none;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 20;
+    z-index: 50; /* Above everything */
     color: var(--primary);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
+
+.std-scroll-btn.left { left: 4px; } /* Closer to edges */
+.std-scroll-btn.right { right: 4px; }
 
 .std-scroll-btn:hover { 
     background: #fff; 
-    color: var(--primary-light);
-    transform: scale(1.05); /* Soft interaction */
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
 }
-
-.std-scroll-btn.left { border: 1px solid rgba(0,0,0,0.05); }
-.std-scroll-btn.right { border: 1px solid rgba(0,0,0,0.05); }
 
 .std-scroll-btn i { 
-    width: 16px; 
-    height: 16px; 
-    stroke-width: 2.5px; /* Thinner stroke */
-    opacity: 0.8;
+    width: 14px; 
+    height: 14px; 
+    stroke-width: 3px;
 }
 
-/* Isolate Top Header */
+/* TOTAL HEADER IMMUNITY */
 .app-header {
     flex-shrink: 0 !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    background-color: #ffffff;
     z-index: 1000;
+    overflow: hidden;
+}
+
+.main-logo-text, .search-bar, .header-actions {
+    flex-shrink: 0 !important; /* CRITICAL: Prevents crushing during resize */
+}
+
+/* Notes Stability */
+.notes-header {
+    flex-shrink: 0 !important;
+    overflow: hidden;
 }
 
 .toolbar-group {
