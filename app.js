@@ -966,23 +966,23 @@ function setupEventListeners() {
         });
     }
 
-    // Local Bible Zoom
+    // Local Bible Zoom (Corrected for direct feedback)
     const btnBZoomIn = document.getElementById('btn-bible-zoom-in');
     if (btnBZoomIn) {
-        btnBZoomIn.addEventListener('click', () => {
+        btnBZoomIn.onclick = () => {
             state.currentBibleFontSize += 2;
             updateBibleFontSize();
-        });
+        };
     }
 
     const btnBZoomOut = document.getElementById('btn-bible-zoom-out');
     if (btnBZoomOut) {
-        btnBZoomOut.addEventListener('click', () => {
+        btnBZoomOut.onclick = () => {
             if (state.currentBibleFontSize > 10) {
                 state.currentBibleFontSize -= 2;
                 updateBibleFontSize();
             }
-        });
+        };
     }
 
     // Notes & Highlights Browser
