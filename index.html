@@ -132,10 +132,17 @@
                             <div class="std-divider"></div>
 
                             <!-- Grupo 3: Auxiliares -->
-                            <div class="toolbar-group">
+                            <div class="toolbar-group right-aligned">
                                 <button class="std-tool-btn" id="btn-bible-zoom-out"><i data-lucide="minus"></i></button>
                                 <span class="std-zoom-label" id="bible-size-label">18</span>
                                 <button class="std-tool-btn" id="btn-bible-zoom-in"><i data-lucide="plus"></i></button>
+                                
+                                <div class="std-dropdown-anchor">
+                                    <button class="std-tool-btn" id="btn-bible-more"><i data-lucide="more-horizontal"></i></button>
+                                    <div class="nav-dropdown" id="bible-more-dropdown" style="right: 0; left: auto;">
+                                        <div class="bible-tools-grid"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -166,14 +173,10 @@
                 <!-- Notes Panel -->
                 <section class="notes-panel" id="notes-panel">
                     <div class="notes-header">
-                        <!-- Flechas de scroll Notas -->
-                        <button id="btn-notes-scroll-left" class="std-scroll-btn left" title="Ver más"><i data-lucide="chevron-left"></i></button>
-                        
-                        <div class="editor-toolbar" id="notes-toolbar-scrollable">
+                        <div class="editor-toolbar">
                             <!-- Grupo 1: Gestión de Nota -->
                             <div class="tool-group">
                                 <button class="tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
-                                <button class="tool-btn" id="btn-save-note" title="Forzar Guardado (Ctrl+S)"><i data-lucide="save"></i></button>
                                 <div class="tool-divider"></div>
                                 <button class="tool-btn" title="Deshacer" data-command="undo"><i data-lucide="rotate-ccw"></i></button>
                                 <button class="tool-btn" title="Rehacer" data-command="redo"><i data-lucide="rotate-cw"></i></button>
@@ -243,10 +246,15 @@
                             </div>
                             <div class="tool-divider"></div>
 
-                            <!-- Grupo 6: Multimedia e Impresión -->
-                            <div class="tool-group">
-                                <button class="tool-btn" title="Insertar Enlace" data-command="createLink"><i data-lucide="link"></i></button>
+                            <!-- Grupo 6: Multimedia e Impresión (Adaptativo) -->
+                            <div class="tool-group adaptive-group">
+                                <button class="tool-btn" title="Insertar Tabla" id="btn-insert-table"><i data-lucide="table"></i></button>
+                                <div id="table-selector-popup" class="table-grid-popup" style="display: none;">
+                                    <div class="table-grid-container" id="table-grid"></div>
+                                    <div class="table-grid-status">Insertar tabla <span id="table-dim">1x1</span></div>
+                                </div>
                                 <button class="tool-btn" title="Insertar Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
+                                <input type="file" id="image-upload" accept="image/*" style="display: none;">
                                 
                                 <button class="tool-btn" title="YouTube" id="btn-insert-youtube">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube-custom"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 2-2h15a2 2 0 0 1 2 2 24.12 24.12 0 0 1 0 10 2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2Z"/><path d="m10 15 5-3-5-3z"/></svg>

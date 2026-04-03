@@ -1736,3 +1736,5 @@ function jumpToVerse(bookId, chapterId, verseId) {
         }
     }, 500);
 }
+
+init();

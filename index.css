@@ -624,19 +624,13 @@ body.resizing {
 .editor-toolbar {
     display: flex;
     align-items: center;
-    flex: 1;
     gap: 8px;
     flex-wrap: nowrap;
     position: relative;
-    width: 0; /* Important for flex-grow to work as scrollable container */
+    width: 100%;
     min-width: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    scroll-behavior: smooth;
+    /* overflow handled by JS moving elements */
 }
-
-.editor-toolbar::-webkit-scrollbar { display: none; }
 
 .tool-group {
     display: flex;
