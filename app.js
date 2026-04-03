@@ -1538,12 +1538,19 @@ function setupCarousel(containerId, leftId, rightId) {
     
     if (!scrollContainer || !btnLeft || !btnRight) return;
 
+    let currentX = 0;
+
     const checkOverflow = () => {
-        const hasOverflow = scrollContainer.scrollWidth > (scrollContainer.clientWidth + 5);
+        const parentWidth = scrollContainer.parentElement.clientWidth;
+        const totalWidth = scrollContainer.scrollWidth;
+        const hasOverflow = totalWidth > (parentWidth - 60); // Account for arrows
+
         if (hasOverflow) {
-            btnLeft.style.display = scrollContainer.scrollLeft > 10 ? 'flex' : 'none';
-            btnRight.style.display = (scrollContainer.scrollLeft + scrollContainer.clientWidth) < (scrollContainer.scrollWidth - 10) ? 'flex' : 'none';
+            btnLeft.style.display = currentX < 0 ? 'flex' : 'none';
+            btnRight.style.display = (parentWidth - 60 - currentX) < totalWidth ? 'flex' : 'none';
         } else {
+            currentX = 0;
+            scrollContainer.style.transform = `translateX(0)`;
             btnLeft.style.display = 'none';
             btnRight.style.display = 'none';
         }
@@ -1551,20 +1558,27 @@ function setupCarousel(containerId, leftId, rightId) {
 
     btnLeft.onclick = (e) => {
         e.stopPropagation();
-        scrollContainer.scrollBy({ left: -220, behavior: 'smooth' });
+        currentX += 200;
+        if (currentX > 0) currentX = 0;
+        scrollContainer.style.transform = `translateX(${currentX}px)`;
+        checkOverflow();
     };
 
     btnRight.onclick = (e) => {
         e.stopPropagation();
-        scrollContainer.scrollBy({ left: 220, behavior: 'smooth' });
+        const parentWidth = scrollContainer.parentElement.clientWidth;
+        const totalWidth = scrollContainer.scrollWidth;
+        const maxScroll = -(totalWidth - (parentWidth - 60));
+        
+        currentX -= 200;
+        if (currentX < maxScroll) currentX = maxScroll;
+        scrollContainer.style.transform = `translateX(${currentX}px)`;
+        checkOverflow();
     };
 
-    scrollContainer.onscroll = checkOverflow;
-    checkOverflow();
-    
-    // Safety check for ResizeObserver to cover layout shifts
+    // Re-check on parent changes
     const obs = new ResizeObserver(checkOverflow);
-    obs.observe(scrollContainer);
+    obs.observe(scrollContainer.parentElement);
 }
 
 window.addEventListener('load', updateToolbarOverflow);

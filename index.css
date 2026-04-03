@@ -256,15 +256,17 @@ body {
     overflow: visible !important;
 }
 
-.bible-toolbar-std {
+.bible-toolbar-std, .editor-toolbar {
     display: flex;
     align-items: center;
     gap: 8px;
     flex: 1;
-    /* Do NOT use overflow-x: auto here, it creates a stacking context */
     overflow: visible !important; 
     white-space: nowrap;
     height: 100%;
+    padding: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
 }
 
 /* 5. TOOLBARS & CAROUSELS */
@@ -273,12 +275,43 @@ body {
     align-items: center;
     gap: 8px;
     flex: 1;
-    /* Unificado: No usar overflow-x para permitir que los dropdowns respiren */
     overflow: visible !important; 
     white-space: nowrap;
     height: 100%;
     padding: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
 }
+
+.std-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    display: none; /* Auto-toggle by JS */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: var(--transition-fast);
+    color: var(--primary);
+}
+
+.std-scroll-btn:hover {
+    background-color: var(--primary);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.std-scroll-btn.left { left: 5px; }
+.std-scroll-btn.right { right: 5px; }
+
+.std-scroll-btn i { width: 14px; height: 14px; stroke-width: 3px; }
 
 .editor-toolbar::-webkit-scrollbar, .bible-toolbar-std::-webkit-scrollbar { display: none; }
 

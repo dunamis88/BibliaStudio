@@ -59,28 +59,25 @@
             <div class="split-view" id="main-split">
                 <!-- Bible Reader Panel -->
                 <section class="bible-panel" id="bible-panel">
-                    <!-- Fixed Header Bar -->
                     <div class="bible-header-sticky">
-                        <!-- Botón de scroll Izquierdo -->
-                        <button id="btn-bible-scroll-left" class="std-scroll-btn left" title="Ver más herramientas"><i data-lucide="chevron-left"></i></button>
+                        <button id="btn-bible-scroll-left" class="std-scroll-btn left" title="Anterior"><i data-lucide="chevron-left"></i></button>
                         
                         <div class="bible-toolbar-std" id="bible-toolbar-scrollable">
-                            <!-- Grupo 1: Historial -->
+                            <!-- Grupo 1: Navegación e Historial -->
                             <div class="toolbar-group">
                                 <button class="std-tool-btn" id="btn-nav-back" title="Atrás"><i data-lucide="arrow-left"></i></button>
                                 <button class="std-tool-btn" id="btn-nav-forward" title="Adelante"><i data-lucide="arrow-right"></i></button>
                                 <div class="std-dropdown-anchor">
                                     <button class="std-tool-btn" id="btn-nav-history" title="Historial"><i data-lucide="history"></i></button>
-                                    <div class="nav-dropdown" id="dropdown-history">
+                                    <div class="nav-dropdown" id="dropdown-history" style="min-width: 250px;">
                                         <div class="dropdown-header">Recientes</div>
-                                        <div id="history-items-list" class="history-list-compact"></div>
+                                        <div id="history-items-list"></div>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="std-divider"></div>
 
-                            <!-- Grupo 2: Navegación Bíblica -->
+                            <!-- Grupo 2: Versión y Selección -->
                             <div class="toolbar-group">
                                 <div class="std-dropdown-anchor">
                                     <button class="std-nav-btn" id="trigger-version">
@@ -89,27 +86,29 @@
                                     </button>
                                     <div class="nav-dropdown" id="dropdown-version"></div>
                                 </div>
-
                                 <div class="std-dropdown-anchor">
                                     <button class="std-nav-btn" id="trigger-book">
                                         <span id="current-book">Génesis</span>
                                         <i data-lucide="chevron-down"></i>
                                     </button>
-                                    <div class="nav-dropdown books-dropdown-menu" id="dropdown-book"></div>
+                                    <div class="nav-dropdown" id="dropdown-book"></div>
                                 </div>
-
                                 <div class="chapter-nav-bundle">
-                                    <span class="chapter-arrow" id="btn-chapter-prev">&lt;</span>
+                                    <button class="chapter-arrow" id="btn-chapter-prev">‹</button>
                                     <div class="std-dropdown-anchor">
                                         <button class="std-nav-btn" id="trigger-chapter">
                                             <span id="current-chapter">1</span>
                                             <i data-lucide="chevron-down"></i>
                                         </button>
-                                        <div class="nav-dropdown chapters-dropdown-menu" id="dropdown-chapter"></div>
+                                        <div class="nav-dropdown" id="dropdown-chapter"></div>
                                     </div>
-                                    <span class="chapter-arrow" id="btn-chapter-next">&gt;</span>
+                                    <button class="chapter-arrow" id="btn-chapter-next">›</button>
                                 </div>
+                            </div>
+                            <div class="std-divider"></div>
 
+                            <!-- Grupo 3: Marcador y Zoom -->
+                            <div class="toolbar-group">
                                 <div class="std-dropdown-anchor">
                                     <button id="btn-highlight-picker" class="std-tool-btn marker-btn">
                                         <span id="current-highlight-dot" class="color-dot yellow"></span>
@@ -128,51 +127,41 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="std-divider"></div>
-
-                            <!-- Grupo 3: Auxiliares -->
-                            <div class="toolbar-group right-aligned">
+                                <div class="std-divider" style="height: 12px;"></div>
                                 <button class="std-tool-btn" id="btn-bible-zoom-out"><i data-lucide="minus"></i></button>
-                                <span class="std-zoom-label" id="bible-size-label">18</span>
+                                <span class="std-zoom-label" id="bible-size-label" style="min-width: 20px; text-align: center; font-weight: 800; font-size: 11px;">18</span>
                                 <button class="std-tool-btn" id="btn-bible-zoom-in"><i data-lucide="plus"></i></button>
-                                
                             </div>
                         </div>
 
-                        <!-- Botón de scroll Derecho -->
-                        <button id="btn-bible-scroll-right" class="std-scroll-btn right" title="Ver más herramientas"><i data-lucide="chevron-right"></i></button>
+                        <button id="btn-bible-scroll-right" class="std-scroll-btn right" title="Siguiente"><i data-lucide="chevron-right"></i></button>
                     </div>
 
-                    <!-- Scrollable Area -->
+                    <!-- Area de Lectura -->
                     <div class="bible-scroll-area">
                         <div class="bible-content-wrapper">
                             <div class="bible-header" style="margin-top: 0;">
-                                <span class="subtitle">Libro</span>
+                                <span class="subtitle">Biblia Sagrada</span>
                                 <h1 id="bible-book-title">Libro</h1>
                                 <h2 id="bible-chapter-title">Capítulo 1</h2>
                             </div>
                             <div class="bible-verses" id="bible-verses-container">
-                                <div class="loading">Cargando Biblia...</div>
+                                <div class="loading">Iniciando motor bíblico...</div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Resizer Handle -->
                 <div class="resizer" id="main-resizer">
                     <div class="resizer-knob"></div>
                 </div>
 
-                <!-- Notes Panel -->
                 <section class="notes-panel" id="notes-panel">
-                    <div class="notes-header" style="position: relative;">
-                        <!-- Botones de scroll Universales -->
+                    <div class="notes-header">
                         <button id="btn-notes-scroll-left" class="std-scroll-btn left" title="Anterior"><i data-lucide="chevron-left"></i></button>
                         
                         <div class="editor-toolbar" id="notes-toolbar-scrollable">
-                            <!-- Grupo 1: Gestión de Nota -->
+                            <!-- Grupo 1: Edición -->
                             <div class="toolbar-group">
                                 <button class="std-tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
                                 <div class="std-divider"></div>
@@ -181,7 +170,7 @@
                             </div>
                             <div class="std-divider"></div>
 
-                            <!-- Grupo 2: Estilo de Texto -->
+                            <!-- Grupo 2: Estilos -->
                             <div class="toolbar-group">
                                 <button class="std-tool-btn" title="Negrita" data-command="bold"><i data-lucide="bold"></i></button>
                                 <button class="std-tool-btn" title="Itálica" data-command="italic"><i data-lucide="italic"></i></button>
@@ -200,7 +189,6 @@
                                         <div class="version-item" onclick="applyFont('Inter', 'Sans')">Sans (Inter)</div>
                                         <div class="version-item" onclick="applyFont('Libre Baskerville', 'Serif')">Serif (Lectura)</div>
                                         <div class="version-item" onclick="applyFont('Outfit', 'Modern')">Modern (Outfit)</div>
-                                        <div class="version-item" onclick="applyFont('JetBrains Mono', 'Mono')">Mono (Citas)</div>
                                     </div>
                                 </div>
                                 <div class="std-dropdown-anchor">
@@ -209,22 +197,19 @@
                                         <i data-lucide="chevron-down"></i>
                                     </button>
                                     <div class="nav-dropdown" id="dropdown-font-size">
-                                        <div class="version-item" onclick="applyFontSize('12px')">12</div>
-                                        <div class="version-item" onclick="applyFontSize('14px')">14</div>
+                                        <div class="version-item" onclick="applyFontSize('12px', '12')">12</div>
                                         <div class="version-item" onclick="applyFontSize('16px', '16')">16</div>
-                                        <div class="version-item" onclick="applyFontSize('18px', '18')">18</div>
                                         <div class="version-item" onclick="applyFontSize('20px', '20')">20</div>
-                                        <div class="version-item" onclick="applyFontSize('24px', '24')">24</div>
-                                        <div class="version-item" onclick="applyFontSize('32px', '32')">32</div>
+                                        <div class="version-item" onclick="applyFontSize('28px', '28')">28</div>
                                     </div>
                                 </div>
                             </div>
                             <div class="std-divider"></div>
 
-                            <!-- Grupo 4: Alineación y Listas -->
+                            <!-- Grupo 4: Alineación -->
                              <div class="toolbar-group">
                                 <div class="std-dropdown-anchor">
-                                    <button class="std-nav-btn" id="trigger-alignment" title="Alineación">
+                                    <button class="std-nav-btn" id="trigger-alignment">
                                         <i data-lucide="align-left" id="current-align-icon"></i>
                                         <i data-lucide="chevron-down"></i>
                                     </button>
@@ -243,30 +228,25 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="std-tool-btn" title="Lista Viñetas" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
+                                <button class="std-tool-btn" title="Lista" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
                             </div>
                             <div class="std-divider"></div>
 
-                            <!-- Grupo 5: Herramientas Académicas -->
+                            <!-- Grupo 5: Académico -->
                             <div class="toolbar-group">
-                                <button class="std-tool-btn" title="Insertar Cita" id="btn-insert-quote"><i data-lucide="quote"></i></button>
-                                <button class="std-tool-btn" title="Importar Versículo" id="btn-import-verse"><i data-lucide="book-open"></i></button>
-                                <div class="std-divider"></div>
+                                <button class="std-tool-btn" title="Cita" id="btn-insert-quote"><i data-lucide="quote"></i></button>
+                                <button class="std-tool-btn" title="Versículo" id="btn-import-verse"><i data-lucide="book-open"></i></button>
                                 <button class="std-tool-btn" title="Limpiar Formato" id="btn-clear-format"><i data-lucide="eraser"></i></button>
                             </div>
                             <div class="std-divider"></div>
 
-                            <!-- Grupo 6: Multimedia e Impresión -->
+                            <!-- Grupo 6: Multimedia -->
                             <div class="toolbar-group">
-                                <button class="std-tool-btn" title="Insertar Tabla" id="btn-insert-table"><i data-lucide="table"></i></button>
-                                <button class="std-tool-btn" title="Insertar Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
-                                <button class="std-tool-btn" title="Insertar YouTube" id="btn-insert-youtube"><i data-lucide="video"></i></button>
-                                <div class="std-divider"></div>
-                                <button class="std-tool-btn" title="Imprimir Nota" id="btn-print-note"><i data-lucide="printer"></i></button>
+                                <button class="std-tool-btn" title="Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
+                                <button class="std-tool-btn" title="Vídeo" id="btn-insert-youtube"><i data-lucide="video"></i></button>
+                                <button class="std-tool-btn" title="Imprimir" id="btn-print-note"><i data-lucide="printer"></i></button>
                             </div>
                         </div>
-                        
-                        <!-- Botón de scroll Derecho -->
                         <button id="btn-notes-scroll-right" class="std-scroll-btn right" title="Siguiente"><i data-lucide="chevron-right"></i></button>
                     </div>
                     <div class="notes-content">
