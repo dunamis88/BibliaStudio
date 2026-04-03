@@ -157,105 +157,68 @@
 
                 <section class="notes-panel" id="notes-panel">
                     <div class="notes-header">
-                        <button id="btn-notes-scroll-left" class="std-scroll-btn left" title="Anterior"><i data-lucide="chevron-left"></i></button>
-                        
-                        <div class="editor-toolbar" id="notes-toolbar-scrollable">
-                            <!-- Grupo 1: Edición -->
+                    <div class="notes-toolbar">
+                        <button id="btn-notes-scroll-left" class="std-scroll-btn left"><i data-lucide="chevron-left"></i></button>
+                        <div class="notes-toolbar-scrollable" id="notes-toolbar-scrollable">
+                            <!-- Grupo 1: Acciones Base -->
                             <div class="toolbar-group">
-                                <button class="std-tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
-                                <div class="std-divider"></div>
-                                <button class="std-tool-btn" title="Deshacer" data-command="undo"><i data-lucide="rotate-ccw"></i></button>
-                                <button class="std-tool-btn" title="Rehacer" data-command="redo"><i data-lucide="rotate-cw"></i></button>
+                                <button class="std-tool-btn" title="Nueva Nota" onmousedown="event.preventDefault(); createNewNote();"><i data-lucide="plus"></i></button>
+                                <button class="std-tool-btn" title="Deshacer" onmousedown="event.preventDefault(); document.execCommand('undo');"><i data-lucide="undo-2"></i></button>
+                                <button class="std-tool-btn" title="Rehacer" onmousedown="event.preventDefault(); document.execCommand('redo');"><i data-lucide="redo-2"></i></button>
                             </div>
                             <div class="std-divider"></div>
 
-                            <!-- Grupo 2: Estilos -->
+                            <!-- Grupo 2: Estilo de Texto -->
                             <div class="toolbar-group">
-                                <button class="std-tool-btn" title="Negrita" data-command="bold"><i data-lucide="bold"></i></button>
-                                <button class="std-tool-btn" title="Itálica" data-command="italic"><i data-lucide="italic"></i></button>
-                                <button class="std-tool-btn" title="Subrayado" data-command="underline"><i data-lucide="underline"></i></button>
+                                <button class="std-tool-btn" title="Negrita" onmousedown="event.preventDefault(); document.execCommand('bold');"><i data-lucide="bold"></i></button>
+                                <button class="std-tool-btn" title="Cursiva" onmousedown="event.preventDefault(); document.execCommand('italic');"><i data-lucide="italic"></i></button>
+                                <button class="std-tool-btn" title="Subrayado" onmousedown="event.preventDefault(); document.execCommand('underline');"><i data-lucide="underline"></i></button>
                             </div>
                             <div class="std-divider"></div>
 
                             <!-- Grupo 3: Fuente y Tamaño -->
                             <div class="toolbar-group">
-                                <div class="std-dropdown-anchor">
-                                    <button class="std-nav-btn" id="trigger-font-family">
+                                <div class="std-dropdown-container">
+                                    <button class="std-nav-btn" onclick="toggleEditorDropdown('dropdown-font-family')">
                                         <span id="current-font-display">Sans</span>
                                         <i data-lucide="chevron-down"></i>
                                     </button>
-                                    <div class="nav-dropdown" id="dropdown-font-family">
-                                        <div class="version-item" onclick="applyFont('Inter', 'Sans')">Sans (Inter)</div>
-                                        <div class="version-item" onclick="applyFont('Libre Baskerville', 'Serif')">Serif (Lectura)</div>
-                                        <div class="version-item" onclick="applyFont('Outfit', 'Modern')">Modern (Outfit)</div>
+                                    <div class="editor-dropdown" id="dropdown-font-family">
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFont('Inter', 'Sans')">Inter (Sans)</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFont('Libre Baskerville', 'Serif')">Baskerville (Serif)</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFont('Outfit', 'Modern')">Outfit (Modern)</div>
                                     </div>
                                 </div>
-                                <div class="std-dropdown-anchor">
-                                    <button class="std-nav-btn" id="trigger-font-size">
+                                <div class="std-dropdown-container">
+                                    <button class="std-nav-btn" onclick="toggleEditorDropdown('dropdown-font-size')">
                                         <span id="current-size-display">16</span>
                                         <i data-lucide="chevron-down"></i>
                                     </button>
-                                    <div class="nav-dropdown" id="dropdown-font-size" style="max-height: 250px; overflow-y: auto;">
-                                        <div class="version-item" onclick="applyFontSize('11px', '11')">11</div>
-                                        <div class="version-item" onclick="applyFontSize('12px', '12')">12</div>
-                                        <div class="version-item" onclick="applyFontSize('14px', '14')">14</div>
-                                        <div class="version-item" onclick="applyFontSize('16px', '16')">16</div>
-                                        <div class="version-item" onclick="applyFontSize('18px', '18')">18</div>
-                                        <div class="version-item" onclick="applyFontSize('20px', '20')">20</div>
-                                        <div class="version-item" onclick="applyFontSize('24px', '24')">24</div>
-                                        <div class="version-item" onclick="applyFontSize('30px', '30')">30</div>
-                                        <div class="version-item" onclick="applyFontSize('36px', '36')">36</div>
-                                        <div class="version-item" onclick="applyFontSize('48px', '48')">48</div>
-                                        <div class="version-item" onclick="applyFontSize('60px', '60')">60</div>
-                                        <div class="version-item" onclick="applyFontSize('72px', '72')">72</div>
+                                    <div class="editor-dropdown" id="dropdown-font-size" style="max-height: 200px; overflow-y: auto;">
+                                        <!-- Tamaños Estándar -->
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('12px', '12')">12</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('14px', '14')">14</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('16px', '16')">16</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('18px', '18')">18</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('20px', '20')">20</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('24px', '24')">24</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('32px', '32')">32</div>
+                                        <div class="version-item" onmousedown="event.preventDefault(); applyFontSize('48px', '48')">48</div>
                                     </div>
                                 </div>
                             </div>
                             <div class="std-divider"></div>
 
                             <!-- Grupo 4: Alineación -->
-                             <div class="toolbar-group">
-                                <div class="std-dropdown-anchor">
-                                    <button class="std-nav-btn" id="trigger-alignment">
-                                        <i data-lucide="align-left" id="current-align-icon"></i>
-                                        <i data-lucide="chevron-down"></i>
-                                    </button>
-                                    <div class="nav-dropdown" id="dropdown-alignment" style="min-width: 140px;">
-                                        <div class="version-item" onclick="applyAlign('justifyLeft', 'align-left')">
-                                            <i data-lucide="align-left"></i> Izquierda
-                                        </div>
-                                        <div class="version-item" onclick="applyAlign('justifyCenter', 'align-center')">
-                                            <i data-lucide="align-center"></i> Centrado
-                                        </div>
-                                        <div class="version-item" onclick="applyAlign('justifyRight', 'align-right')">
-                                            <i data-lucide="align-right"></i> Derecha
-                                        </div>
-                                        <div class="version-item" onclick="applyAlign('justifyFull', 'align-justify')">
-                                            <i data-lucide="align-justify"></i> Justificado
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="std-tool-btn" title="Lista" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
-                            </div>
-                            <div class="std-divider"></div>
-
-                            <!-- Grupo 5: Académico -->
                             <div class="toolbar-group">
-                                <button class="std-tool-btn" title="Cita" id="btn-insert-quote"><i data-lucide="quote"></i></button>
-                                <button class="std-tool-btn" title="Versículo" id="btn-import-verse"><i data-lucide="book-open"></i></button>
-                                <button class="std-tool-btn" title="Limpiar Formato" id="btn-clear-format"><i data-lucide="eraser"></i></button>
-                            </div>
-                            <div class="std-divider"></div>
-
-                            <!-- Grupo 6: Multimedia -->
-                            <div class="toolbar-group">
-                                <button class="std-tool-btn" title="Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
-                                <button class="std-tool-btn" title="Vídeo" id="btn-insert-youtube"><i data-lucide="video"></i></button>
-                                <button class="std-tool-btn" title="Imprimir" id="btn-print-note"><i data-lucide="printer"></i></button>
+                                <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('justifyLeft');"><i data-lucide="align-left"></i></button>
+                                <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('justifyCenter');"><i data-lucide="align-center"></i></button>
+                                <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('insertUnorderedList');"><i data-lucide="list"></i></button>
                             </div>
                         </div>
-                        <button id="btn-notes-scroll-right" class="std-scroll-btn right" title="Siguiente"><i data-lucide="chevron-right"></i></button>
+                        <button id="btn-notes-scroll-right" class="std-scroll-btn right"><i data-lucide="chevron-right"></i></button>
                     </div>
+               </div>
                     <div class="notes-content">
                         <div class="document-page">
                             <div class="active-note-context">

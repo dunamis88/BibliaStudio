@@ -477,90 +477,64 @@ function updateEditorToolbarState() {
     }
 }
 
+// --- EDITOR CORE FUNCTIONS ---
+function toggleEditorDropdown(id) {
+    const el = document.getElementById(id);
+    const isShow = el.classList.contains('show');
+    
+    // Close others
+    document.querySelectorAll('.editor-dropdown').forEach(d => d.classList.remove('show'));
+    
+    if (!isShow) el.classList.add('show');
+}
+
+// Close dropdowns on global click
+window.addEventListener('click', (e) => {
+    if (!e.target.closest('.std-dropdown-container')) {
+        document.querySelectorAll('.editor-dropdown').forEach(d => d.classList.remove('show'));
+    }
+});
+
 function applyFont(fontName, displayName) {
     document.execCommand('styleWithCSS', false, true);
     document.execCommand('fontName', false, fontName);
-    const display = document.getElementById('current-font-display');
-    if (display) display.textContent = displayName;
+    document.getElementById('current-font-display').textContent = displayName;
     document.getElementById('dropdown-font-family').classList.remove('show');
-    const editorEl = document.getElementById('editor');
-    if (editorEl) editorEl.focus();
+    document.getElementById('editor').focus();
 }
 
-function applyFontSize(sizeValue, labelValue) {
-    const display = document.getElementById('current-size-display');
-    if (display) display.textContent = labelValue;
+function applyFontSize(sizePx, label) {
+    document.execCommand('styleWithCSS', false, true);
+    // Standard hack for pixels in contenteditable
+    document.execCommand('fontSize', false, '7'); 
     
-    setNoteFontSize(sizeValue);
+    const editor = document.getElementById('editor');
+    const markers = editor.querySelectorAll('span[style*="font-size: xxx-large"]');
     
+    markers.forEach(m => {
+        m.style.fontSize = sizePx;
+        // Clean inner conflicts
+        m.querySelectorAll('span').forEach(child => {
+            if (child.style.fontSize) child.style.fontSize = 'inherit';
+        });
+    });
+
+    document.getElementById('current-size-display').textContent = label;
     document.getElementById('dropdown-font-size').classList.remove('show');
-}
-
-function setNoteFontSize(size) {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
-
-    const editorEl = document.getElementById('editor');
-    if (!editorEl) return;
-
-    const range = selection.getRangeAt(0);
-
-    // MODO A: Solo el cursor (sin texto seleccionado)
-    if (selection.isCollapsed) {
-        const span = document.createElement('span');
-        span.style.fontSize = size;
-        span.innerHTML = '&#8203;'; // Espacio invisible para "anclar" el estilo
-        range.insertNode(span);
-        
-        // Posicionar el cursor dentro del nuevo estilo
-        const newRange = document.createRange();
-        newRange.setStart(span.firstChild, 1);
-        newRange.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(newRange);
-    } 
-    // MODO B: Texto seleccionado (Envoltura directa)
-    else {
-        const span = document.createElement('span');
-        span.style.fontSize = size;
-        
-        try {
-            // Extraemos y envolvemos el contenido exacto
-            const fragment = range.extractContents();
-            span.appendChild(fragment);
-            range.insertNode(span);
-            
-            // Limpieza: Evitar anidación infinita de tamaños
-            span.querySelectorAll('span[style*="font-size"]').forEach(child => {
-                child.style.fontSize = 'inherit';
-            });
-        } catch (e) {
-            // Fallback: Si el rango es muy complejo, forzamos vía execCommand CSS
-            document.execCommand('styleWithCSS', false, true);
-            document.execCommand('fontSize', false, '7');
-            editorEl.querySelectorAll('span[style*="xxx-large"]').forEach(m => {
-                m.style.fontSize = size;
-            });
-        }
-    }
-    
     saveState();
-    editorEl.focus();
+    editor.focus();
 }
 
-function adjustSelectionFontSize(delta) {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
+// History tracking for Undo/Redo
+function saveEditorState() {
+    if (!state.currentNoteId) return;
+    state.notes[state.currentNoteId].content = document.getElementById('editor').innerHTML;
+    saveState();
+}
 
-    const node = selection.anchorNode.nodeType === 3 
-        ? selection.anchorNode.parentElement 
-        : selection.anchorNode;
-        
-    const currentSizeStr = window.getComputedStyle(node).fontSize;
-    const currentSize = parseInt(currentSizeStr);
-    const newSize = (currentSize + delta) + "px";
-    
-    setNoteFontSize(newSize);
+// Sync focus back to editor
+function focusEditor() {
+    document.getElementById('editor').focus();
 }
 
 /* --- FIREBASE LOGIC --- */
