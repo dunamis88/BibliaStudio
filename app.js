@@ -478,11 +478,13 @@ function updateEditorToolbarState() {
 }
 
 function applyFont(fontName, displayName) {
+    document.execCommand('styleWithCSS', false, true);
     document.execCommand('fontName', false, fontName);
     const display = document.getElementById('current-font-display');
     if (display) display.textContent = displayName;
     document.getElementById('dropdown-font-family').classList.remove('show');
-    editor.focus();
+    const editorEl = document.getElementById('editor');
+    if (editorEl) editorEl.focus();
 }
 
 function applyFontSize(sizeValue, labelValue) {
@@ -498,51 +500,38 @@ function setNoteFontSize(size) {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
-    const editor = document.getElementById('editor');
-    if (!editor) return;
+    const editorEl = document.getElementById('editor');
+    if (!editorEl) return;
 
-    // Standard Industry Method: Style Wrapping
-    const range = selection.getRangeAt(0);
-
+    // Standard high-reliability method
+    document.execCommand('styleWithCSS', false, true);
+    
     if (selection.isCollapsed) {
-        // Mode A: Cursor point - Inject a marker span for future typing
+        // Mode A: Focus only - Create a styled span for new typing
+        const range = selection.getRangeAt(0);
         const span = document.createElement('span');
         span.style.fontSize = size;
-        span.innerHTML = '&#8203;'; // Zero-width space to hold the style
+        span.innerHTML = '&#8203;'; // Invisible holder
         range.insertNode(span);
         
-        // Move cursor inside the span
         const newRange = document.createRange();
         newRange.setStart(span.firstChild, 1);
         newRange.collapse(true);
         selection.removeAllRanges();
         selection.addRange(newRange);
     } else {
-        // Mode B: Selection - Wrap content in a span
-        // We use a robust wrapper that ensures no nested duplication
-        const span = document.createElement('span');
-        span.style.fontSize = size;
-        
-        try {
-            span.appendChild(range.extractContents());
-            range.insertNode(span);
-            // Clean up any inner spans that might conflict
-            span.querySelectorAll('span[style*="font-size"]').forEach(s => s.style.fontSize = 'inherit');
-        } catch (e) {
-            // Fallback for complex cross-node selections
-            document.execCommand('styleWithCSS', false, true);
-            document.execCommand('fontSize', false, '7');
-            editor.querySelectorAll('font, span[style*="xxx-large"]').forEach(el => {
-                const s = document.createElement('span');
-                s.style.fontSize = size;
-                s.innerHTML = el.innerHTML;
-                el.parentNode.replaceChild(s, el);
-            });
-        }
+        // Mode B: Selection - Apply size
+        document.execCommand('fontSize', false, '7'); 
+        const markers = editorEl.querySelectorAll('span[style*="font-size: xxx-large"]');
+        markers.forEach(m => {
+            m.style.fontSize = size;
+            // Clean internal conflicting sizes
+            m.querySelectorAll('span[style*="font-size"]').forEach(inner => inner.style.fontSize = 'inherit');
+        });
     }
     
     saveState();
-    editor.focus();
+    editorEl.focus();
 }
 
 function adjustSelectionFontSize(delta) {
@@ -557,7 +546,7 @@ function adjustSelectionFontSize(delta) {
     const currentSize = parseInt(currentSizeStr);
     const newSize = (currentSize + delta) + "px";
     
-    applyFontSizeSelected(newSize);
+    setNoteFontSize(newSize);
 }
 
 /* --- FIREBASE LOGIC --- */
@@ -736,7 +725,7 @@ function setupEventListeners() {
     const selectSize = document.getElementById('select-font-size');
     if (selectSize) {
         selectSize.addEventListener('change', (e) => {
-            applyFontSizeSelected(e.target.value);
+            setNoteFontSize(e.target.value);
         });
     }
 
@@ -751,7 +740,7 @@ function setupEventListeners() {
             document.execCommand('removeFormat', false, null);
             const selection = window.getSelection();
             if (!selection.isCollapsed) {
-                applyFontSizeSelected('inherit');
+                setNoteFontSize('inherit');
             }
             editor.focus();
         });
