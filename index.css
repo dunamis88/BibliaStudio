@@ -1157,165 +1157,110 @@ body.resizing {
     animation: highlightIn 0.2s ease-out forwards; /* Using the new fixed animation */
 }
 
-.nav-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    z-index: 1000;
-    min-width: 120px;
-    padding: 8px;
-    display: none;
-    animation: highlightIn 0.2s ease-out forwards;
-}
-
-.nav-dropdown.show {
-    display: block;
-}
-
-/* Fix for Books Columns */
-.books-dropdown-menu {
-    min-width: 450px !important;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
+/* --- BIBLE TOOLBAR: STUDIO DESIGN (RECONSTRUCTED) --- */
 .bible-header-sticky {
     position: sticky;
     top: 0;
     z-index: 100;
     background-color: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
-    height: 60px; /* Precise height */
+    height: 60px; /* Precise height matches the notes toolbar */
     display: flex;
     align-items: center;
-    overflow: visible !important; /* Dropdowns NEED to be seen! */
+    overflow: visible !important;
 }
 
 .bible-header-top {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Bible tools to the left, Zoom/More to the right */
+    justify-content: space-between;
     width: 100%;
-    padding: 0 16px;
+    padding: 0 20px;
     height: 100%;
+    box-sizing: border-box;
 }
 
 .bible-nav-main {
     display: flex;
     align-items: center;
+    gap: 12px;
     height: 100%;
-    flex: 1; /* Take available space but don't take over */
 }
 
 .inline-nav {
     display: flex;
     align-items: center;
+    gap: 8px;
     height: 100%;
 }
 
-.bible-local-controls {
-    display: flex;
+/* ALL Toolbar Buttons share the same 36px height and vertical centering */
+.nav-trigger, .icon-btn.highlight-dot-btn, .bible-local-controls button {
+    height: 36px !important;
+    min-height: 36px !important;
+    display: inline-flex !important;
     align-items: center;
-    gap: 12px;
-    margin-right: 16px;
-    white-space: nowrap;
-}
-
-/* Redefine dropdown container to anchor dropdowns */
-.dropdown-container {
-    position: relative !important;
-    display: flex;
-    align-items: center;
-    height: 100%;
-}
-
-.nav-label {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--tertiary); /* Brownish from your palette */
-    opacity: 0.7;
-    margin-right: -4px;
-    letter-spacing: 1px;
-}
-
-/* Premium Nav Trigger - The "Studio" Button Look (Compact) */
-.nav-trigger {
-    background: white;
+    justify-content: center;
+    background-color: white;
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 6px 12px;
-    font-size: 14px; /* Slightly smaller for more room */
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
     cursor: pointer;
     transition: var(--transition-fast);
-    outline: none;
+    outline: none !important;
     font-family: 'Outfit', sans-serif;
-    user-select: none;
-    box-shadow: var(--shadow-sm); 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-sizing: border-box !important;
+    vertical-align: middle;
+    margin: 0;
 }
 
-.nav-trigger:hover {
+.nav-trigger:hover, .icon-btn.highlight-dot-btn:hover, .bible-local-controls button:hover {
     border-color: var(--primary-light);
+    background-color: #fafafa;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .nav-trigger i {
-    width: 12px;
-    height: 12px;
-    opacity: 0.4;
-    color: var(--secondary);
+    width: 14px;
+    height: 14px;
+    margin-left: 8px;
+    opacity: 0.5;
 }
 
+/* Specific button widths */
+#trigger-version { min-width: 80px; }
+#trigger-book { min-width: 120px; }
+#trigger-chapter { min-width: 60px; }
+
+/* Uniform Dividers */
 .tool-divider {
     width: 1px;
     height: 24px;
     background-color: var(--border-color);
-    margin: 0 12px;
-    opacity: 0.5;
+    margin: 0 10px;
+    flex-shrink: 0;
+    opacity: 0.6;
 }
 
-/* Highlighter nav item special adjustment */
-#highlighter-nav-item {
-    padding-left: 4px;
-}
-
-/* Color dot button must be elegant */
-.highlight-dot-btn {
-    width: 34px !important;
-    height: 34px !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Clear Arrows */
+/* Arrow Navigation */
 .chapter-nav-arrow {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    font-family: 'Outfit', sans-serif;
+    width: 30px;
+    height: 36px;
+    font-size: 22px;
     font-weight: 300;
-    font-size: 20px;
     color: var(--secondary);
     cursor: pointer;
     opacity: 0.4;
     transition: var(--transition-fast);
     user-select: none;
-    line-height: 1;
 }
 
 .chapter-nav-arrow:hover {
@@ -1324,29 +1269,89 @@ body.resizing {
     transform: scale(1.15);
 }
 
+.bible-chapter-nav-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Highlighter Item */
+#highlighter-nav-item {
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.highlight-dot-btn {
+    width: 36px !important;
+    padding: 0 !important;
+}
+
+.color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Bible Zoom Controls */
+.bible-local-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 0;
+}
+
+.bible-local-controls span {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--secondary);
+    min-width: 22px;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+}
+
+.bible-local-controls button {
+    width: 36px !important;
+    padding: 0 !important;
+}
+
+/* Unified Dropdown Design */
 .nav-dropdown {
     position: absolute;
-    top: calc(100% + 12px) !important;
+    top: calc(100% + 8px) !important;
     left: 0;
     background: white;
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-    z-index: 1000;
+    z-index: 2000;
     display: none;
-    padding: 12px;
-    animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 10px;
+    animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-dropdown.show {
     display: block !important;
 }
 
-.bible-chapter-nav-wrapper {
-    display: flex !important;
+.dropdown-container {
+    position: relative !important;
+    display: flex;
     align-items: center;
-    flex-wrap: nowrap !important;
-    padding: 0 4px;
+    height: 100%;
+}
+
+.books-dropdown-menu {
+    min-width: 460px !important;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.chapters-dropdown-menu {
+    min-width: 300px !important;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .books-columns {
