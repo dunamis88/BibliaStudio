@@ -775,7 +775,7 @@ function setupEventListeners() {
         });
     }
 
-    alignPopup.addEventListener('click', (e) => e.stopPropagation());
+    if (alignPopup) alignPopup.addEventListener('click', (e) => e.stopPropagation());
     
     // Toolbar commands
     document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
