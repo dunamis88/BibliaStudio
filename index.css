@@ -1292,14 +1292,14 @@ body.resizing {
 
 /* --- STANDARD BUTTONS (MATCHING NOTES 32px) --- */
 .std-tool-btn, .std-nav-btn {
-    height: 36px; /* Uniform height for premium feel */
-    min-height: 36px;
+    height: 32px; /* Sleek academic size */
+    min-height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     background-color: #ffffff;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     color: var(--primary);
     cursor: pointer;
     font-weight: 700;
@@ -1322,7 +1322,7 @@ body.resizing {
 }
 
 .std-tool-btn {
-    width: 36px; /* Perfect square */
+    width: 32px; /* Perfect square matching history button */
     padding: 0;
 }
 
@@ -1330,22 +1330,22 @@ body.resizing {
     background-color: #f8fafd;
     border-color: var(--primary-light);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
 }
 
 .std-nav-btn i, .std-tool-btn i {
-    width: 18px; /* Standardized icon size */
-    height: 18px;
-    opacity: 0.8; /* Slightly clearer */
+    width: 16px; /* Optimized icon size */
+    height: 16px;
+    opacity: 0.8;
 }
 
 /* Specific UI Elements */
 .std-divider {
     width: 1px;
-    height: 24px;
+    height: 18px;
     background-color: var(--border-color);
     margin: 0 4px;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 .std-zoom-label {
