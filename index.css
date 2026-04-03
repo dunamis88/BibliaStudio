@@ -403,17 +403,22 @@ body {
 /* 8. DROPDOWNS & POPUPS (THE POPUP SYSTEM) */
 .nav-dropdown, .search-dropdown-menu, .highlight-popup {
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 180px;
     background: white;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    display: none;
+    z-index: 2000 !important; /* Absolute priority */
+    display: none !important; /* Hide by default */
     animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
 }
 
-.nav-dropdown.show, .search-dropdown-menu.show { display: block; }
+.nav-dropdown.show, .search-dropdown-menu.show, .highlight-popup.show { 
+    display: block !important; /* Decisive visibility */
+}
 
 .highlight-popup {
     left: 50%;
