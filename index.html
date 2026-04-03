@@ -172,8 +172,11 @@
 
                 <!-- Notes Panel -->
                 <section class="notes-panel" id="notes-panel">
-                    <div class="notes-header">
-                        <div class="editor-toolbar">
+                    <div class="notes-header" style="position: relative;">
+                        <!-- Botón de scroll Izquierdo -->
+                        <button id="btn-notes-scroll-left" class="std-scroll-btn left" title="Anterior"><i data-lucide="chevron-left"></i></button>
+                        
+                        <div class="editor-toolbar" id="notes-toolbar-scrollable">
                             <!-- Grupo 1: Gestión de Nota -->
                             <div class="tool-group">
                                 <button class="tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
@@ -274,6 +277,9 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Botón de scroll Derecho -->
+                        <button id="btn-notes-scroll-right" class="std-scroll-btn right" title="Siguiente"><i data-lucide="chevron-right"></i></button>
                     </div>
                     <div class="notes-content">
                         <div class="active-note-context">

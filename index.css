@@ -629,8 +629,16 @@ body.resizing {
     position: relative;
     width: 100%;
     min-width: 0;
-    /* overflow handled by JS moving elements */
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    white-space: nowrap;
+    padding: 0 10px;
 }
+
+.editor-toolbar::-webkit-scrollbar { display: none; }
 
 .tool-group {
     display: flex;
