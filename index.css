@@ -61,8 +61,8 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    min-width: 300px;
-    background-color: white;
+    min-height: 0; /* CRITICAL: Permits children to scroll! */
+    background-color: var(--card-bg);
 }
 
 .notes-panel {
@@ -72,7 +72,7 @@ body {
 /* 3. SYNCED HEADERS (LEVEL 68 BASE) */
 .app-header, .bible-header-sticky, .notes-header {
     height: var(--header-height) !important;
-    padding: 0 30px !important;
+    padding: 0 35px !important;
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.98);
@@ -81,7 +81,8 @@ body {
     border-bottom: 1px solid var(--border-color);
     position: relative;
     box-sizing: border-box;
-    overflow: visible !important; /* CRITICAL: Allows popups and hovers to breathe */
+    overflow: visible !important;
+    flex-shrink: 0; /* Ensures header never collapses */
 }
 
 .app-header {
