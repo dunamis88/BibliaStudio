@@ -18,6 +18,7 @@
     --radius-md: 8px;
     --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --header-height: 68px; /* Standardize across all panels */
+    --bible-font-size: 18px;
 }
 
 /* 1. RESET & BASE */
@@ -399,7 +400,7 @@ body {
     border-radius: 8px;
     margin-bottom: 10px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: var(--bible-font-size);
     line-height: 1.8;
     font-family: 'Libre Baskerville', serif;
     transition: var(--transition-fast);
