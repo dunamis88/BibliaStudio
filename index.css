@@ -1292,8 +1292,8 @@ body.resizing {
 
 /* --- STANDARD BUTTONS (MATCHING NOTES 32px) --- */
 .std-tool-btn, .std-nav-btn {
-    height: 32px; /* Slimmer, matches notes .tool-btn */
-    min-height: 32px;
+    height: 36px; /* Uniform height for premium feel */
+    min-height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1322,7 +1322,7 @@ body.resizing {
 }
 
 .std-tool-btn {
-    width: 36px;
+    width: 36px; /* Perfect square */
     padding: 0;
 }
 
@@ -1330,13 +1330,13 @@ body.resizing {
     background-color: #f8fafd;
     border-color: var(--primary-light);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .std-nav-btn i, .std-tool-btn i {
-    width: 16px;
-    height: 16px;
-    opacity: 0.6;
+    width: 18px; /* Standardized icon size */
+    height: 18px;
+    opacity: 0.8; /* Slightly clearer */
 }
 
 /* Specific UI Elements */
@@ -1762,9 +1762,10 @@ blockquote {
     .main-logo-text { font-size: 20px; }
     .search-bar { margin: 0 10px; }
     .split-view { margin: 0 8px 8px 8px; max-width: calc(100vw - 16px); }
-    .bible-header-sticky, .notes-header { padding: 0 25px; }
-    .std-tool-btn { width: 28px; height: 28px; border-radius: 5px; }
-    .std-nav-btn { height: 30px; padding: 0 8px; font-size: 11px; }
+    .bible-header-sticky, .notes-header { padding: 0 20px; height: 56px; }
+    .std-tool-btn, .std-nav-btn { height: 32px; min-height: 32px; }
+    .std-tool-btn { width: 32px; }
+    .std-nav-btn { padding: 0 8px; font-size: 11px; }
     .toolbar-group { gap: 4px; }
 }
 
