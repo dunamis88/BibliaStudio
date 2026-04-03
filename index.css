@@ -1173,31 +1173,53 @@ body.resizing {
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    overflow: visible !important;
+    overflow: hidden !important; /* Contain the scrollable bar */
 }
 
 .bible-toolbar-std {
     display: flex;
     align-items: center;
-    width: 100%;
+    flex: 1;
     height: 100%;
     padding: 0 16px;
     gap: 12px;
     box-sizing: border-box;
     font-family: 'Outfit', sans-serif;
-    
-    /* Standard Responsive Toolbar Solution */
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
-    -webkit-overflow-scrolling: touch; /* Smooth scroll on mobile */
-    scrollbar-width: none; /* Firefox: Hide scrollbar */
-    -ms-overflow-style: none; /* IE/Edge: Hide scrollbar */
+    scrollbar-width: none;
+    scroll-behavior: smooth; /* Modern smooth scrolling */
 }
 
-/* Chrome/Safari: Hide scrollbar */
-.bible-toolbar-std::-webkit-scrollbar {
-    display: none;
+.bible-toolbar-std::-webkit-scrollbar { display: none; }
+
+/* Scroll Arrow Buttons (Floating Glassmorphism) */
+.std-scroll-btn {
+    width: 32px;
+    height: 100%;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    display: none; /* JS will toggle this */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    color: var(--primary);
+    transition: all 0.2s;
+}
+
+.std-scroll-btn:hover { background: #fff; color: var(--primary-light); }
+.std-scroll-btn.left { border-right: 1px solid var(--border-color); }
+.std-scroll-btn.right { border-left: 1px solid var(--border-color); }
+
+.std-scroll-btn i { width: 18px; height: 18px; stroke-width: 3px; }
+
+/* Isolate Top Header */
+.app-header {
+    flex-shrink: 0 !important; /* Never crush the top bar */
+    z-index: 1000;
 }
 
 .toolbar-group {

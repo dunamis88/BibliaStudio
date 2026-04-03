@@ -62,7 +62,10 @@
                 <section class="bible-panel" id="bible-panel">
                     <!-- Fixed Header Bar -->
                     <div class="bible-header-sticky">
-                        <div class="bible-toolbar-std">
+                        <!-- Botón de scroll Izquierdo -->
+                        <button id="btn-bible-scroll-left" class="std-scroll-btn left" title="Ver más herramientas"><i data-lucide="chevron-left"></i></button>
+                        
+                        <div class="bible-toolbar-std" id="bible-toolbar-scrollable">
                             <!-- Grupo 1: Historial -->
                             <div class="toolbar-group">
                                 <button class="std-tool-btn" id="btn-nav-back" title="Atrás"><i data-lucide="arrow-left"></i></button>
@@ -142,6 +145,9 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Botón de scroll Derecho -->
+                        <button id="btn-bible-scroll-right" class="std-scroll-btn right" title="Ver más herramientas"><i data-lucide="chevron-right"></i></button>
                     </div>
 
                     <!-- Scrollable Area -->

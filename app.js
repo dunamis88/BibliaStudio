@@ -1483,7 +1483,7 @@ function insertTable(rows, cols) {
 
 function updateToolbarOverflow() {
     updateNotesToolbarOverflow();
-    updateBibleToolbarOverflow();
+    initBibleCarousel();
 }
 
 // Professional Toolbar Overflow Implementation
@@ -1501,14 +1501,12 @@ function initToolbarObservers() {
         notesToolbarObserver.observe(notesHeader);
     }
     
-    // Also trigger on bible container resizer
-    const bibleToolbar = document.querySelector('.bible-toolbar');
-    const bibleHeader = document.querySelector('.bible-header');
-    if (bibleHeader && bibleToolbar) {
-        bibleToolbarObserver = new ResizeObserver(() => {
-            updateBibleToolbarOverflow();
+    const bibleSticky = document.querySelector('.bible-header-sticky');
+    if (bibleSticky) {
+        const bibleObs = new ResizeObserver(() => {
+            initBibleCarousel();
         });
-        bibleToolbarObserver.observe(bibleHeader);
+        bibleObs.observe(bibleSticky);
     }
 }
 
@@ -1561,32 +1559,36 @@ function updateNotesToolbarOverflow() {
     }
 }
 
-function updateBibleToolbarOverflow() {
-    const header = document.querySelector('.bible-header-top');
-    if (!header) return;
-
-    const container = document.getElementById('bible-more-container');
-    const dropdown = document.querySelector('.bible-tools-grid');
-    if (!container || !dropdown) return;
-
-    const adaptiveEls = document.querySelectorAll('.bible-adaptive-el');
-    const panelWidth = document.getElementById('bible-panel').offsetWidth;
+function initBibleCarousel() {
+    const scrollContainer = document.getElementById('bible-toolbar-scrollable');
+    const btnLeft = document.getElementById('btn-bible-scroll-left');
+    const btnRight = document.getElementById('btn-bible-scroll-right');
     
-    if (panelWidth < 680) {
-        adaptiveEls.forEach(el => dropdown.appendChild(el));
-        container.style.display = 'flex';
-    } else {
-        const inlineNav = document.querySelector('.inline-nav');
-        adaptiveEls.forEach(el => {
-            if (el.classList.contains('history-controls')) {
-                header.insertBefore(el, inlineNav);
-            } else {
-                header.insertBefore(el, container);
-            }
-        });
-        container.style.display = 'none';
-    }
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (!scrollContainer || !btnLeft || !btnRight) return;
+
+    const checkOverflow = () => {
+        const hasOverflow = scrollContainer.scrollWidth > (scrollContainer.clientWidth + 5);
+        if (hasOverflow) {
+            btnLeft.style.display = scrollContainer.scrollLeft > 10 ? 'flex' : 'none';
+            btnRight.style.display = (scrollContainer.scrollLeft + scrollContainer.clientWidth) < (scrollContainer.scrollWidth - 10) ? 'flex' : 'none';
+        } else {
+            btnLeft.style.display = 'none';
+            btnRight.style.display = 'none';
+        }
+    };
+
+    btnLeft.onclick = (e) => {
+        e.stopPropagation();
+        scrollContainer.scrollBy({ left: -220, behavior: 'smooth' });
+    };
+
+    btnRight.onclick = (e) => {
+        e.stopPropagation();
+        scrollContainer.scrollBy({ left: 220, behavior: 'smooth' });
+    };
+
+    scrollContainer.onscroll = checkOverflow;
+    checkOverflow();
 }
 
 window.addEventListener('load', updateToolbarOverflow);
