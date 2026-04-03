@@ -1484,6 +1484,7 @@ function insertTable(rows, cols) {
 function updateToolbarOverflow() {
     initBibleCarousel();
     initNotesCarousel();
+    if (window.lucide) lucide.createIcons();
 }
 
 function initToolbarObservers() {
