@@ -690,23 +690,32 @@ function setupEventListeners() {
     document.execCommand('styleWithCSS', false, false);
 
     // Toolbar selections
-    document.getElementById('select-font-family').addEventListener('change', (e) => {
-        document.execCommand('fontName', false, e.target.value);
-        editor.focus();
-    });
+    const selectFont = document.getElementById('select-font-family');
+    if (selectFont) {
+        selectFont.addEventListener('change', (e) => {
+            document.execCommand('fontName', false, e.target.value);
+            editor.focus();
+        });
+    }
 
-    document.getElementById('select-font-size').addEventListener('change', (e) => {
-        applyFontSizeSelected(e.target.value);
-    });
+    const selectSize = document.getElementById('select-font-size');
+    if (selectSize) {
+        selectSize.addEventListener('change', (e) => {
+            applyFontSizeSelected(e.target.value);
+        });
+    }
 
-    document.getElementById('btn-clear-format').addEventListener('click', () => {
-        document.execCommand('removeFormat', false, null);
-        const selection = window.getSelection();
-        if (!selection.isCollapsed) {
-            applyFontSizeSelected('inherit');
-        }
-        editor.focus();
-    });
+    const btnClearFormat = document.getElementById('btn-clear-format');
+    if (btnClearFormat) {
+        btnClearFormat.addEventListener('click', () => {
+            document.execCommand('removeFormat', false, null);
+            const selection = window.getSelection();
+            if (!selection.isCollapsed) {
+                applyFontSizeSelected('inherit');
+            }
+            editor.focus();
+        });
+    }
 
     document.addEventListener('selectionchange', updateEditorToolbarState);
 
@@ -736,11 +745,12 @@ function setupEventListeners() {
     const bibleSearchInput = document.getElementById('bible-main-search');
     const bibleSearchDropdown = document.getElementById('bible-search-dropdown');
 
-    if (alignBtn) {
+    if (alignBtn && alignPopup) {
         alignBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             alignPopup.style.display = alignPopup.style.display === 'none' ? 'flex' : 'none';
         });
+        alignPopup.addEventListener('click', (e) => e.stopPropagation());
     }
 
     // Global click closer
@@ -774,13 +784,10 @@ function setupEventListeners() {
             }
         });
     }
-
-    if (alignPopup) alignPopup.addEventListener('click', (e) => e.stopPropagation());
     
-    // Toolbar commands
-    document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
+    // Toolbar commands (Unified class)
+    document.querySelectorAll('.std-tool-btn[data-command], .tool-btn[data-command]').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            if (btn.closest('#align-popup')) e.stopPropagation();
             const command = btn.getAttribute('data-command');
             const value = btn.getAttribute('data-value');
             document.execCommand(command, false, value);
@@ -789,234 +796,171 @@ function setupEventListeners() {
     });
 
     // Special Quote Button
-    document.getElementById('btn-insert-quote').addEventListener('click', () => {
-        const selection = window.getSelection();
-        if (selection.toString().length > 0) {
-            document.execCommand('formatBlock', false, 'blockquote');
-        } else {
-            const quoteHTML = `<blockquote>Escribe tu cita aquí...</blockquote><p><br></p>`;
-            document.execCommand('insertHTML', false, quoteHTML);
-        }
-        editor.focus();
-    });
+    const btnQuote = document.getElementById('btn-insert-quote');
+    if (btnQuote) {
+        btnQuote.addEventListener('click', () => {
+            const selection = window.getSelection();
+            if (selection.toString().length > 0) {
+                document.execCommand('formatBlock', false, 'blockquote');
+            } else {
+                const quoteHTML = `<blockquote>Escribe tu cita aquí...</blockquote><p><br></p>`;
+                document.execCommand('insertHTML', false, quoteHTML);
+            }
+            editor.focus();
+        });
+    }
 
     // Word-style Table Selector
-    setupTableSelector();
+    if (typeof setupTableSelector === 'function') setupTableSelector();
 
     // Special Inserts
-    document.getElementById('btn-insert-youtube').addEventListener('click', () => {
-        const url = prompt("Pegue la URL de YouTube:");
-        if (!url) return;
-        const vidId = extractYoutubeId(url);
-        if (!vidId) return;
-        
-        const embed = `
-            <div class="video-container" contenteditable="false">
-                <iframe src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe>
-            </div><p><br></p>`;
-        document.execCommand('insertHTML', false, embed);
-    });
+    const btnYT = document.getElementById('btn-insert-youtube');
+    if (btnYT) {
+        btnYT.addEventListener('click', () => {
+            const url = prompt("Pegue la URL de YouTube:");
+            if (!url) return;
+            const vidId = extractYoutubeId(url);
+            if (!vidId) return;
+            
+            const embed = `
+                <div class="video-container" contenteditable="false">
+                    <iframe src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe>
+                </div><p><br></p>`;
+            document.execCommand('insertHTML', false, embed);
+        });
+    }
 
-    document.getElementById('btn-insert-web').addEventListener('click', () => {
-        const url = prompt("URL de la página web:");
-        if (!url) return;
-        const embed = `
-            <div class="web-preview" style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden; height: 300px;" contenteditable="false">
-                <iframe src="${url}" style="width: 100%; height: 100%; border: none;"></iframe>
-            </div><p><br></p>`;
-        document.execCommand('insertHTML', false, embed);
-    });
+    const btnWeb = document.getElementById('btn-insert-web');
+    if (btnWeb) {
+        btnWeb.addEventListener('click', () => {
+            const url = prompt("URL de la página web:");
+            if (!url) return;
+            const embed = `
+                <div class="web-preview" style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden; height: 300px;" contenteditable="false">
+                    <iframe src="${url}" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div><p><br></p>`;
+            document.execCommand('insertHTML', false, embed);
+        });
+    }
 
     // Import Current Bible Selection to Note
-    document.getElementById('btn-import-verse').addEventListener('click', async () => {
-        if (state.selectedVerses.length === 0) {
-            alert("Selecciona primero algunos versículos de la Biblia.");
-            return;
-        }
-
-        const bible = bibleLibrary[state.currentVersion];
-        if (!bible) return;
-
-        const bObj = BOOKS.find(b => b.id === state.currentBook);
-        const verses = state.selectedVerses.sort((a,b) => a-b);
-        let combinedText = "";
-
-        // Determine keys
-        const first = bible.data[0] || {};
-        const isSql = bible.type === 'sqlite';
-        const keys = Object.keys(first);
-        const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('id1')) || keys[0]);
-        const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('capitulo') || k.toLowerCase().includes('id2')) || keys[1]);
-        const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
-        const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text')) || keys[3]);
-
-        verses.forEach(vNum => {
-            const vData = bible.data.find(row => 
-                parseInt(row[bKey]) === state.currentBook && 
-                parseInt(row[cKey]) === state.currentChapter && 
-                parseInt(row[vKey]) === vNum
-            );
-            if (vData) {
-                combinedText += `<sup>${vNum}</sup> ${cleanText(vData[tKey], state.currentVersion)} `;
+    const btnImport = document.getElementById('btn-import-verse');
+    if (btnImport) {
+        btnImport.addEventListener('click', async () => {
+            if (state.selectedVerses.length === 0) {
+                alert("Selecciona primero algunos versículos de la Biblia.");
+                return;
             }
-        });
 
-        const vRange = verses.length > 1 ? `${verses[0]}-${verses[verses.length-1]}` : verses[0];
-        const verseHTML = `
-            <div class="verse-quote-box" contenteditable="false">
-                <div class="verse-quote-text">"${combinedText.trim()}"</div>
-                <div class="verse-quote-ref">${bObj.n} ${state.currentChapter}:${vRange} (${state.currentVersion})</div>
-            </div><p><br></p>`;
-        
-        document.execCommand('insertHTML', false, verseHTML);
-        editor.focus();
-    });
+            const bible = bibleLibrary[state.currentVersion];
+            if (!bible) return;
+
+            const bObj = BOOKS.find(b => b.id === state.currentBook);
+            const verses = state.selectedVerses.sort((a,b) => a-b);
+            let combinedText = "";
+
+            // Determine keys
+            const first = bible.data[0] || {};
+            const isSql = bible.type === 'sqlite';
+            const keys = Object.keys(first);
+            const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('id1')) || keys[0]);
+            const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('capitulo') || k.toLowerCase().includes('id2')) || keys[1]);
+            const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
+            const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text')) || keys[3]);
+
+            verses.forEach(vNum => {
+                const vData = bible.data.find(row => 
+                    parseInt(row[bKey]) === state.currentBook && 
+                    parseInt(row[cKey]) === state.currentChapter && 
+                    parseInt(row[vKey]) === vNum
+                );
+                if (vData) {
+                    combinedText += `<sup>${vNum}</sup> ${cleanText(vData[tKey], state.currentVersion)} `;
+                }
+            });
+
+            const vRange = verses.length > 1 ? `${verses[0]}-${verses[verses.length-1]}` : verses[0];
+            const verseHTML = `
+                <div class="verse-quote-box" contenteditable="false">
+                    <div class="verse-quote-text">"${combinedText.trim()}"</div>
+                    <div class="verse-quote-ref">${bObj.n} ${state.currentChapter}:${vRange} (${state.currentVersion})</div>
+                </div><p><br></p>`;
+            
+            document.execCommand('insertHTML', false, verseHTML);
+            editor.focus();
+        });
+    }
 
     // Image Upload
     const imgBtn = document.getElementById('btn-insert-image');
     const imgInput = document.getElementById('image-upload');
-    
-    imgBtn.addEventListener('click', () => imgInput.click());
-    
-    imgInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const imgHTML = `<img src="${event.target.result}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`;
-                document.execCommand('insertHTML', false, imgHTML);
-                imgInput.value = ''; // Reset for same file again
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-
-    // History Controls Listeners
-    document.getElementById('btn-nav-back').addEventListener('click', goBack);
-    document.getElementById('btn-nav-forward').addEventListener('click', goForward);
-    document.getElementById('btn-nav-history').addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.getElementById('dropdown-history').classList.toggle('show');
-        renderHistoryDropdown();
-    });
-
-    // Inline Dropdown Listeners
-    const triggers = {
-        'trigger-version': 'dropdown-version',
-        'trigger-book': 'dropdown-book',
-        'trigger-chapter': 'dropdown-chapter'
-    };
-
-    Object.keys(triggers).forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const dropdownId = triggers[id];
-                const isOpen = document.getElementById(dropdownId).classList.contains('show');
-                
-                // Close all others
-                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
-                
-                if (!isOpen) {
-                    if (id === 'trigger-version') renderVersionDropdown();
-                    if (id === 'trigger-book') renderBookDropdown();
-                    if (id === 'trigger-chapter') renderChapterDropdown();
-                    document.getElementById(dropdownId).classList.add('show');
-                }
-            });
-        }
-    });
-
-    window.addEventListener('click', () => {
-        document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
-    });
-
-    // Toolbar '...' toggle
-    const btnMoreTools = document.getElementById('btn-toolbar-more');
-    if (btnMoreTools) {
-        btnMoreTools.addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('toolbar-more-dropdown').classList.toggle('show');
+    if (imgBtn && imgInput) {
+        imgBtn.addEventListener('click', () => imgInput.click());
+        imgInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const imgHTML = `<img src="${event.target.result}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`;
+                    document.execCommand('insertHTML', false, imgHTML);
+                    imgInput.value = ''; // Reset for same file again
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
         });
     }
 
-    const btnBibleMore = document.getElementById('btn-bible-more');
-    if (btnBibleMore) {
-        btnBibleMore.addEventListener('click', (e) => {
+    // History Controls Listeners
+    const btnBack = document.getElementById('btn-nav-back');
+    if (btnBack) btnBack.addEventListener('click', goBack);
+    const btnFwd = document.getElementById('btn-nav-forward');
+    if (btnFwd) btnFwd.addEventListener('click', goForward);
+    const btnHist = document.getElementById('btn-nav-history');
+    if (btnHist) {
+        btnHist.addEventListener('click', (e) => {
             e.stopPropagation();
-            document.getElementById('bible-more-dropdown').classList.toggle('show');
+            const historyDropdown = document.getElementById('dropdown-history');
+            if (historyDropdown) {
+                historyDropdown.classList.toggle('show');
+                renderHistoryDropdown();
+            }
         });
     }
 
     // Settings Modal Toggle
-    document.getElementById('btn-settings').addEventListener('click', () => {
-        document.getElementById('settings-overlay').style.display = 'flex';
-    });
-
-    // Settings Tab Switching
-    document.querySelectorAll('.settings-nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-            document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            const tab = item.getAttribute('data-tab');
-            const title = item.querySelector('span').textContent;
-            document.getElementById('settings-tab-title').textContent = `Configuración de ${title}`;
-        });
-    });
-
-    // Print Logic
-    const btnPrintNote = document.getElementById('btn-print-note');
-    if (btnPrintNote) {
-        btnPrintNote.addEventListener('click', () => {
-            window.print();
-        });
-    }
-
-    // Quick New Note
-    const btnNewNoteQuick = document.getElementById('btn-new-note-quick');
-    if (btnNewNoteQuick) {
-        btnNewNoteQuick.addEventListener('click', () => {
-            const id = 'note-' + Date.now();
-            state.notes[id] = {
-                title: "Escribe el título aquí...",
-                subtitle: "Escribe el subtítulo aquí...",
-                content: "",
-                date: new Date().toLocaleDateString()
-            };
-            state.currentNoteId = id;
-            saveState();
-            loadCurrentNote();
-            document.getElementById('active-note-title').focus();
-        });
-    }
-
-    // Notes Browser Toggle
-    const browseNotesBtn = document.getElementById('btn-browse-notes');
-    if (browseNotesBtn) {
-        browseNotesBtn.addEventListener('click', (e) => {
-            console.log("Opening Notes Browser...");
-            renderNotesBrowser();
-            document.getElementById('notes-overlay').style.display = 'flex';
+    const btnSettings = document.getElementById('btn-settings');
+    if (btnSettings) {
+        btnSettings.addEventListener('click', () => {
+            const overlay = document.getElementById('settings-overlay');
+            if (overlay) overlay.style.display = 'flex';
         });
     }
 
     // Filter Notes
-    document.getElementById('notes-filter').addEventListener('input', (e) => {
-        renderNotesBrowser(normalizeText(e.target.value));
-    });
+    const notesFilterInput = document.getElementById('notes-filter');
+    if (notesFilterInput) {
+        notesFilterInput.addEventListener('input', (e) => {
+            renderNotesBrowser(normalizeText(e.target.value));
+        });
+    }
 
     // Local Bible Zoom
-    document.getElementById('btn-bible-zoom-in').addEventListener('click', () => {
-        state.currentBibleFontSize += 2;
-        updateBibleFontSize();
-    });
-
-    document.getElementById('btn-bible-zoom-out').addEventListener('click', () => {
-        if (state.currentBibleFontSize > 10) {
-            state.currentBibleFontSize -= 2;
+    const btnBZoomIn = document.getElementById('btn-bible-zoom-in');
+    if (btnBZoomIn) {
+        btnBZoomIn.addEventListener('click', () => {
+            state.currentBibleFontSize += 2;
             updateBibleFontSize();
-        }
-    });
+        });
+    }
+
+    const btnBZoomOut = document.getElementById('btn-bible-zoom-out');
+    if (btnBZoomOut) {
+        btnBZoomOut.addEventListener('click', () => {
+            if (state.currentBibleFontSize > 10) {
+                state.currentBibleFontSize -= 2;
+                updateBibleFontSize();
+            }
+        });
+    }
 
     // Manual Save
     const btnSave = document.getElementById('btn-save-note');
