@@ -529,11 +529,15 @@ body {
 
 /* Marker Colors */
 .verse.h-yellow { background-color: #fefcbf; }
-.verse.h-green { background-color: #c6f6d5; }
-.verse.h-blue { background-color: #bee3f8; }
-.verse.h-red { background-color: #fed7d7; }
-.verse.h-purple { background-color: #e9d8fd; }
-.verse.h-orange { background-color: #feebc8; }
+.color-dot.purple { background-color: #e9d8fd; }
+.color-dot.orange { background-color: #feebc8; }
+.color-dot.pink   { background-color: #fed7e2; }
+.color-dot.teal   { background-color: #b2f5ea; }
+.color-dot.clear  { background-color: #f1f5f9; border: 1px dashed var(--border-color); }
+.verse.h-purple { background-color: #e9d8fd66; border-left-color: #b794f4; }
+.verse.h-orange { background-color: #feebc866; border-left-color: #f6ad55; }
+.verse.h-pink   { background-color: #fed7e266; border-left-color: #f687b3; }
+.verse.h-teal   { background-color: #b2f5ea66; border-left-color: #4fd1c5; }
 
 /* 9. MODALS & OVERLAYS */
 .overlay {
