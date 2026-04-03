@@ -285,33 +285,37 @@ body {
 
 .std-scroll-btn {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 28px;
-    height: 28px;
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
+    top: 0;
+    height: 100%;
+    width: 45px;
     display: none; /* Auto-toggle by JS */
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: var(--transition-fast);
     color: var(--primary);
+    border: none;
+}
+
+.std-scroll-btn.left { 
+    left: 0; 
+    background: linear-gradient(to right, #fcfcfc 40%, rgba(252, 252, 252, 0));
+    padding-right: 15px;
+}
+
+.std-scroll-btn.right { 
+    right: 0; 
+    background: linear-gradient(to left, #fcfcfc 40%, rgba(252, 252, 252, 0));
+    padding-left: 15px;
 }
 
 .std-scroll-btn:hover {
-    background-color: var(--primary);
-    color: white;
-    transform: translateY(-50%) scale(1.1);
+    color: var(--secondary);
+    width: 55px; /* Sutil expansión al hover */
 }
 
-.std-scroll-btn.left { left: 5px; }
-.std-scroll-btn.right { right: 5px; }
-
-.std-scroll-btn i { width: 14px; height: 14px; stroke-width: 3px; }
+.std-scroll-btn i { width: 18px; height: 18px; stroke-width: 3px; }
 
 .editor-toolbar::-webkit-scrollbar, .bible-toolbar-std::-webkit-scrollbar { display: none; }
 
