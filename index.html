@@ -195,16 +195,32 @@
                                     <option value="Inter">Sans</option>
                                     <option value="Libre Baskerville">Serif</option>
                                     <option value="Outfit">Modern</option>
-                                </select>
-                                <select class="std-tool-select" id="select-font-size" title="Tamaño">
-                                    <option value="9px">9</option>
-                                    <option value="16px" selected>16</option>
-                                    <option value="20px">20</option>
-                                    <option value="24px">24</option>
-                                    <option value="32px">32</option>
-                                    <option value="48px">48</option>
-                                </select>
-                            </div>
+                                <div class="toolbar-group">
+                                    <div class="std-dropdown-anchor">
+                                        <button class="std-nav-btn" id="trigger-font-family">
+                                            <span id="label-font-family">Sans</span>
+                                            <i data-lucide="chevron-down"></i>
+                                        </button>
+                                        <div class="nav-dropdown" id="dropdown-font-family">
+                                            <div class="version-item" onclick="applyEditorFont('Arial', 'Sans')">Sans</div>
+                                            <div class="version-item" onclick="applyEditorFont('Georgia', 'Serif')">Serif</div>
+                                            <div class="version-item" onclick="applyEditorFont('Courier New', 'Mono')">Mono</div>
+                                        </div>
+                                    </div>
+                                    <div class="std-dropdown-anchor">
+                                        <button class="std-nav-btn" id="trigger-font-size">
+                                            <span id="label-font-size">16</span>
+                                            <i data-lucide="chevron-down"></i>
+                                        </button>
+                                        <div class="nav-dropdown" id="dropdown-font-size">
+                                            <div class="version-item" onclick="applyEditorSize('3', '12')">12</div>
+                                            <div class="version-item" onclick="applyEditorSize('4', '14')">14</div>
+                                            <div class="version-item" onclick="applyEditorSize('5', '16')">16</div>
+                                            <div class="version-item" onclick="applyEditorSize('6', '18')">18</div>
+                                            <div class="version-item" onclick="applyEditorSize('7', '24')">24</div>
+                                        </div>
+                                    </div>
+                                </div>
                             <div class="std-divider"></div>
 
                             <!-- Grupo 4: Alineación y Listas -->

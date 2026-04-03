@@ -647,6 +647,8 @@ function setupEventListeners() {
     setupDropdown('trigger-version', 'dropdown-version', renderVersionDropdown);
     setupDropdown('trigger-book', 'dropdown-book', renderBookDropdown);
     setupDropdown('trigger-chapter', 'dropdown-chapter', renderChapterDropdown);
+    setupDropdown('trigger-font-family', 'dropdown-font-family');
+    setupDropdown('trigger-font-size', 'dropdown-font-size');
 
     // --- HIGHLIGHTER LOGIC ---
     const btnHighlight = document.getElementById('btn-highlight-picker');
@@ -1725,4 +1727,18 @@ function jumpToVerse(bookId, chapterId, verseId) {
             setTimeout(() => target.classList.remove('flash-highlight'), 2000);
         }
     }, 500);
+}
+
+function applyEditorFont(font, labelText) {
+    document.execCommand('fontName', false, font);
+    const label = document.getElementById('label-font-family');
+    if (label) label.textContent = labelText;
+    document.getElementById('dropdown-font-family').classList.remove('show');
+}
+
+function applyEditorSize(sizeVal, labelText) {
+    document.execCommand('fontSize', false, sizeVal);
+    const label = document.getElementById('label-font-size');
+    if (label) label.textContent = labelText;
+    document.getElementById('dropdown-font-size').classList.remove('show');
 }
