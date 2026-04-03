@@ -148,18 +148,17 @@ body {
 }
 
 .search-bar {
-    background-color: white;
+    position: relative !important; /* Critical anchor */
+    max-width: 500px;
+    width: 100%;
+    background-color: var(--neutral);
     border: 1px solid var(--border-color);
-    padding: 0 16px;
-    border-radius: 12px;
+    border-radius: 25px;
+    padding: 8px 15px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    height: 42px;
-    width: 100%;
-    max-width: 420px;
+    gap: 10px;
     transition: var(--transition-fast);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
 
 .search-bar:focus-within {
