@@ -446,26 +446,6 @@ body.resizing {
     cursor: not-allowed;
 }
 
-.bible-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.bible-local-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #fcfcfc;
-    border: 1px solid var(--border-color);
-    padding: 2px 8px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--secondary);
-}
-
 .highlighter-control-group {
     background: transparent;
     border: none;
@@ -811,25 +791,7 @@ body.resizing {
     gap: 8px;
 }
 
-.dropdown-container {
-    display: inline-block;
-}
-
-.nav-trigger {
-    background: transparent;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    outline: none;
-}
+/* Removed redundant dropdown-container and nav-trigger here, consolidated below */
 
 .nav-trigger:hover {
     background: var(--neutral-dark);
@@ -1222,6 +1184,72 @@ body.resizing {
     overflow-y: auto;
 }
 
+.bible-header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    height: 56px; 
+    display: flex;
+    align-items: center;
+    overflow: hidden; /* No overflows */
+}
+
+.bible-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 0 16px;
+    gap: 12px;
+    height: 100% !important; /* Forces vertical centering relative to sticky parent */
+}
+
+.bible-nav-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap !important;
+    height: 100%;
+}
+
+.inline-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap !important;
+    height: 100%;
+}
+
+.bible-chapter-nav-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    min-width: fit-content;
+}
+
+/* Ensure arrows are vertically centered with the number */
+.chapter-nav-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    font-size: 20px;
+    color: var(--secondary);
+    cursor: pointer;
+    padding: 0 6px;
+    opacity: 0.6;
+    transition: var(--transition-fast);
+    user-select: none;
+    line-height: 1;
+}
+
 .books-columns {
     display: flex;
     gap: 20px;
@@ -1390,7 +1418,7 @@ body.resizing {
 
 /* Image Resize Handles */
 .dropdown-container {
-    position: relative !important; /* Force all dropdowns to be an anchor */
+    position: relative !important;
     display: inline-block;
 }
 
