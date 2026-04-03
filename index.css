@@ -1167,15 +1167,17 @@ body.resizing {
 
 .highlight-popup {
     position: absolute;
-    top: 110%;
-    left: 0;
-    background: white;
+    top: calc(100% + 10px); /* 10px space below button */
+    left: 50%;
+    transform: translateX(-50%); /* Mathematical centering */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     border: 1px solid var(--border-color);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    z-index: 1001;
-    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 1000;
     width: 140px;
     animation: modalIn 0.2s ease-out;
 }
