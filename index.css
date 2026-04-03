@@ -623,7 +623,6 @@ body.resizing {
     display: flex;
     align-items: center;
     position: relative;
-    overflow: hidden !important;
     box-sizing: border-box;
 }
 
@@ -636,7 +635,6 @@ body.resizing {
     flex: 1;
     min-width: 0;
     overflow-x: auto;
-    overflow-y: hidden;
     scrollbar-width: none;
     scroll-behavior: smooth;
     white-space: nowrap;
@@ -1329,8 +1327,9 @@ body.resizing {
 .std-tool-btn:hover, .std-nav-btn:hover {
     background-color: #f8fafd;
     border-color: var(--primary-light);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    transform: translateY(-2px); /* Slightly more elevation for elegance */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 10; /* Ensures borders are never erased */
 }
 
 .std-nav-btn i, .std-tool-btn i {
