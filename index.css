@@ -761,17 +761,192 @@ body {
     justify-content: center;
 }
 
-.notes-browser-card, .settings-card {
+/* 11. PREMIUM MODAL & DATA BROWSER */
+.notes-browser-card, .highlights-browser-card {
     background: white;
-    width: 80%;
-    max-width: 850px;
-    height: 75vh;
-    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    border-radius: 24px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    animation: modalSlide 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes modalSlide {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    padding: 30px 40px;
+    background: #fcfcfc;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.master-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0;
+}
+
+.modal-title-group h3 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--secondary);
+    opacity: 0.6;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
+
+.notes-list-stack {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #fafbfc;
+}
+
+/* CARDS DE DATOS */
+.note-list-item, .highlight-list-item {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.note-list-item:hover, .highlight-list-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.note-info, .h-item-details {
+    flex: 1;
+}
+
+.note-title, .h-item-ref {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.note-meta, .h-item-meta {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--secondary);
+    opacity: 0.5;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.note-preview, .h-item-text {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* BOTÓN DE CREACIÓN RÁPIDA DENTRO DEL MODAL */
+.btn-new-note-modal {
+    border: 2px dashed var(--border-color);
+    background: transparent;
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.btn-new-note-modal:hover {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.05);
+}
+
+.btn-new-note-modal i {
+    color: var(--primary);
+    width: 24px;
+}
+
+.btn-new-note-modal .text-group {
+    text-align: left;
+}
+
+.btn-new-note-modal .title {
+    display: block;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Outfit', sans-serif;
+}
+
+.btn-new-note-modal .sub {
+    font-size: 13px;
+    color: var(--secondary);
+    opacity: 0.6;
+}
+
+/* CONTROLES DE FILTRO PREMIUM */
+.modal-search {
+    background: #f0f2f5;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    width: 250px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.modal-search:focus {
+    background: white;
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.sort-mini-btn {
+    border: none;
+    background: transparent;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--secondary);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sort-mini-btn.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* 10. RESIZER */

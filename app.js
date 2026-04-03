@@ -1094,17 +1094,14 @@ function renderNotesBrowser(query = "") {
     const list = document.getElementById('notes-list');
     list.innerHTML = '';
     
-    // Nueva Nota Button (List item style)
+    // Quick Creation Card
     const newBtn = document.createElement('div');
-    newBtn.className = 'note-item-list';
-    newBtn.style.border = '2px dashed var(--border-color)';
-    newBtn.style.margin = '10px 30px';
-    newBtn.style.borderRadius = '12px';
+    newBtn.className = 'btn-new-note-modal';
     newBtn.innerHTML = `
-        <i data-lucide="plus-circle" style="color: var(--primary);"></i>
-        <div class="note-info">
-            <div class="note-item-title">Crear Nueva Reflexión</div>
-            <div class="note-item-date">Empieza un nuevo documento de estudio</div>
+        <i data-lucide="file-plus-2"></i>
+        <div class="text-group">
+            <span class="title">Crear Nueva Reflexión</span>
+            <span class="sub">Empieza un nuevo documento de estudio</span>
         </div>
     `;
     newBtn.onclick = () => {
@@ -1113,45 +1110,44 @@ function renderNotesBrowser(query = "") {
     };
     list.appendChild(newBtn);
 
-    const noteKeys = Object.keys(state.notes);
-    const filtered = noteKeys.filter(key => {
-        const note = state.notes[key];
-        const normalizedTitle = normalizeText(note.title);
-        const normalizedSubtitle = normalizeText(note.subtitle || "");
-        return normalizedTitle.includes(query) || normalizedSubtitle.includes(query);
+    const sortedNotes = Object.keys(state.notes).filter(id => {
+        const note = state.notes[id];
+        return !query || normalizeText(note.title).includes(query) || normalizeText(note.content || "").includes(query);
+    }).sort((a,b) => {
+        return (state.notes[b].updatedAt || 0) - (state.notes[a].updatedAt || 0);
     });
 
-    filtered.sort((a,b) => b === 'default' ? 1 : a === 'default' ? -1 : 0);
-
-    filtered.forEach(key => {
-        const note = state.notes[key];
+    sortedNotes.forEach(id => {
+        const note = state.notes[id];
+        const date = new Date(note.updatedAt || Date.now());
+        const dateStr = date.toLocaleDateString([], { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+        
         const item = document.createElement('div');
-        item.className = 'note-item-list' + (state.currentNoteId === key ? ' active' : '');
+        item.className = 'note-list-item';
         item.innerHTML = `
             <div class="note-info">
-                <div class="note-item-title">${note.title}</div>
-                <div class="note-item-date">MODIFICADO EL ${note.date}</div>
-                <div class="note-item-excerpt">${note.subtitle || ''}</div>
+                <div class="note-title">${note.title || "Sin título"}</div>
+                <div class="note-meta">MODIFICADO EL ${dateStr}</div>
+                <div class="note-preview">${(note.content || "").replace(/<[^>]*>/g, "").substring(0, 120)}</div>
             </div>
-            <button class="icon-btn btn-delete-note" title="Eliminar"><i data-lucide="trash-2"></i></button>
+            <button class="icon-btn delete-btn" title="Eliminar">
+                <i data-lucide="trash-2"></i>
+            </button>
         `;
         
-        item.addEventListener('click', (e) => {
-            if (e.target.closest('.btn-delete-note')) {
-                if (confirm('¿Seguro que quieres eliminar esta nota?')) {
-                    delete state.notes[key];
-                    if (state.currentNoteId === key) state.currentNoteId = 'default';
-                    saveState();
+        item.onclick = (e) => {
+            if (e.target.closest('.delete-btn')) {
+                if (confirm('¿Eliminar esta reflexión definitivamente?')) {
+                    deleteNote(id);
                     renderNotesBrowser(query);
                 }
                 return;
             }
-            state.currentNoteId = key;
+            state.currentNoteId = id;
             saveState();
             loadCurrentNote();
             document.getElementById('notes-overlay').style.display = 'none';
-        });
-        
+        };
         list.appendChild(item);
     });
     lucide.createIcons();
@@ -1678,24 +1674,16 @@ function renderHighlightsBrowser(sortBy = 'book') {
     hArray.forEach(h => {
         const book = BOOKS.find(b => b.id === h.bookId);
         
-        // Fetch the actual verse text for the list
-        let verseText = "Cargando texto...";
-        const bible = bibleLibrary[h.version];
-
         // Format Date elegantly
-        let dateStr = "Marcado recientemente";
-        if (h.time && h.time > 0) {
-            dateStr = new Date(h.time).toLocaleDateString('es-ES', { 
-                day: 'numeric', 
-                month: 'short', 
-                year: 'numeric' 
-            });
-        }
-        if (bible) {
-            const first = bible.data[0] || {};
-            const keys = Object.keys(first);
+        const date = new Date(h.time || Date.now());
+        const dateStr = date.toLocaleDateString([], { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
+        
+        let verseText = "Cargando versículo...";
+        if (bibleLibrary[h.version]) {
+            const bible = bibleLibrary[h.version];
             const isSql = bible.type === 'sqlite';
-            const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('id1')) || keys[0]);
+            const keys = Object.keys(bible.data[0] || {});
+            const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('libro') || k.toLowerCase().includes('id1')) || keys[0]);
             const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('capitulo') || k.toLowerCase().includes('id2')) || keys[1]);
             const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
             const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text') || k.toLowerCase().includes('vtext')) || keys[3]);
@@ -1705,20 +1693,18 @@ function renderHighlightsBrowser(sortBy = 'book') {
                 parseInt(v[cKey]) === h.chapter && 
                 parseInt(v[vKey]) === h.verse
             );
-            if (vData) verseText = cleanText(vData[tKey], h.version);
+            if (vData) verseText = cleanText(vData[tKey], h.version).replace(/<[^>]*>/g, "");
         }
 
         const item = document.createElement('div');
-        item.className = `highlight-list-item h-${h.color}`;
+        item.className = 'highlight-list-item';
         item.innerHTML = `
             <div class="h-item-details">
-                <div class="h-item-header">
-                    <span class="h-item-ref">${book ? book.n : 'Libro'} ${h.chapter}:${h.verse}</span>
-                    <span class="h-item-meta">${h.version} • ${dateStr}</span>
-                </div>
+                <div class="h-item-ref">${book ? book.n : 'Libro'} ${h.chapter}:${h.verse}</div>
+                <div class="h-item-meta">${h.version} • ${dateStr}</div>
                 <div class="h-item-text">"${verseText}"</div>
             </div>
-            <i data-lucide="external-link" style="width: 16px; opacity: 0.3; flex-shrink: 0;"></i>
+            <i data-lucide="external-link" style="width: 18px; opacity: 0.3; margin-top: 4px;"></i>
         `;
         item.onclick = () => {
             state.currentVersion = h.version;
