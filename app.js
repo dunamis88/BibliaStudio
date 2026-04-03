@@ -962,6 +962,25 @@ function setupEventListeners() {
         });
     }
 
+    // Notes & Highlights Browser
+    const btnBrowseNotes = document.getElementById('btn-browse-notes');
+    if (btnBrowseNotes) {
+        btnBrowseNotes.addEventListener('click', () => {
+            renderNotesBrowser();
+            const overlay = document.getElementById('notes-overlay');
+            if (overlay) overlay.style.display = 'flex';
+        });
+    }
+
+    const btnBrowseHighlights = document.getElementById('btn-browse-highlights');
+    if (btnBrowseHighlights) {
+        btnBrowseHighlights.addEventListener('click', () => {
+            renderHighlightsBrowser();
+            const overlay = document.getElementById('highlights-overlay');
+            if (overlay) overlay.style.display = 'flex';
+        });
+    }
+
     // Manual Save
     const btnSave = document.getElementById('btn-save-note');
     if (btnSave) {
