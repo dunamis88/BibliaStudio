@@ -222,9 +222,27 @@
                             <div class="std-divider"></div>
 
                             <!-- Grupo 4: Alineación y Listas -->
-                            <div class="toolbar-group">
-                                <button class="std-tool-btn" title="Alineación Izquierda" data-command="justifyLeft"><i data-lucide="align-left"></i></button>
-                                <button class="std-tool-btn" title="Alineación Central" data-command="justifyCenter"><i data-lucide="align-center"></i></button>
+                             <div class="toolbar-group">
+                                <div class="std-dropdown-anchor">
+                                    <button class="std-nav-btn" id="trigger-alignment" title="Alineación">
+                                        <i data-lucide="align-left" id="current-align-icon"></i>
+                                        <i data-lucide="chevron-down"></i>
+                                    </button>
+                                    <div class="nav-dropdown" id="dropdown-alignment" style="min-width: 140px;">
+                                        <div class="version-item" onclick="applyAlign('justifyLeft', 'align-left')">
+                                            <i data-lucide="align-left"></i> Izquierda
+                                        </div>
+                                        <div class="version-item" onclick="applyAlign('justifyCenter', 'align-center')">
+                                            <i data-lucide="align-center"></i> Centrado
+                                        </div>
+                                        <div class="version-item" onclick="applyAlign('justifyRight', 'align-right')">
+                                            <i data-lucide="align-right"></i> Derecha
+                                        </div>
+                                        <div class="version-item" onclick="applyAlign('justifyFull', 'align-justify')">
+                                            <i data-lucide="align-justify"></i> Justificado
+                                        </div>
+                                    </div>
+                                </div>
                                 <button class="std-tool-btn" title="Lista Viñetas" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
                             </div>
                             <div class="std-divider"></div>

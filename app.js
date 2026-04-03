@@ -769,6 +769,15 @@ function setupEventListeners() {
         if (!isShow) target.classList.add('show');
     };
 
+    const triggerAlign = document.getElementById('trigger-alignment');
+    if (triggerAlign) triggerAlign.onclick = (e) => {
+        e.stopPropagation();
+        const target = document.getElementById('dropdown-alignment');
+        const isShow = target.classList.contains('show');
+        closeAllDropdowns();
+        if (!isShow) target.classList.add('show');
+    };
+
     // Keyboard Shortcuts
     const editableAreas = ['editor', 'active-note-title', 'active-note-subtitle'];
     editableAreas.forEach(id => {
@@ -1782,4 +1791,15 @@ function createNewNote() {
             sel.addRange(range);
         }
     }, 150);
+}
+
+function applyAlign(command, iconName) {
+    document.execCommand(command, false, null);
+    const icon = document.getElementById('current-align-icon');
+    if (icon) {
+        icon.setAttribute('data-lucide', iconName);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+    closeAllDropdowns();
+    editor.focus();
 }
