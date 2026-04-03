@@ -48,17 +48,6 @@
                     <button id="btn-login" class="icon-btn" title="Iniciar Sesión con Google" onclick="loginWithGoogle()">
                         <i data-lucide="user"></i>
                     </button>
-                    <div class="toolbar-divider"></div>
-                <!-- Dropdown Tamaño Biblia -->
-                <div class="std-dropdown">
-                    <div class="std-dropdown-btn" id="btn-bible-size">
-                        <span id="bible-size-label">18</span>
-                        <i data-lucide="chevron-down"></i>
-                    </div>
-                    <div class="std-dropdown-list" id="list-bible-size">
-                        <!-- Generado por JS -->
-                    </div>
-                </div>
                     
                     <button class="icon-btn" id="btn-settings" title="Ajustes">
                         <i data-lucide="settings"></i>
@@ -206,11 +195,19 @@
                                         <span id="current-size-display">16</span>
                                         <i data-lucide="chevron-down"></i>
                                     </button>
-                                    <div class="nav-dropdown" id="dropdown-font-size">
+                                    <div class="nav-dropdown" id="dropdown-font-size" style="max-height: 250px; overflow-y: auto;">
+                                        <div class="version-item" onclick="applyFontSize('11px', '11')">11</div>
                                         <div class="version-item" onclick="applyFontSize('12px', '12')">12</div>
+                                        <div class="version-item" onclick="applyFontSize('14px', '14')">14</div>
                                         <div class="version-item" onclick="applyFontSize('16px', '16')">16</div>
+                                        <div class="version-item" onclick="applyFontSize('18px', '18')">18</div>
                                         <div class="version-item" onclick="applyFontSize('20px', '20')">20</div>
-                                        <div class="version-item" onclick="applyFontSize('28px', '28')">28</div>
+                                        <div class="version-item" onclick="applyFontSize('24px', '24')">24</div>
+                                        <div class="version-item" onclick="applyFontSize('30px', '30')">30</div>
+                                        <div class="version-item" onclick="applyFontSize('36px', '36')">36</div>
+                                        <div class="version-item" onclick="applyFontSize('48px', '48')">48</div>
+                                        <div class="version-item" onclick="applyFontSize('60px', '60')">60</div>
+                                        <div class="version-item" onclick="applyFontSize('72px', '72')">72</div>
                                     </div>
                                 </div>
                             </div>

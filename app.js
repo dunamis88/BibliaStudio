@@ -50,7 +50,6 @@ let state = {
     selectedHighlightColor: 'yellow',
     splitPos: 50, // Percentage
     currentBibleFontSize: 18,
-    currentEditorFontSize: 18,
     // History
     history: [], // Stack for back/forward [{v, b, c}]
     historyIndex: -1,
@@ -68,9 +67,7 @@ async function init() {
     loadState();
     setupResizer();
     setupEventListeners();
-    setupFontSizeDropdowns(); // Nuevo sistema estándar
     updateBibleFontSize();
-    updateEditorFontSize(); // Sincronizar editor
     
     // Initial render to show loading state
     renderBible();
@@ -500,43 +497,47 @@ function applyFontSizeSelected(size) {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
-    const activeContainer = selection.anchorNode.parentElement.closest('[contenteditable="true"]');
-    if (!activeContainer) return;
+    const editor = document.getElementById('editor');
+    if (!editor) return;
 
+    const range = selection.getRangeAt(0);
+
+    // Standard high-reliability method for pixels in contenteditable
     if (selection.isCollapsed) {
-        const range = selection.getRangeAt(0);
+        // Insertion mode: Create a span with the size and put the cursor inside
         const span = document.createElement('span');
         span.style.fontSize = size;
-        span.innerHTML = '&#8203;'; 
+        span.innerHTML = '&#8203;'; // Zero-width space
         range.insertNode(span);
         
-        const nextRange = document.createRange();
-        nextRange.setStart(span.firstChild, 1);
-        nextRange.collapse(true);
+        const newRange = document.createRange();
+        newRange.setStart(span.firstChild, 1);
+        newRange.collapse(true);
         selection.removeAllRanges();
-        selection.addRange(nextRange);
+        selection.addRange(newRange);
     } else {
-        // MUST BE FALSE for the font tag marker to work
-        document.execCommand('styleWithCSS', false, false);
-        document.execCommand('fontSize', false, '7');
-        
-        const hooks = document.querySelectorAll('font[size="7"]');
-        hooks.forEach(hook => {
-            if (activeContainer.contains(hook)) {
-                const span = document.createElement('span');
-                span.style.fontSize = size;
-                // Preserve internal structure but flatten font-size spans
-                span.innerHTML = hook.innerHTML;
-                span.querySelectorAll('span[style*="font-size"]').forEach(inner => {
-                    inner.style.fontSize = '';
-                });
-                
-                hook.parentNode.replaceChild(span, hook);
-            }
+        // Selection mode: Use execCommand as a baseline to wrap, then fix
+        document.execCommand('styleWithCSS', false, true);
+        document.execCommand('fontSize', false, '7'); // Marker size
+
+        // Replace all 'font' or 'span' markers with the solid pixel size
+        const markers = editor.querySelectorAll('font[size="7"], span[style*="font-size: xxx-large"]');
+        markers.forEach(marker => {
+            const span = document.createElement('span');
+            span.style.fontSize = size;
+            span.innerHTML = marker.innerHTML;
+            
+            // Auto-clean nested font-sizes to avoid "span soup"
+            span.querySelectorAll('span[style*="font-size"]').forEach(child => {
+                child.style.fontSize = 'inherit';
+            });
+            
+            marker.parentNode.replaceChild(span, marker);
         });
     }
-    activeContainer.focus();
+    
     saveState();
+    editor.focus();
 }
 
 function adjustSelectionFontSize(delta) {
@@ -1012,10 +1013,24 @@ function setupEventListeners() {
         });
     }
 
-    // Dropdowns Global Click (Cerrar al hacer clic fuera)
-    window.addEventListener('click', () => {
-        document.querySelectorAll('.std-dropdown-list').forEach(l => l.classList.remove('show'));
-    });
+    // Local Bible Zoom (Corrected for direct feedback)
+    const btnBZoomIn = document.getElementById('btn-bible-zoom-in');
+    if (btnBZoomIn) {
+        btnBZoomIn.onclick = () => {
+            state.currentBibleFontSize += 2;
+            updateBibleFontSize();
+        };
+    }
+
+    const btnBZoomOut = document.getElementById('btn-bible-zoom-out');
+    if (btnBZoomOut) {
+        btnBZoomOut.onclick = () => {
+            if (state.currentBibleFontSize > 10) {
+                state.currentBibleFontSize -= 2;
+                updateBibleFontSize();
+            }
+        };
+    }
 
     // Notes & Highlights Browser
     const btnBrowseNotes = document.getElementById('btn-browse-notes');
@@ -1077,55 +1092,6 @@ function updateBibleFontSize() {
     const label = document.getElementById('bible-size-label');
     if (label) label.textContent = state.currentBibleFontSize;
     saveState();
-}
-
-function updateEditorFontSize() {
-    const editor = document.getElementById('editor');
-    if (editor) {
-        editor.style.fontSize = `${state.currentEditorFontSize}px`;
-        // También aplicamos a las cabeceras de forma relativa o directa
-    }
-    const label = document.getElementById('note-size-label');
-    if (label) label.textContent = state.currentEditorFontSize;
-    saveState();
-}
-
-function setupFontSizeDropdowns() {
-    const SIZES = [12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 28, 32, 36, 40, 48];
-    
-    const setupPair = (btnId, listId, labelId, stateProp, updateFn) => {
-        const btn = document.getElementById(btnId);
-        const list = document.getElementById(listId);
-        const label = document.getElementById(labelId);
-        
-        if (!btn || !list) return;
-
-        btn.onclick = (e) => {
-            e.stopPropagation();
-            // Cerrar otros dropdowns
-            document.querySelectorAll('.std-dropdown-list').forEach(l => {
-                if (l !== list) l.classList.remove('show');
-            });
-            list.classList.toggle('show');
-        };
-
-        list.innerHTML = '';
-        SIZES.forEach(s => {
-            const item = document.createElement('div');
-            item.className = 'std-dropdown-item' + (state[stateProp] === s ? ' active' : '');
-            item.textContent = s;
-            item.onclick = () => {
-                state[stateProp] = s;
-                label.textContent = s;
-                updateFn();
-                list.classList.remove('show');
-            };
-            list.appendChild(item);
-        });
-    };
-
-    setupPair('btn-bible-size', 'list-bible-size', 'bible-size-label', 'currentBibleFontSize', updateBibleFontSize);
-    setupPair('btn-note-size', 'list-note-size', 'note-size-label', 'currentEditorFontSize', updateEditorFontSize);
 }
 
 function renderNotesBrowser(query = "") {

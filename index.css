@@ -608,70 +608,38 @@ body {
     height: 1px;
     background-color: var(--border-color);
 }
-.std-dropdown {
-    position: relative;
-    display: inline-flex;
-}
-
-.std-dropdown-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    height: 32px;
-    background: #fdfdfd;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary);
-    transition: var(--transition-fast);
-    min-width: 65px;
-    justify-content: space-between;
-}
-
-.std-dropdown-btn:hover {
-    border-color: var(--primary-light);
-    background: white;
-    box-shadow: var(--shadow-sm);
-}
-
-.std-dropdown-list {
+.nav-dropdown, .search-dropdown-menu, .highlight-popup {
     position: absolute;
     top: calc(100% + 5px);
     left: 0;
+    min-width: 220px;
     background: white;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    z-index: 10000;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05);
+    z-index: 9999; 
+    display: none !important;
+    animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 8px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.nav-dropdown.show, .search-dropdown-menu.show, .highlight-popup.show { 
+    display: flex !important; 
+    flex-direction: column;
+}
+
+.search-dropdown-menu {
+    width: 600px !important; 
+    max-width: 90vw;
+    padding: 0 !important;
+    overflow: hidden;
     display: none;
     flex-direction: column;
-    padding: 6px;
-    min-width: 70px;
-    animation: modalIn 0.2s ease;
-}
-
-.std-dropdown-list.show { display: flex; }
-
-.std-dropdown-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 13px;
-    transition: var(--transition-fast);
-    text-align: center;
-}
-
-.std-dropdown-item:hover {
-    background: var(--neutral);
-    color: var(--primary);
-}
-
-.std-dropdown-item.active {
-    background: var(--primary);
-    color: white;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: calc(100% + 12px) !important;
 }
 
 .search-results-list {
