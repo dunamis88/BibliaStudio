@@ -627,7 +627,28 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 function setupEventListeners() {
-    // 1. Firebase Auth (Handled by direct onclick in index    // --- HIGHLIGHTER LOGIC ---
+    // --- BIBLE NAV DROPDOWNS ---
+    const setupDropdown = (triggerId, dropdownId, renderFn) => {
+        const trigger = document.getElementById(triggerId);
+        const dropdown = document.getElementById(dropdownId);
+        if (trigger && dropdown) {
+            trigger.onclick = (e) => {
+                e.stopPropagation();
+                // Close others first
+                document.querySelectorAll('.nav-dropdown').forEach(d => {
+                    if (d.id !== dropdownId) d.classList.remove('show');
+                });
+                dropdown.classList.toggle('show');
+                if (renderFn && dropdown.classList.contains('show')) renderFn();
+            };
+        }
+    };
+
+    setupDropdown('trigger-version', 'dropdown-version', renderVersionDropdown);
+    setupDropdown('trigger-book', 'dropdown-book', renderBookDropdown);
+    setupDropdown('trigger-chapter', 'dropdown-chapter', renderChapterDropdown);
+
+    // --- HIGHLIGHTER LOGIC ---
     const btnHighlight = document.getElementById('btn-highlight-picker');
     const highlightPalette = document.getElementById('highlight-palette');
     
