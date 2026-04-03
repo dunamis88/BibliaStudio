@@ -1165,11 +1165,23 @@ body.resizing {
     justify-content: center;
 }
 
+/* Highlights Palette Animation - Fixed to avoid jump */
+@keyframes highlightIn {
+    from { 
+        opacity: 0; 
+        transform: translateX(-50%) translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(-50%) translateY(0); 
+    }
+}
+
 .highlight-popup {
     position: absolute;
-    top: calc(100% + 10px); /* 10px space below button */
+    top: calc(100% + 10px);
     left: 50%;
-    transform: translateX(-50%); /* Mathematical centering */
+    transform: translateX(-50%); /* Base position */
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -1179,7 +1191,7 @@ body.resizing {
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     z-index: 1000;
     width: 140px;
-    animation: modalIn 0.2s ease-out;
+    animation: highlightIn 0.2s ease-out forwards; /* Using the new fixed animation */
 }
 
 .palette-grid {
