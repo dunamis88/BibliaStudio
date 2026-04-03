@@ -50,6 +50,7 @@ let state = {
     selectedHighlightColor: 'yellow',
     splitPos: 50, // Percentage
     currentBibleFontSize: 18,
+    currentEditorFontSize: 18,
     // History
     history: [], // Stack for back/forward [{v, b, c}]
     historyIndex: -1,
@@ -67,7 +68,9 @@ async function init() {
     loadState();
     setupResizer();
     setupEventListeners();
+    setupFontSizeDropdowns(); // Nuevo sistema estándar
     updateBibleFontSize();
+    updateEditorFontSize(); // Sincronizar editor
     
     // Initial render to show loading state
     renderBible();
@@ -1009,24 +1012,10 @@ function setupEventListeners() {
         });
     }
 
-    // Local Bible Zoom (Corrected for direct feedback)
-    const btnBZoomIn = document.getElementById('btn-bible-zoom-in');
-    if (btnBZoomIn) {
-        btnBZoomIn.onclick = () => {
-            state.currentBibleFontSize += 2;
-            updateBibleFontSize();
-        };
-    }
-
-    const btnBZoomOut = document.getElementById('btn-bible-zoom-out');
-    if (btnBZoomOut) {
-        btnBZoomOut.onclick = () => {
-            if (state.currentBibleFontSize > 10) {
-                state.currentBibleFontSize -= 2;
-                updateBibleFontSize();
-            }
-        };
-    }
+    // Dropdowns Global Click (Cerrar al hacer clic fuera)
+    window.addEventListener('click', () => {
+        document.querySelectorAll('.std-dropdown-list').forEach(l => l.classList.remove('show'));
+    });
 
     // Notes & Highlights Browser
     const btnBrowseNotes = document.getElementById('btn-browse-notes');
@@ -1088,6 +1077,55 @@ function updateBibleFontSize() {
     const label = document.getElementById('bible-size-label');
     if (label) label.textContent = state.currentBibleFontSize;
     saveState();
+}
+
+function updateEditorFontSize() {
+    const editor = document.getElementById('editor');
+    if (editor) {
+        editor.style.fontSize = `${state.currentEditorFontSize}px`;
+        // También aplicamos a las cabeceras de forma relativa o directa
+    }
+    const label = document.getElementById('note-size-label');
+    if (label) label.textContent = state.currentEditorFontSize;
+    saveState();
+}
+
+function setupFontSizeDropdowns() {
+    const SIZES = [12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 28, 32, 36, 40, 48];
+    
+    const setupPair = (btnId, listId, labelId, stateProp, updateFn) => {
+        const btn = document.getElementById(btnId);
+        const list = document.getElementById(listId);
+        const label = document.getElementById(labelId);
+        
+        if (!btn || !list) return;
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            // Cerrar otros dropdowns
+            document.querySelectorAll('.std-dropdown-list').forEach(l => {
+                if (l !== list) l.classList.remove('show');
+            });
+            list.classList.toggle('show');
+        };
+
+        list.innerHTML = '';
+        SIZES.forEach(s => {
+            const item = document.createElement('div');
+            item.className = 'std-dropdown-item' + (state[stateProp] === s ? ' active' : '');
+            item.textContent = s;
+            item.onclick = () => {
+                state[stateProp] = s;
+                label.textContent = s;
+                updateFn();
+                list.classList.remove('show');
+            };
+            list.appendChild(item);
+        });
+    };
+
+    setupPair('btn-bible-size', 'list-bible-size', 'bible-size-label', 'currentBibleFontSize', updateBibleFontSize);
+    setupPair('btn-note-size', 'list-note-size', 'note-size-label', 'currentEditorFontSize', updateEditorFontSize);
 }
 
 function renderNotesBrowser(query = "") {
