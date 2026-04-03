@@ -238,7 +238,7 @@ function cleanText(text, version) {
     return clean.replace(/\s+/g, ' ').trim();
 }
 
-function renderBible() {
+function renderBible(resetScroll = true) {
     const container = document.getElementById('bible-verses-container');
     const bible = bibleLibrary[state.currentVersion];
 
@@ -275,9 +275,11 @@ function renderBible() {
         return;
     }
 
-    // Reset scroll to top of chapter
-    const scrollArea = document.querySelector('.bible-scroll-area');
-    if (scrollArea) scrollArea.scrollTop = 0;
+    // Reset scroll ONLY if requested (usually on navigation to new chapter)
+    if (resetScroll) {
+        const scrollArea = document.querySelector('.bible-scroll-area');
+        if (scrollArea) scrollArea.scrollTop = 0;
+    }
 
     container.innerHTML = verses.map(v => {
         const vNum = parseInt(v[vKey]);
@@ -319,7 +321,7 @@ function handleVerseClick(e, vNum) {
     }
     
     state.selectedVerses.sort((a, b) => a - b);
-    renderBible();
+    renderBible(false); // Do not jump to top when just selecting/deselecting a verse
     saveState();
 }
 
@@ -656,7 +658,7 @@ function setupEventListeners() {
                 
                 // Clear selection after applying color (Better UX)
                 state.selectedVerses = [];
-                renderBible();
+                renderBible(false); // Update colors without jumping to top
                 saveState();
             }
             
