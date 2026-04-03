@@ -615,10 +615,14 @@ body.resizing {
 /* Editor Toolbar */
 .notes-header {
     height: 64px;
-    padding: 0 24px;
+    padding: 0 50px;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
+    position: relative;
+    overflow: hidden !important;
+    background-color: #ffffff;
+    box-sizing: border-box;
 }
 
 .editor-toolbar {
