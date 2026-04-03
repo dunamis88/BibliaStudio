@@ -947,9 +947,9 @@ function setupEventListeners() {
 
             const vRange = verses.length > 1 ? `${verses[0]}-${verses[verses.length-1]}` : verses[0];
             const verseHTML = `
-                <div class="verse-quote-box" contenteditable="false">
-                    <div class="verse-quote-text">"${combinedText.trim()}"</div>
-                    <div class="verse-quote-ref">${bObj.n} ${state.currentChapter}:${vRange} (${state.currentVersion})</div>
+                <div class="premium-verse-card" contenteditable="false">
+                    <div class="verse-card-text">"${combinedText.trim()}"</div>
+                    <div class="verse-card-ref">${bObj.n} ${state.currentChapter}:${vRange} (${state.currentVersion})</div>
                 </div><p><br></p>`;
             
             document.execCommand('insertHTML', false, verseHTML);

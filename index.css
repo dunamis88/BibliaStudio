@@ -454,6 +454,58 @@ body {
     color: var(--secondary);
     opacity: 0.8;
 }
+
+/* 9. PREMIUM VERSE IMPORT COMPONENT */
+.premium-verse-card {
+    background-color: #f0f4f8; /* Soft Institutional Blue-Grey */
+    border-left: 4px solid var(--primary);
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-verse-card::after {
+    content: '\eb31'; /* Lucide Book-Open icon approximate */
+    font-family: serif;
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+    font-size: 80px;
+    opacity: 0.03;
+    color: var(--primary);
+    transform: rotate(-15deg);
+}
+
+.verse-card-text {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+
+.verse-card-ref {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.verse-card-ref::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background-color: var(--border-color);
+}
 .nav-dropdown, .search-dropdown-menu, .highlight-popup {
     position: absolute;
     top: calc(100% + 5px);
