@@ -1200,10 +1200,9 @@ body.resizing {
 .bible-header-top {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Items to the left */
+    justify-content: space-between; /* Bible tools to the left, Zoom/More to the right */
     width: 100%;
     padding: 0 16px;
-    gap: 0; /* Let dividers handle the space */
     height: 100%;
 }
 
@@ -1211,12 +1210,21 @@ body.resizing {
     display: flex;
     align-items: center;
     height: 100%;
+    flex: 1; /* Take available space but don't take over */
 }
 
 .inline-nav {
     display: flex;
     align-items: center;
     height: 100%;
+}
+
+.bible-local-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 16px;
+    white-space: nowrap;
 }
 
 /* Redefine dropdown container to anchor dropdowns */
@@ -1236,18 +1244,18 @@ body.resizing {
     letter-spacing: 1px;
 }
 
-/* Premium Nav Trigger - The "Studio" Button Look */
+/* Premium Nav Trigger - The "Studio" Button Look (Compact) */
 .nav-trigger {
-    background: white; /* Clean white */
+    background: white;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    padding: 6px 14px;
-    font-size: 15px;
+    padding: 6px 12px;
+    font-size: 14px; /* Slightly smaller for more room */
     font-weight: 700;
     color: var(--primary);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
     transition: var(--transition-fast);
     outline: none;
@@ -1263,8 +1271,8 @@ body.resizing {
 }
 
 .nav-trigger i {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     opacity: 0.4;
     color: var(--secondary);
 }
@@ -1273,8 +1281,23 @@ body.resizing {
     width: 1px;
     height: 24px;
     background-color: var(--border-color);
-    margin: 0 16px;
+    margin: 0 12px;
     opacity: 0.5;
+}
+
+/* Highlighter nav item special adjustment */
+#highlighter-nav-item {
+    padding-left: 4px;
+}
+
+/* Color dot button must be elegant */
+.highlight-dot-btn {
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Clear Arrows */
@@ -1282,11 +1305,11 @@ body.resizing {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     font-family: 'Outfit', sans-serif;
     font-weight: 300;
-    font-size: 24px;
+    font-size: 20px;
     color: var(--secondary);
     cursor: pointer;
     opacity: 0.4;
@@ -1298,7 +1321,7 @@ body.resizing {
 .chapter-nav-arrow:hover {
     opacity: 1;
     color: var(--primary);
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
 .nav-dropdown {
@@ -1310,7 +1333,7 @@ body.resizing {
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.12);
     z-index: 1000;
-    display: none; /* JS will toggle this */
+    display: none;
     padding: 12px;
     animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
