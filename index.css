@@ -244,9 +244,34 @@ body {
     z-index: 10;
 }
 
+.bible-header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 500; /* Lead stacking context */
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    height: 68px;
+    flex-shrink: 0;
+    /* Remove any overflow that traps dropdowns */
+    overflow: visible !important;
+}
+
+.bible-toolbar-std {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    /* Do NOT use overflow-x: auto here, it creates a stacking context */
+    overflow: visible !important; 
+    white-space: nowrap;
+    height: 100%;
+}
 
 /* 5. TOOLBARS & CAROUSELS */
-.editor-toolbar, .bible-toolbar-std {
+.editor-toolbar {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -403,17 +428,16 @@ body {
 /* 8. DROPDOWNS & POPUPS (THE POPUP SYSTEM) */
 .nav-dropdown, .search-dropdown-menu, .highlight-popup {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 5px);
     left: 0;
-    min-width: 180px;
+    min-width: 220px;
     background: white;
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    box-shadow: var(--shadow-lg);
-    z-index: 2000 !important; /* Absolute priority */
-    display: none !important; /* Hide by default */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05);
+    z-index: 9999; /* Absolute foreground */
+    display: none !important;
     animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    box-sizing: border-box;
 }
 
 .nav-dropdown.show, .search-dropdown-menu.show, .highlight-popup.show { 
