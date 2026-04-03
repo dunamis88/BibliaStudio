@@ -142,8 +142,11 @@ body {
     border-radius: 12px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    width: 280px;
+    gap: 8px;
+    flex: 1; /* Elastic search bar */
+    max-width: 380px;
+    min-width: 150px;
+    margin: 0 20px;
     transition: var(--transition-slow);
 }
 
@@ -262,9 +265,10 @@ body {
 .split-view {
     flex: 1;
     display: flex;
-    margin: 0 15px 15px 15px; /* Reduced from 30 */
+    margin: 0 10px 10px 10px;
     gap: 0;
-    height: calc(100% - var(--header-height) - 15px);
+    max-width: calc(100vw - 20px); /* Strict limit */
+    height: calc(100% - var(--header-height) - 10px);
     background-color: white;
     border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px rgba(0,0,0,0.06);
@@ -1755,12 +1759,13 @@ blockquote {
 /* RESPONSIVE ADAPTATION */
 @media (max-width: 1400px) {
     .app-header { padding: 0 10px; }
-    .split-view { margin: 0 10px 10px 10px; height: calc(100% - var(--header-height) - 10px); }
+    .main-logo-text { font-size: 20px; }
+    .search-bar { margin: 0 10px; }
+    .split-view { margin: 0 8px 8px 8px; max-width: calc(100vw - 16px); }
     .bible-header-sticky, .notes-header { padding: 0 25px; }
-    .std-tool-btn { width: 30px; height: 30px; }
-    .std-nav-btn { height: 32px; padding: 0 10px; font-size: 12px; }
-    .search-bar { width: 220px; }
-    .search-bar:focus-within { width: 280px; }
+    .std-tool-btn { width: 28px; height: 28px; border-radius: 5px; }
+    .std-nav-btn { height: 30px; padding: 0 8px; font-size: 11px; }
+    .toolbar-group { gap: 4px; }
 }
 
 @media print {
