@@ -456,38 +456,41 @@ function updateEditorToolbarState() {
     // Only update if we are inside a contenteditable area
     if (!node.closest('[contenteditable="true"]')) return;
     
-    // Update Font Size Dropdown - handle sub-pixels by rounding
+    // Update Font Size Label (Sync with current selection)
     const fontSize = computedStyle.fontSize;
-    const selectSize = document.getElementById('select-font-size');
-    if (selectSize) {
-        const numericSize = Math.round(parseFloat(fontSize));
-        const sizeVal = numericSize + 'px';
-        const options = Array.from(selectSize.options);
-        const hasOption = options.some(opt => opt.value === sizeVal);
-        if (hasOption) {
-            selectSize.value = sizeVal;
-        } else {
-            // Fallback: If not an exact match, find the closest one
-            let closest = options[0];
-            let minDiff = Math.abs(parseInt(closest.value) - numericSize);
-            options.forEach(opt => {
-                let diff = Math.abs(parseInt(opt.value) - numericSize);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    closest = opt;
-                }
-            });
-            if (minDiff < 5) selectSize.value = closest.value;
-        }
+    const sizeDisplay = document.getElementById('current-size-display');
+    if (sizeDisplay) {
+        sizeDisplay.textContent = Math.round(parseFloat(fontSize));
     }
 
-    // Update Font Family Dropdown
+    // Update Font Family Label (Sync with current selection)
     const fontFamily = computedStyle.fontFamily.split(',')[0].replace(/['"]/g, '');
-    const selectFont = document.getElementById('select-font-family');
-    if (selectFont) {
-        const hasOption = Array.from(selectFont.options).some(opt => opt.value === fontFamily);
-        if (hasOption) selectFont.value = fontFamily;
+    const fontDisplay = document.getElementById('current-font-display');
+    if (fontDisplay) {
+        const fontMap = {
+            'Inter': 'Sans',
+            'Libre Baskerville': 'Serif',
+            'Outfit': 'Modern',
+            'JetBrains Mono': 'Mono'
+        };
+        fontDisplay.textContent = fontMap[fontFamily] || fontFamily;
     }
+}
+
+function applyFont(fontName, displayName) {
+    document.execCommand('fontName', false, fontName);
+    const display = document.getElementById('current-font-display');
+    if (display) display.textContent = displayName;
+    document.getElementById('dropdown-font-family').classList.remove('show');
+    editor.focus();
+}
+
+function applyFontSize(sizeValue, labelValue) {
+    applyFontSizeSelected(sizeValue);
+    const display = document.getElementById('current-size-display');
+    if (display) display.textContent = labelValue || parseInt(sizeValue);
+    document.getElementById('dropdown-font-size').classList.remove('show');
+    editor.focus();
 }
 
 function applyFontSizeSelected(size) {
@@ -647,8 +650,6 @@ function setupEventListeners() {
     setupDropdown('trigger-version', 'dropdown-version', renderVersionDropdown);
     setupDropdown('trigger-book', 'dropdown-book', renderBookDropdown);
     setupDropdown('trigger-chapter', 'dropdown-chapter', renderChapterDropdown);
-    setupDropdown('trigger-font-family', 'dropdown-font-family');
-    setupDropdown('trigger-font-size', 'dropdown-font-size');
 
     // --- HIGHLIGHTER LOGIC ---
     const btnHighlight = document.getElementById('btn-highlight-picker');
@@ -742,7 +743,23 @@ function setupEventListeners() {
         });
     }
 
+    // Selection change toolbar update
     document.addEventListener('selectionchange', updateEditorToolbarState);
+
+    // Editor Dropdowns
+    const triggerFont = document.getElementById('trigger-font-family');
+    if (triggerFont) triggerFont.onclick = (e) => {
+        e.stopPropagation();
+        closeAllDropdowns();
+        document.getElementById('dropdown-font-family').classList.add('show');
+    };
+
+    const triggerSize = document.getElementById('trigger-font-size');
+    if (triggerSize) triggerSize.onclick = (e) => {
+        e.stopPropagation();
+        closeAllDropdowns();
+        document.getElementById('dropdown-font-size').classList.add('show');
+    };
 
     // Keyboard Shortcuts
     const editableAreas = ['editor', 'active-note-title', 'active-note-subtitle'];
@@ -1727,18 +1744,4 @@ function jumpToVerse(bookId, chapterId, verseId) {
             setTimeout(() => target.classList.remove('flash-highlight'), 2000);
         }
     }, 500);
-}
-
-function applyEditorFont(font, labelText) {
-    document.execCommand('fontName', false, font);
-    const label = document.getElementById('label-font-family');
-    if (label) label.textContent = labelText;
-    document.getElementById('dropdown-font-family').classList.remove('show');
-}
-
-function applyEditorSize(sizeVal, labelText) {
-    document.execCommand('fontSize', false, sizeVal);
-    const label = document.getElementById('label-font-size');
-    if (label) label.textContent = labelText;
-    document.getElementById('dropdown-font-size').classList.remove('show');
 }
