@@ -1719,19 +1719,23 @@ function performBibleSearch(query) {
 }
 
 function jumpToVerse(bookId, chapterId, verseId) {
-    state.currentBook = bookId;
-    state.currentChapter = chapterId;
-    state.selectedVerses = [verseId];
+    // Navigate first (this clears selection)
     navigateTo(state.currentVersion, bookId, chapterId);
+    
+    // Select AFTER navigation so it's not cleared
+    state.selectedVerses = [verseId];
+    
+    // Render and notify
     updateUIState();
     renderBible();
     
-    // Smooth scroll to target verse
+    // Scroll specifically to this verse
     setTimeout(() => {
         const target = document.querySelector(`.verse[data-verse="${verseId}"]`);
         if (target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.classList.add('active');
+            target.classList.add('flash-highlight');
+            setTimeout(() => target.classList.remove('flash-highlight'), 2000);
         }
-    }, 400);
+    }, 500);
 }
