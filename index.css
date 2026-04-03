@@ -511,12 +511,18 @@ body {
 
 .highlight-popup {
     left: 50%;
-    margin-left: -135px;
-    min-width: 270px !important;
+    margin-left: -88px; /* Precise half of 176px */
+    width: 176px !important;
+    min-width: unset !important;
     padding: 15px !important;
 }
 
-.palette-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.palette-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 12px;
+    justify-items: center; 
+}
 .palette-dot { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
 .palette-dot:hover { transform: scale(1.15); }
 .palette-dot.active { border-color: var(--primary); }
