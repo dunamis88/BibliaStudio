@@ -62,9 +62,9 @@
                 <section class="bible-panel" id="bible-panel">
                     <!-- Fixed Header Bar -->
                     <div class="bible-header-sticky">
-                        <div class="bible-content-wrapper">
-                            <div class="bible-header-top">
-                                <!-- Controles Auxiliares Izquierda -->
+                        <div class="bible-header-top">
+                            <div class="bible-nav-main">
+                                <!-- Controles Historial -->
                                 <div class="history-controls bible-adaptive-el">
                                     <button class="tool-btn" id="btn-nav-back" title="Atrás"><i data-lucide="arrow-left"></i></button>
                                     <button class="tool-btn" id="btn-nav-forward" title="Adelante"><i data-lucide="arrow-right"></i></button>
@@ -81,28 +81,35 @@
                                 <!-- Selección Bíblica -->
                                 <div class="inline-nav">
                                     <div class="dropdown-container">
-                                        <button class="nav-trigger" id="trigger-version">
+                                        <button class="nav-trigger" id="trigger-version" title="Seleccionar Versión">
                                             <span id="current-version">RV60</span>
                                             <i data-lucide="chevron-down"></i>
                                         </button>
                                         <div class="nav-dropdown" id="dropdown-version"></div>
                                     </div>
+
+                                    <div class="tool-divider"></div>
+
                                     <div class="dropdown-container">
-                                        <button class="nav-trigger" id="trigger-book">
+                                        <button class="nav-trigger" id="trigger-book" title="Seleccionar Libro">
                                             <span id="current-book">Génesis</span>
                                             <i data-lucide="chevron-down"></i>
                                         </button>
                                         <div class="nav-dropdown books-dropdown-menu" id="dropdown-book"></div>
                                     </div>
-                                    <div class="dropdown-container" style="display: flex; align-items: center;">
-                                        <span class="chapter-nav-arrow" id="btn-chapter-prev" title="Cápitulo anterior">&lt;</span>
-                                        <button class="nav-trigger" id="trigger-chapter">
+
+                                    <div class="tool-divider"></div>
+
+                                    <div class="dropdown-container bible-chapter-nav-wrapper">
+                                        <span class="chapter-nav-arrow" id="btn-chapter-prev" title="Capítulo anterior">&lt;</span>
+                                        <button class="nav-trigger" id="trigger-chapter" title="Seleccionar Capítulo">
                                             <span id="current-chapter">1</span>
                                             <i data-lucide="chevron-down"></i>
                                         </button>
                                         <span class="chapter-nav-arrow" id="btn-chapter-next" title="Próximo capítulo">&gt;</span>
                                         <div class="nav-dropdown chapters-dropdown-menu" id="dropdown-chapter"></div>
                                     </div>
+
                                     <!-- Marcador junto a los Capítulos -->
                                     <div id="highlighter-nav-item" class="dropdown-container" style="margin-left: 8px;">
                                         <button id="btn-highlight-picker" class="icon-btn highlight-dot-btn" title="Aplicar Marcado">
