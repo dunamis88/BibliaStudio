@@ -1586,7 +1586,6 @@ function setupCarousel(containerId, leftId, rightId) {
     scrollContainer.onmousedown = (e) => {
         isDown = true;
         moved = false;
-        scrollContainer.classList.add('grabbing');
         startX = e.pageX - currentX;
         scrollContainer.style.transition = 'none';
     };
@@ -1604,7 +1603,6 @@ function setupCarousel(containerId, leftId, rightId) {
     window.addEventListener('mouseup', (e) => {
         if (!isDown) return;
         isDown = false;
-        scrollContainer.classList.remove('grabbing');
         scrollContainer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         
         // Prevent accidental clicks if moved significantly
