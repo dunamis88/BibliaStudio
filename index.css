@@ -83,7 +83,7 @@ body {
 }
 
 /* 3. SYNCED HEADERS (LEVEL 68 BASE) */
-.app-header, .bible-header-sticky, .notes-header {
+.bible-header-sticky, .notes-header {
     height: var(--header-height) !important;
     padding: 0 30px !important;
     display: flex;
@@ -94,13 +94,20 @@ body {
     border-bottom: 1px solid var(--border-color);
     position: relative;
     box-sizing: border-box;
-    overflow: visible !important; /* CRITICAL: Allows popups and hovers to breathe */
+    overflow: visible !important;
 }
 
 .app-header {
-    background-color: transparent;
+    height: 72px !important;
+    padding: 0 40px !important;
+    background-color: var(--neutral);
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    border-bottom: none;
+    position: relative;
+    z-index: 2000 !important; /* Supreme hierarchy for dropdowns */
+    overflow: visible !important;
 }
 /* 4. STANDARD UI BUTTONS (THE 32px SYSTEM) */
 .std-tool-btn, .std-nav-btn, .icon-btn {
@@ -122,15 +129,6 @@ body {
     flex-shrink: 0;
 }
 
-.app-header {
-    height: 72px !important;
-    padding: 0 40px !important;
-    background-color: var(--neutral);
-    border-bottom: 2px solid var(--neutral-dark);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
 
 .app-header-left {
     display: flex;
