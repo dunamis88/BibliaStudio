@@ -54,7 +54,8 @@ body {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
-    overflow: hidden; /* Only on the outer container */
+    overflow: hidden; 
+    min-height: 0; /* Force panels to fold within split-view */
 }
 
 .bible-panel, .notes-panel {
@@ -266,12 +267,21 @@ body {
 }
 
 /* 6. BIBLE READER STYLING */
+.bible-panel, .notes-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0; /* Prevents panel overflow */
+    overflow: hidden;
+}
+
 .bible-scroll-area {
     flex: 1;
-    overflow-y: auto !important; /* Force scroll visibility */
+    overflow-y: auto !important;
     padding: 30px 40px;
     scroll-behavior: smooth;
-    min-height: 0; /* CRITICAL for flex containers to scroll */
+    min-height: 0;
 }
 
 /* Elegant Scrollbar */
