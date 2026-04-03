@@ -655,7 +655,9 @@ function setupEventListeners() {
     if (btnHighlight) {
         btnHighlight.onclick = (e) => {
             e.stopPropagation();
-            highlightPalette.style.display = highlightPalette.style.display === 'none' ? 'block' : 'none';
+            // Close other dropdowns first
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
+            highlightPalette.classList.toggle('show');
         };
     }
 
@@ -700,13 +702,13 @@ function setupEventListeners() {
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }
             
-            highlightPalette.style.display = 'none';
+            highlightPalette.classList.remove('show');
         };
     });
 
     // Close palette when clicking outside
     window.addEventListener('click', () => {
-        if (highlightPalette) highlightPalette.style.display = 'none';
+        if (highlightPalette) highlightPalette.classList.remove('show');
     });
     document.execCommand('styleWithCSS', false, false);
 
