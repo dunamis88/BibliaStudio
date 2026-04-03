@@ -1213,16 +1213,19 @@ body.resizing {
     font-weight: 700;
     transition: all 0.2s ease;
     box-sizing: border-box;
-    padding: 0 12px;
+    padding: 0 14px;
     font-family: inherit;
     outline: none;
     vertical-align: middle;
+    white-space: nowrap !important; /* Forces one line always */
+    flex-shrink: 0; /* Prevents button from being crushed */
 }
 
 .std-nav-btn {
     font-size: 14px;
     min-width: 60px;
-    gap: 10px;
+    width: auto; /* Adapts to content length */
+    gap: 8px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 
