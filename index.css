@@ -1185,6 +1185,19 @@ body.resizing {
     gap: 12px;
     box-sizing: border-box;
     font-family: 'Outfit', sans-serif;
+    
+    /* Standard Responsive Toolbar Solution */
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll on mobile */
+    scrollbar-width: none; /* Firefox: Hide scrollbar */
+    -ms-overflow-style: none; /* IE/Edge: Hide scrollbar */
+}
+
+/* Chrome/Safari: Hide scrollbar */
+.bible-toolbar-std::-webkit-scrollbar {
+    display: none;
 }
 
 .toolbar-group {
