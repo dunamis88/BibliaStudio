@@ -1227,16 +1227,6 @@ function navigateTo(v, b, c, isHistoryNav = false) {
         }
     }
 
-    state.currentVersion = v;
-    state.currentBook = b;
-    state.currentChapter = c;
-    state.selectedVerses = [];
-    
-    saveState();
-    updateUIState();
-    renderBible();
-}
-
 function goBack() {
     if (state.historyIndex > 0) {
         state.historyIndex--;
@@ -1662,56 +1652,356 @@ function performBibleSearch(query) {
 
     // Logic for keys (patterned after renderBible)
     const first = bible.data[0] || {};
+    initNotesCarousel();
+    if (window.lucide) lucide.createIcons();
+}
+
+function initToolbarObservers() {
+    initBibleCarousel();
+    initNotesCarousel();
+}
+
+// Global debounce helper
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// UNIVERSAL CAROUSEL SYSTEM
+function initBibleCarousel() {
+    setupCarousel('bible-toolbar-scrollable', 'btn-bible-scroll-left', 'btn-bible-scroll-right');
+}
+
+function initNotesCarousel() {
+    setupCarousel('notes-toolbar-scrollable', 'btn-notes-scroll-left', 'btn-notes-scroll-right');
+}
+
+function setupCarousel(containerId, leftId, rightId) {
+    const scrollContainer = document.getElementById(containerId);
+    const btnLeft = document.getElementById(leftId);
+    const btnRight = document.getElementById(rightId);
+    
+    if (!scrollContainer || !btnLeft || !btnRight) return;
+
+    const checkOverflow = () => {
+        const hasOverflow = scrollContainer.scrollWidth > (scrollContainer.clientWidth + 5);
+        if (hasOverflow) {
+            btnLeft.style.display = scrollContainer.scrollLeft > 10 ? 'flex' : 'none';
+            btnRight.style.display = (scrollContainer.scrollLeft + scrollContainer.clientWidth) < (scrollContainer.scrollWidth - 10) ? 'flex' : 'none';
+        } else {
+            btnLeft.style.display = 'none';
+            btnRight.style.display = 'none';
+        }
+    };
+
+    btnLeft.onclick = (e) => {
+        e.stopPropagation();
+        scrollContainer.scrollBy({ left: -220, behavior: 'smooth' });
+    };
+
+    btnRight.onclick = (e) => {
+        e.stopPropagation();
+        scrollContainer.scrollBy({ left: 220, behavior: 'smooth' });
+    };
+
+    scrollContainer.onscroll = checkOverflow;
+    checkOverflow();
+    
+    // Safety check for ResizeObserver to cover layout shifts
+    const obs = new ResizeObserver(checkOverflow);
+    obs.observe(scrollContainer);
+}
+
+window.addEventListener('load', updateToolbarOverflow);
+window.addEventListener('resize', updateToolbarOverflow);
+
+
+function renderHighlightsBrowser(sortBy = 'book') {
+    const list = document.getElementById('highlights-list');
+    list.innerHTML = '';
+    
+    // Convert current highlights to array
+    const hArray = [];
+    for (const key in state.highlights) {
+        const parts = key.split('_'); // version_book_chapter_verse
+        const hData = state.highlights[key];
+        const color = typeof hData === 'object' ? hData.c : hData;
+        const timestamp = typeof hData === 'object' ? hData.t : 0;
+        
+        hArray.push({
+            key,
+            version: parts[0],
+            bookId: parseInt(parts[1]),
+            chapter: parseInt(parts[2]),
+            verse: parseInt(parts[3]),
+            color: color,
+            time: timestamp
+        });
+    }
+
+    if (hArray.length === 0) {
+        list.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--secondary); opacity: 0.6;">Tu colección de marcadores está vacía.</div>';
+        return;
+    }
+
+    // Sort
+    if (sortBy === 'book') {
+        hArray.sort((a,b) => a.bookId - b.bookId || a.chapter - b.chapter || a.verse - b.verse);
+    } else {
+        hArray.sort((a,b) => (b.time || 0) - (a.time || 0));
+    }
+
+    hArray.forEach(h => {
+        const book = BOOKS.find(b => b.id === h.bookId);
+        
+        // Fetch the actual verse text for the list
+        let verseText = "Cargando texto...";
+        const bible = bibleLibrary[h.version];
+
+        // Format Date elegantly
+        let dateStr = "Marcado recientemente";
+        if (h.time && h.time > 0) {
+            dateStr = new Date(h.time).toLocaleDateString('es-ES', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+        }
+        if (bible) {
+            const first = bible.data[0] || {};
+            const keys = Object.keys(first);
+            const isSql = bible.type === 'sqlite';
+            const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('id1')) || keys[0]);
+            const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('capitulo') || k.toLowerCase().includes('id2')) || keys[1]);
+            const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
+            const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text') || k.toLowerCase().includes('vtext')) || keys[3]);
+
+            const vData = bible.data.find(v => 
+                parseInt(v[bKey]) === h.bookId && 
+                parseInt(v[cKey]) === h.chapter && 
+                parseInt(v[vKey]) === h.verse
+            );
+            if (vData) verseText = cleanText(vData[tKey], h.version);
+        }
+
+        const item = document.createElement('div');
+        item.className = `highlight-list-item h-${h.color}`;
+        item.innerHTML = `
+            <div class="h-item-details">
+                <div class="h-item-header">
+                    <span class="h-item-ref">${book ? book.n : 'Libro'} ${h.chapter}:${h.verse}</span>
+                    <span class="h-item-meta">${h.version} • ${dateStr}</span>
+                </div>
+                <div class="h-item-text">"${verseText}"</div>
+            </div>
+            <i data-lucide="external-link" style="width: 16px; opacity: 0.3; flex-shrink: 0;"></i>
+        `;
+        item.onclick = () => {
+            state.currentVersion = h.version;
+            state.currentBook = h.bookId;
+            state.currentChapter = h.chapter;
+            state.selectedVerses = [h.verse];
+            saveState();
+            updateUIState();
+            renderBible();
+            document.getElementById('highlights-overlay').style.display = 'none';
+        };
+        list.appendChild(item);
+    });
+    lucide.createIcons();
+}
+
+// Additional Event Listeners for Highlights
+document.getElementById('btn-browse-highlights').addEventListener('click', () => {
+    document.getElementById('highlights-overlay').style.display = 'flex';
+    renderHighlightsBrowser('book');
+});
+
+document.getElementById('sort-h-book').onclick = () => {
+    document.querySelectorAll('.sort-mini-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sort-h-book').classList.add('active');
+    renderHighlightsBrowser('book');
+};
+
+document.getElementById('sort-h-date').onclick = () => {
+    document.querySelectorAll('.sort-mini-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sort-h-date').classList.add('active');
+    renderHighlightsBrowser('date');
+};
+
+function navigateTo(version, bookId, chapterId, isHistoryAction = false) {
+    if (!isHistoryAction) {
+        if (state.historyIndex === -1 || 
+            state.history[state.historyIndex].v !== version || 
+            state.history[state.historyIndex].b !== bookId || 
+            state.history[state.historyIndex].c !== chapterId) {
+            
+            state.history = state.history.slice(0, state.historyIndex + 1);
+            state.history.push({ v: version, b: bookId, c: chapterId });
+            state.historyIndex = state.history.length - 1;
+            
+            const exists = state.fullHistory.find(h => h.v === version && h.b === bookId && h.c === chapterId);
+            if (!exists) {
+                state.fullHistory.unshift({ v: version, b: bookId, c: chapterId, timestamp: Date.now() });
+                if (state.fullHistory.length > 20) state.fullHistory.pop();
+            }
+        }
+    }
+
+    state.currentVersion = version;
+    state.currentBook = bookId;
+    state.currentChapter = chapterId;
+    state.selectedVerses = [];
+    
+    saveState();
+    updateUIState();
+    renderBible();
+}
+
+function renderVersionDropdown() {
+    const list = document.getElementById('dropdown-version');
+    if (!list) return;
+    list.innerHTML = '<div class="dropdown-header">Versiones</div>';
+    
+    const versions = Object.keys(bibleLibrary);
+    if (versions.length === 0) {
+        list.innerHTML += '<div class="dropdown-item disabled">No hay versiones cargadas</div>';
+        return;
+    }
+
+    versions.forEach(v => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item' + (state.currentVersion === v ? ' active' : '');
+        item.textContent = v;
+        item.onclick = () => {
+            navigateTo(v, state.currentBook, state.currentChapter);
+            list.classList.remove('show');
+        };
+        list.appendChild(item);
+    });
+}
+
+function renderBookDropdown() {
+    const list = document.getElementById('dropdown-book');
+    if (!list) return;
+    list.innerHTML = `
+        <div class="dropdown-header">Libros</div>
+        <div class="book-tabs">
+            <button class="book-tab active" id="tab-at">Antiguo</button>
+            <button class="book-tab" id="tab-nt">Nuevo</button>
+        </div>
+        <div class="books-grid-container" id="books-grid"></div>
+    `;
+    
+    const grid = list.querySelector('#books-grid');
+    const tabAt = list.querySelector('#tab-at');
+    const tabNt = list.querySelector('#tab-nt');
+    
+    const renderGrid = (ntMode) => {
+        grid.innerHTML = '';
+        const filtered = BOOKS.filter(b => b.nt === ntMode);
+        filtered.forEach(b => {
+            const item = document.createElement('div');
+            item.className = 'book-grid-item' + (state.currentBook === b.id ? ' active' : '');
+            item.textContent = b.n;
+            item.onclick = () => {
+                navigateTo(state.currentVersion, b.id, 1);
+                list.classList.remove('show');
+            };
+            grid.appendChild(item);
+        });
+    };
+
+    tabAt.onclick = (e) => {
+        e.stopPropagation();
+        tabAt.classList.add('active');
+        tabNt.classList.remove('active');
+        renderGrid(false);
+    };
+    tabNt.onclick = (e) => {
+        e.stopPropagation();
+        tabNt.classList.add('active');
+        tabAt.classList.remove('active');
+        renderGrid(true);
+    };
+
+    const currentBook = BOOKS.find(b => b.id === state.currentBook);
+    const isNT = currentBook ? currentBook.nt : false;
+    if (isNT) {
+        tabNt.classList.add('active');
+        tabAt.classList.remove('active');
+    }
+    renderGrid(isNT);
+}
+
+function renderChapterDropdown() {
+    const list = document.getElementById('dropdown-chapter');
+    if (!list) return;
+    list.innerHTML = '<div class="dropdown-header">Capítulos</div><div class="chapters-grid"></div>';
+    
+    const grid = list.querySelector('.chapters-grid');
+    const book = BOOKS.find(b => b.id === state.currentBook);
+    if (!book) return;
+
+    for (let i = 1; i <= book.c; i++) {
+        const item = document.createElement('div');
+        item.className = 'chapter-grid-item' + (state.currentChapter === i ? ' active' : '');
+        item.textContent = i;
+        item.onclick = () => {
+            navigateTo(state.currentVersion, state.currentBook, i);
+            list.classList.remove('show');
+        };
+        grid.appendChild(item);
+    }
+}
+
+function performBibleSearch(query) {
+    const bible = bibleLibrary[state.currentVersion];
+    if (!bible) return;
+
+    const dropdown = document.getElementById('bible-search-dropdown');
+    if (!dropdown) return;
+
+    const first = bible.data[0] || {};
     const keys = Object.keys(first);
     const isSql = bible.type === 'sqlite';
-    const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('libro') || k.toLowerCase().includes('id1')) || keys[0]);
-    const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('capitulo') || k.toLowerCase().includes('id2')) || keys[1]);
+    const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('id1')) || keys[0]);
+    const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('id2')) || keys[1]);
     const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
-    const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text') || k.toLowerCase().includes('vtext')) || keys[3]);
+    const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('text')) || keys[3]);
 
     const normalizedQuery = normalizeText(query);
-    const results = bible.data.filter(v => {
-        const text = String(v[tKey] || "");
-        const normalizedVerse = normalizeText(text);
-        return normalizedVerse.includes(normalizedQuery);
-    }).slice(0, 50); // Smaller limit for dropdown performance
+    const results = bible.data.filter(v => normalizeText(String(v[tKey] || "")).includes(normalizedQuery)).slice(0, 50);
 
     if (results.length === 0) {
         dropdown.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--secondary); font-size: 13px;">No hay resultados</div>';
     } else {
-        const header = `<div class="search-dropdown-header">${results.length} Versículos encontrados</div>`;
-        const items = results.map(v => {
-            const bId = parseInt(v[bKey]);
-            const cId = parseInt(v[cKey]);
-            const vId = parseInt(v[vKey]);
-            const bookName = BOOKS.find(b => b.id === bId)?.n || "Libro";
-            const cleanTextVal = cleanText(v[tKey], state.currentVersion);
-            
-            return `
-                <div class="search-item" onclick="jumpToVerse(${bId}, ${cId}, ${vId}); document.getElementById('bible-search-dropdown').classList.remove('show');">
-                    <div class="search-item-ref">${bookName} ${cId}:${vId}</div>
-                    <div class="search-item-text">${cleanTextVal}</div>
-                </div>
-            `;
-        }).join('');
-        dropdown.innerHTML = header + items;
+        dropdown.innerHTML = `<div class="search-dropdown-header">${results.length} Versículos encontrados</div>` + 
+            results.map(v => {
+                const bId = parseInt(v[bKey]), cId = parseInt(v[cKey]), vId = parseInt(v[vKey]);
+                const bookName = BOOKS.find(b => b.id === bId)?.n || "Libro";
+                return `
+                    <div class="search-item" onclick="jumpToVerse(${bId}, ${cId}, ${vId}); document.getElementById('bible-search-dropdown').classList.remove('show');">
+                        <div class="search-item-ref">${bookName} ${cId}:${vId}</div>
+                        <div class="search-item-text">${cleanText(v[tKey], state.currentVersion)}</div>
+                    </div>`;
+            }).join('');
     }
-
     dropdown.classList.add('show');
 }
 
 function jumpToVerse(bookId, chapterId, verseId) {
-    // Navigate first (this clears selection)
     navigateTo(state.currentVersion, bookId, chapterId);
-    
-    // Select AFTER navigation so it's not cleared
     state.selectedVerses = [verseId];
-    
-    // Render and notify
     updateUIState();
     renderBible();
-    
-    // Scroll specifically to this verse
     setTimeout(() => {
         const target = document.querySelector(`.verse[data-verse="${verseId}"]`);
         if (target) {
@@ -1720,6 +2010,22 @@ function jumpToVerse(bookId, chapterId, verseId) {
             setTimeout(() => target.classList.remove('flash-highlight'), 2000);
         }
     }, 500);
+}
+
+function goBack() {
+    if (state.historyIndex > 0) {
+        state.historyIndex--;
+        const dest = state.history[state.historyIndex];
+        navigateTo(dest.v, dest.b, dest.c, true);
+    }
+}
+
+function goForward() {
+    if (state.historyIndex < state.history.length - 1) {
+        state.historyIndex++;
+        const dest = state.history[state.historyIndex];
+        navigateTo(dest.v, dest.b, dest.c, true);
+    }
 }
 
 init();
