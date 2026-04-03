@@ -487,57 +487,62 @@ function applyFont(fontName, displayName) {
 
 function applyFontSize(sizeValue, labelValue) {
     const display = document.getElementById('current-size-display');
-    if (display) display.textContent = labelValue || parseInt(sizeValue);
+    if (display) display.textContent = labelValue;
     
-    applyFontSizeSelected(sizeValue);
+    setNoteFontSize(sizeValue);
     
     document.getElementById('dropdown-font-size').classList.remove('show');
 }
 
-function applyFontSizeSelected(size) {
-    const editor = document.getElementById('editor');
+function setNoteFontSize(size) {
     const selection = window.getSelection();
-    if (!selection.rangeCount || !editor) return;
+    if (!selection.rangeCount) return;
 
-    // Range Lock: Ensure we are inside the editor
+    const editor = document.getElementById('editor');
+    if (!editor) return;
+
+    // Standard Industry Method: Style Wrapping
     const range = selection.getRangeAt(0);
-    if (!editor.contains(range.commonAncestorContainer)) return;
 
     if (selection.isCollapsed) {
-        // Insertion mode: Create a span with the target size and focus it
+        // Mode A: Cursor point - Inject a marker span for future typing
         const span = document.createElement('span');
         span.style.fontSize = size;
-        span.innerHTML = '&#8203;'; // Zero-width character to hold focus
+        span.innerHTML = '&#8203;'; // Zero-width space to hold the style
         range.insertNode(span);
         
+        // Move cursor inside the span
         const newRange = document.createRange();
         newRange.setStart(span.firstChild, 1);
         newRange.collapse(true);
         selection.removeAllRanges();
         selection.addRange(newRange);
     } else {
-        // Selection mode: Use Universal Tag Marker (Reliable way across browsers)
-        document.execCommand('styleWithCSS', false, false);
-        document.execCommand('fontSize', false, '7'); 
-
-        // Targeted replacement of markers
-        const markers = editor.querySelectorAll('font[size="7"]');
-        markers.forEach(marker => {
-            const span = document.createElement('span');
-            span.style.fontSize = size;
-            span.innerHTML = marker.innerHTML;
-            
-            // Clean internal nested font styles to prevent "span soup"
-            span.querySelectorAll('span[style*="font-size"]').forEach(child => {
-                child.style.fontSize = 'inherit';
+        // Mode B: Selection - Wrap content in a span
+        // We use a robust wrapper that ensures no nested duplication
+        const span = document.createElement('span');
+        span.style.fontSize = size;
+        
+        try {
+            span.appendChild(range.extractContents());
+            range.insertNode(span);
+            // Clean up any inner spans that might conflict
+            span.querySelectorAll('span[style*="font-size"]').forEach(s => s.style.fontSize = 'inherit');
+        } catch (e) {
+            // Fallback for complex cross-node selections
+            document.execCommand('styleWithCSS', false, true);
+            document.execCommand('fontSize', false, '7');
+            editor.querySelectorAll('font, span[style*="xxx-large"]').forEach(el => {
+                const s = document.createElement('span');
+                s.style.fontSize = size;
+                s.innerHTML = el.innerHTML;
+                el.parentNode.replaceChild(s, el);
             });
-            
-            marker.parentNode.replaceChild(span, marker);
-        });
+        }
     }
     
-    editor.focus();
     saveState();
+    editor.focus();
 }
 
 function adjustSelectionFontSize(delta) {
