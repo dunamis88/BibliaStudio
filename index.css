@@ -1189,19 +1189,15 @@ body.resizing {
    Focus: Stability, Box-Sizing & Perfect Alignment
    ============================================================ */
 
-.bible-header-sticky {
-    position: sticky;
-    top: 0;
-    z-index: 500;
-    width: 100%;
-    height: 64px;
-    background-color: #ffffff;
-    border-bottom: 1px solid var(--border-color);
+/* Duplicated Sticky Header Logic Removed - Using Unified definition at line 291 */
+.bible-panel {
     display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    overflow: hidden !important;
+    flex-direction: column;
+    height: 100%;
+    min-width: 300px;
 }
+
+/* Legacy Ghost Headers Removed */
 
 .bible-toolbar-std {
     display: flex;
@@ -1256,24 +1252,14 @@ body.resizing {
 }
 
 /* TOTAL HEADER IMMUNITY */
-.app-header {
-    flex-shrink: 0 !important;
-    height: 64px !important;
-    min-height: 64px !important;
-    background-color: #ffffff;
-    z-index: 1000;
-    overflow: hidden;
-}
+/* Global Header Reset - Using Master Sync at Line 291 */
 
 .main-logo-text, .search-bar, .header-actions {
     flex-shrink: 0 !important; /* CRITICAL: Prevents crushing during resize */
 }
 
 /* Notes Stability */
-.notes-header {
-    flex-shrink: 0 !important;
-    overflow: hidden;
-}
+/* Notes Structural Integrity - Using Master Sync at Line 291 */
 
 .toolbar-group {
     display: flex;
@@ -1760,7 +1746,7 @@ blockquote {
     .main-logo-text { font-size: 20px; }
     .search-bar { margin: 0 10px; }
     .split-view { margin: 0 8px 8px 8px; max-width: calc(100vw - 16px); }
-    .bible-header-sticky, .notes-header { padding: 0 20px; height: 56px; }
+    .bible-header-sticky, .notes-header { padding: 0 20px; height: 68px !important; }
     .std-tool-btn, .std-nav-btn { height: 32px; min-height: 32px; }
     .std-tool-btn { width: 32px; }
     .std-nav-btn { padding: 0 8px; font-size: 11px; }
