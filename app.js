@@ -103,12 +103,19 @@ function updateUIState() {
     const bObj = BOOKS.find(b => b.id === state.currentBook);
     if (!bObj) return;
 
-    document.getElementById('current-version').textContent = vName;
-    document.getElementById('current-book').textContent = bObj.n;
-    document.getElementById('current-chapter').textContent = state.currentChapter;
+    // Sincronizar etiquetas de la barra
+    const labelVersion = document.getElementById('current-version-display');
+    const labelBook = document.getElementById('current-book-display');
+    const labelChapter = document.getElementById('current-chapter-display');
     
-    document.getElementById('bible-book-title').textContent = bObj.n;
-    document.getElementById('bible-chapter-title').textContent = `Capítulo ${state.currentChapter}`;
+    if (labelVersion) labelVersion.textContent = vName;
+    if (labelBook) labelBook.textContent = bObj.n;
+    if (labelChapter) labelChapter.textContent = state.currentChapter;
+    
+    const bibleTitle = document.getElementById('bible-book-title');
+    const bibleSub = document.getElementById('bible-chapter-title');
+    if (bibleTitle) bibleTitle.textContent = bObj.n;
+    if (bibleSub) bibleSub.textContent = `Capítulo ${state.currentChapter}`;
     
     // Split View Adjustment
     const biblePanel = document.getElementById('bible-panel');
@@ -119,15 +126,15 @@ function updateUIState() {
     }
 
     // Update History Buttons State
-    const btnBack = document.getElementById('btn-nav-back');
-    const btnForward = document.getElementById('btn-nav-forward');
+    const btnBack = document.getElementById('btn-bible-back');
+    const btnForward = document.getElementById('btn-bible-forward');
     if (btnBack && btnForward) {
         btnBack.disabled = state.historyIndex <= 0;
         btnForward.disabled = state.historyIndex >= state.history.length - 1;
     }
 
-    const label = document.getElementById('bible-size-label');
-    if (label) label.textContent = state.currentBibleFontSize;
+    const zoomLabel = document.getElementById('zoom-value');
+    if (zoomLabel) zoomLabel.textContent = state.currentBibleFontSize;
 }
 
 // --- BIBLE ENGINE ---
@@ -627,359 +634,116 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 function setupEventListeners() {
-    // 1. Firebase Auth (Handled by direct onclick in index    // --- HIGHLIGHTER LOGIC ---
-    const btnHighlight = document.getElementById('btn-highlight-picker');
-    const highlightPalette = document.getElementById('highlight-palette');
-    
-    if (btnHighlight) {
-        btnHighlight.onclick = (e) => {
-            e.stopPropagation();
-            highlightPalette.style.display = highlightPalette.style.display === 'none' ? 'block' : 'none';
-        };
-    }
+    // --- BIBLE NAVIGATION ---
+    const btnOpenSelector = document.getElementById('btn-open-selector');
+    const btnOpenBook = document.getElementById('btn-open-book-selector');
+    const btnOpenChapter = document.getElementById('btn-open-chapter-selector');
+    const selectorOverlay = document.getElementById('selection-overlay');
 
-    document.querySelectorAll('.palette-dot').forEach(dot => {
-        dot.onclick = (e) => {
-            e.stopPropagation();
-            const color = dot.getAttribute('data-color');
-            state.selectedHighlightColor = color;
-            
-            // ACTION: If there are selected verses, APPLY color to them
-            if (state.selectedVerses.length > 0) {
-                state.selectedVerses.forEach(vNum => {
-                    const verseKey = `${state.currentVersion}_${state.currentBook}_${state.currentChapter}_${vNum}`;
-                    if (color === 'none') {
-                        delete state.highlights[verseKey];
-                    } else {
-                        // Store AS OBJECT to include timestamp (t) and color (c)
-                        state.highlights[verseKey] = { c: color, t: Date.now() };
-                    }
-                });
-                
-                // Clear selection after applying color (Better UX)
-                state.selectedVerses = [];
-                renderBible(false); // Update colors without jumping to top
-                saveState();
-            }
-            
-            // Update UI selection on dots
-            document.querySelectorAll('.palette-dot').forEach(d => d.classList.remove('active'));
-            dot.classList.add('active');
-            
-            const dotIndicator = document.getElementById('current-highlight-dot');
-            if (dotIndicator) {
-                dotIndicator.className = 'color-dot ' + (color === 'none' ? 'clear' : color);
-                if (color === 'none') {
-                    dotIndicator.style.backgroundColor = '#f1f5f9';
-                    dotIndicator.innerHTML = '<i data-lucide="droplet-off" style="width:10px; height:10px; color:#718096;"></i>';
-                } else {
-                    dotIndicator.style.backgroundColor = '';
-                    dotIndicator.innerHTML = '';
-                }
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-            }
-            
-            highlightPalette.style.display = 'none';
-        };
-    });
-
-    // Close palette when clicking outside
-    window.addEventListener('click', () => {
-        if (highlightPalette) highlightPalette.style.display = 'none';
-    });
-    document.execCommand('styleWithCSS', false, false);
-
-    // Toolbar selections
-    document.getElementById('select-font-family').addEventListener('change', (e) => {
-        document.execCommand('fontName', false, e.target.value);
-        editor.focus();
-    });
-
-    document.getElementById('select-font-size').addEventListener('change', (e) => {
-        applyFontSizeSelected(e.target.value);
-    });
-
-    document.getElementById('btn-clear-format').addEventListener('click', () => {
-        document.execCommand('removeFormat', false, null);
-        const selection = window.getSelection();
-        if (!selection.isCollapsed) {
-            applyFontSizeSelected('inherit');
+    const openSelector = () => {
+        if (selectorOverlay) {
+            selectorOverlay.style.display = 'flex';
+            renderUnifiedSelector();
         }
-        editor.focus();
-    });
-
-    document.addEventListener('selectionchange', updateEditorToolbarState);
-
-    // Keyboard Shortcuts
-    const editableAreas = ['editor', 'active-note-title', 'active-note-subtitle'];
-    editableAreas.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('keydown', (e) => {
-                if (e.ctrlKey) {
-                    if (e.key === '=' || e.key === '+') {
-                        e.preventDefault();
-                        adjustSelectionFontSize(2);
-                    }
-                    if (e.key === '-') {
-                        e.preventDefault();
-                        adjustSelectionFontSize(-2);
-                    }
-                }
-            });
-        }
-    });
-
-    // POPUPS AND DROPDOWNS
-    const alignBtn = document.getElementById('btn-align');
-    const alignPopup = document.getElementById('align-popup');
-    const bibleSearchInput = document.getElementById('bible-main-search');
-    const bibleSearchDropdown = document.getElementById('bible-search-dropdown');
-
-    if (alignBtn) {
-        alignBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            alignPopup.style.display = alignPopup.style.display === 'none' ? 'flex' : 'none';
-        });
-    }
-
-    // Global click closer
-    document.addEventListener('click', (e) => {
-        if (alignPopup) alignPopup.style.display = 'none';
-        const tablePopup = document.getElementById('table-selector-popup');
-        if (tablePopup) tablePopup.style.display = 'none';
-        
-        document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
-        
-        // Close search dropdown if click is outside
-        if (bibleSearchDropdown && !e.target.closest('.bible-search-main')) {
-            bibleSearchDropdown.classList.remove('show');
-        }
-    });
-    
-    // Bible Search
-    if (bibleSearchInput) {
-        bibleSearchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            if (query.length >= 3) {
-                performBibleSearch(query);
-            } else {
-                if (bibleSearchDropdown) bibleSearchDropdown.classList.remove('show');
-            }
-        });
-
-        bibleSearchInput.addEventListener('focus', () => {
-            if (bibleSearchInput.value.trim().length >= 3) {
-                if (bibleSearchDropdown) bibleSearchDropdown.classList.add('show');
-            }
-        });
-    }
-
-    alignPopup.addEventListener('click', (e) => e.stopPropagation());
-    
-    // Toolbar commands
-    document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if (btn.closest('#align-popup')) e.stopPropagation();
-            const command = btn.getAttribute('data-command');
-            const value = btn.getAttribute('data-value');
-            document.execCommand(command, false, value);
-            editor.focus();
-        });
-    });
-
-    // Special Quote Button
-    document.getElementById('btn-insert-quote').addEventListener('click', () => {
-        const selection = window.getSelection();
-        if (selection.toString().length > 0) {
-            document.execCommand('formatBlock', false, 'blockquote');
-        } else {
-            const quoteHTML = `<blockquote>Escribe tu cita aquí...</blockquote><p><br></p>`;
-            document.execCommand('insertHTML', false, quoteHTML);
-        }
-        editor.focus();
-    });
-
-    // Word-style Table Selector
-    setupTableSelector();
-
-    // Special Inserts
-    document.getElementById('btn-insert-youtube').addEventListener('click', () => {
-        const url = prompt("Pegue la URL de YouTube:");
-        if (!url) return;
-        const vidId = extractYoutubeId(url);
-        if (!vidId) return;
-        
-        const embed = `
-            <div class="video-container" contenteditable="false">
-                <iframe src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe>
-            </div><p><br></p>`;
-        document.execCommand('insertHTML', false, embed);
-    });
-
-    document.getElementById('btn-insert-web').addEventListener('click', () => {
-        const url = prompt("URL de la página web:");
-        if (!url) return;
-        const embed = `
-            <div class="web-preview" style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden; height: 300px;" contenteditable="false">
-                <iframe src="${url}" style="width: 100%; height: 100%; border: none;"></iframe>
-            </div><p><br></p>`;
-        document.execCommand('insertHTML', false, embed);
-    });
-
-    // Import Current Bible Selection to Note
-    document.getElementById('btn-import-verse').addEventListener('click', async () => {
-        if (state.selectedVerses.length === 0) {
-            alert("Selecciona primero algunos versículos de la Biblia.");
-            return;
-        }
-
-        const bible = bibleLibrary[state.currentVersion];
-        if (!bible) return;
-
-        const bObj = BOOKS.find(b => b.id === state.currentBook);
-        const verses = state.selectedVerses.sort((a,b) => a-b);
-        let combinedText = "";
-
-        // Determine keys
-        const first = bible.data[0] || {};
-        const isSql = bible.type === 'sqlite';
-        const keys = Object.keys(first);
-        const bKey = isSql ? 'Book' : (keys.find(k => k.toLowerCase().replace(/\s/g, '').includes('book') || k.toLowerCase().includes('id1')) || keys[0]);
-        const cKey = isSql ? 'Chapter' : (keys.find(k => k.toLowerCase().includes('chapter') || k.toLowerCase().includes('capitulo') || k.toLowerCase().includes('id2')) || keys[1]);
-        const vKey = isSql ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
-        const tKey = isSql ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text')) || keys[3]);
-
-        verses.forEach(vNum => {
-            const vData = bible.data.find(row => 
-                parseInt(row[bKey]) === state.currentBook && 
-                parseInt(row[cKey]) === state.currentChapter && 
-                parseInt(row[vKey]) === vNum
-            );
-            if (vData) {
-                combinedText += `<sup>${vNum}</sup> ${cleanText(vData[tKey], state.currentVersion)} `;
-            }
-        });
-
-        const vRange = verses.length > 1 ? `${verses[0]}-${verses[verses.length-1]}` : verses[0];
-        const verseHTML = `
-            <div class="verse-quote-box" contenteditable="false">
-                <div class="verse-quote-text">"${combinedText.trim()}"</div>
-                <div class="verse-quote-ref">${bObj.n} ${state.currentChapter}:${vRange} (${state.currentVersion})</div>
-            </div><p><br></p>`;
-        
-        document.execCommand('insertHTML', false, verseHTML);
-        editor.focus();
-    });
-
-    // Image Upload
-    const imgBtn = document.getElementById('btn-insert-image');
-    const imgInput = document.getElementById('image-upload');
-    
-    imgBtn.addEventListener('click', () => imgInput.click());
-    
-    imgInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const imgHTML = `<img src="${event.target.result}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`;
-                document.execCommand('insertHTML', false, imgHTML);
-                imgInput.value = ''; // Reset for same file again
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-
-    // History Controls Listeners
-    document.getElementById('btn-nav-back').addEventListener('click', goBack);
-    document.getElementById('btn-nav-forward').addEventListener('click', goForward);
-    document.getElementById('btn-nav-history').addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.getElementById('dropdown-history').classList.toggle('show');
-        renderHistoryDropdown();
-    });
-
-    // Inline Dropdown Listeners
-    const triggers = {
-        'trigger-version': 'dropdown-version',
-        'trigger-book': 'dropdown-book',
-        'trigger-chapter': 'dropdown-chapter'
     };
 
-    Object.keys(triggers).forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const dropdownId = triggers[id];
-                const isOpen = document.getElementById(dropdownId).classList.contains('show');
-                
-                // Close all others
-                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
-                
-                if (!isOpen) {
-                    if (id === 'trigger-version') renderVersionDropdown();
-                    if (id === 'trigger-book') renderBookDropdown();
-                    if (id === 'trigger-chapter') renderChapterDropdown();
-                    document.getElementById(dropdownId).classList.add('show');
-                }
-            });
-        }
-    });
+    if (btnOpenSelector) btnOpenSelector.onclick = openSelector;
+    if (btnOpenBook) btnOpenBook.onclick = openSelector;
+    if (btnOpenChapter) btnOpenChapter.onclick = openSelector;
 
-    window.addEventListener('click', () => {
-        document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
-    });
+    // Reading confirmation from modal
+    const btnReading = document.getElementById('btn-begin-reading');
+    if (btnReading) {
+        btnReading.onclick = () => {
+            selectorOverlay.style.display = 'none';
+            navigateTo(state.currentVersion, state.currentBook, state.currentChapter);
+        };
+    }
 
-    // Toolbar '...' toggle
-    const btnMoreTools = document.getElementById('btn-toolbar-more');
-    if (btnMoreTools) {
-        btnMoreTools.addEventListener('click', (e) => {
+    // Modal close on cancel
+    const btnCancelModal = document.querySelector('.btn-cancel');
+    if (btnCancelModal) {
+        btnCancelModal.onclick = () => {
+            selectorOverlay.style.display = 'none';
+        };
+    }
+
+    // Chapter Arrows
+    const btnPrev = document.getElementById('btn-prev-chapter');
+    const btnNext = document.getElementById('btn-next-chapter');
+    if (btnPrev) {
+        btnPrev.onclick = (e) => {
             e.stopPropagation();
-            document.getElementById('toolbar-more-dropdown').classList.toggle('show');
-        });
+            if (state.currentChapter > 1) {
+                navigateTo(state.currentVersion, state.currentBook, state.currentChapter - 1);
+            }
+        };
     }
-
-    const btnBibleMore = document.getElementById('btn-bible-more');
-    if (btnBibleMore) {
-        btnBibleMore.addEventListener('click', (e) => {
+    if (btnNext) {
+        btnNext.onclick = (e) => {
             e.stopPropagation();
-            document.getElementById('bible-more-dropdown').classList.toggle('show');
-        });
+            const book = BOOKS.find(b => b.id === state.currentBook);
+            if (book && state.currentChapter < book.c) {
+                navigateTo(state.currentVersion, state.currentBook, state.currentChapter + 1);
+            }
+        };
     }
 
-    // Settings Modal Toggle
-    document.getElementById('btn-settings').addEventListener('click', () => {
-        document.getElementById('settings-overlay').style.display = 'flex';
-    });
-
-    // Settings Tab Switching
-    document.querySelectorAll('.settings-nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-            document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            const tab = item.getAttribute('data-tab');
-            const title = item.querySelector('span').textContent;
-            document.getElementById('settings-tab-title').textContent = `Configuración de ${title}`;
-        });
-    });
-
-    // Print Logic
-    const btnPrintNote = document.getElementById('btn-print-note');
-    if (btnPrintNote) {
-        btnPrintNote.addEventListener('click', () => {
-            window.print();
-        });
+    // Bible Zoom
+    const zoomIn = document.getElementById('btn-zoom-in');
+    const zoomOut = document.getElementById('btn-zoom-out');
+    if (zoomIn) {
+        zoomIn.onclick = () => {
+            state.currentBibleFontSize += 2;
+            updateBibleFontSize();
+        };
+    }
+    if (zoomOut) {
+        zoomOut.onclick = () => {
+            if (state.currentBibleFontSize > 10) {
+                state.currentBibleFontSize -= 2;
+                updateBibleFontSize();
+            }
+        };
     }
 
-    // Quick New Note
-    const btnNewNoteQuick = document.getElementById('btn-new-note-quick');
-    if (btnNewNoteQuick) {
-        btnNewNoteQuick.addEventListener('click', () => {
+    // History
+    const btnBack = document.getElementById('btn-bible-back');
+    const btnForward = document.getElementById('btn-bible-forward');
+    if (btnBack) btnBack.onclick = goBack;
+    if (btnForward) btnForward.onclick = goForward;
+
+    // --- NOTES TOOLS ---
+    const selectFontFamily = document.getElementById('select-font-family');
+    if (selectFontFamily) {
+        selectFontFamily.onchange = (e) => {
+            document.execCommand('fontName', false, e.target.value);
+            editor.focus();
+        };
+    }
+
+    const selectFontSize = document.getElementById('select-font-size');
+    if (selectFontSize) {
+        selectFontSize.onchange = (e) => {
+            applyFontSizeSelected(e.target.value);
+        };
+    }
+
+    document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
+        btn.onclick = () => {
+            const cmd = btn.getAttribute('data-command');
+            document.execCommand(cmd, false, null);
+            editor.focus();
+        };
+    });
+
+    const btnNewQuick = document.getElementById('btn-new-note-quick');
+    if (btnNewQuick) {
+        btnNewQuick.onclick = () => {
             const id = 'note-' + Date.now();
             state.notes[id] = {
-                title: "Escribe el título aquí...",
-                subtitle: "Escribe el subtítulo aquí...",
+                title: "Nueva Reflexión",
+                subtitle: "Referencia...",
                 content: "",
                 date: new Date().toLocaleDateString()
             };
@@ -987,72 +751,58 @@ function setupEventListeners() {
             saveState();
             loadCurrentNote();
             document.getElementById('active-note-title').focus();
-        });
+        };
     }
 
-    // Notes Browser Toggle
-    const browseNotesBtn = document.getElementById('btn-browse-notes');
-    if (browseNotesBtn) {
-        browseNotesBtn.addEventListener('click', (e) => {
-            console.log("Opening Notes Browser...");
-            renderNotesBrowser();
-            document.getElementById('notes-overlay').style.display = 'flex';
-        });
+    const btnImport = document.getElementById('btn-import-verse');
+    if (btnImport) btnImport.onclick = importVersesToNote;
+
+    const btnPrint = document.getElementById('btn-print-note');
+    if (btnPrint) btnPrint.onclick = () => window.print();
+
+    const btnTable = document.getElementById('btn-insert-table');
+    if (btnTable) {
+        btnTable.onclick = (e) => {
+            e.stopPropagation();
+            const popup = document.getElementById('table-selector-popup');
+            if (popup) popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+        };
     }
 
-    // Filter Notes
-    document.getElementById('notes-filter').addEventListener('input', (e) => {
-        renderNotesBrowser(normalizeText(e.target.value));
-    });
-
-    // Local Bible Zoom
-    document.getElementById('btn-bible-zoom-in').addEventListener('click', () => {
-        state.currentBibleFontSize += 2;
-        updateBibleFontSize();
-    });
-
-    document.getElementById('btn-bible-zoom-out').addEventListener('click', () => {
-        if (state.currentBibleFontSize > 10) {
-            state.currentBibleFontSize -= 2;
-            updateBibleFontSize();
+    const btnYoutube = document.getElementById('btn-insert-youtube');
+    if (btnYoutube) btnYoutube.onclick = () => {
+        const url = prompt("URL de YouTube:");
+        if (!url) return;
+        const id = extractYoutubeId(url);
+        if (id) {
+            const html = `<div class="video-container" contenteditable="false"><iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe></div><p><br></p>`;
+            document.execCommand('insertHTML', false, html);
         }
-    });
+    };
 
-    // Manual Save
-    const btnSave = document.getElementById('btn-save-note');
-    if (btnSave) {
-        btnSave.addEventListener('click', () => {
-            btnSave.classList.add('saving');
-            saveState(); // Triggers both local and cloud sync
-            setTimeout(() => btnSave.classList.remove('saving'), 800);
-        });
-    }
-
-    // Chapter Arrows Navigation
-    const btnPrev = document.getElementById('btn-chapter-prev');
-    const btnNext = document.getElementById('btn-chapter-next');
-
-    if (btnPrev) {
-        btnPrev.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (state.currentChapter > 1) {
-                navigateTo(state.currentVersion, state.currentBook, state.currentChapter - 1);
-            } else {
-                // Try to go to previous book? For now just stay.
+    const btnImage = document.getElementById('btn-insert-image');
+    if (btnImage) btnImage.onclick = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const html = `<img src="${ev.target.result}" style="max-width:100%; border-radius:8px; margin:10px 0;">`;
+                    document.execCommand('insertHTML', false, html);
+                };
+                reader.readAsDataURL(file);
             }
-        });
-    }
+        };
+        input.click();
+    };
 
-    if (btnNext) {
-        btnNext.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const book = BOOKS.find(b => b.id === state.currentBook);
-            if (state.currentChapter < book.c) {
-                navigateTo(state.currentVersion, state.currentBook, state.currentChapter + 1);
-            }
-        });
-    }
+    document.addEventListener('selectionchange', updateEditorToolbarState);
 
+    // Initial tooltips for freshly rendered bible parts
+    setupTooltipEvents();
     lucide.createIcons();
 }
 
