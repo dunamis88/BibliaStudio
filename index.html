@@ -62,91 +62,81 @@
                 <section class="bible-panel" id="bible-panel">
                     <!-- Fixed Header Bar -->
                     <div class="bible-header-sticky">
-                        <div class="bible-header-top">
-                            <div class="bible-nav-main">
-                                <!-- Controles Historial -->
-                                <div class="history-controls bible-adaptive-el">
-                                    <button class="tool-btn" id="btn-nav-back" title="Atrás"><i data-lucide="arrow-left"></i></button>
-                                    <button class="tool-btn" id="btn-nav-forward" title="Adelante"><i data-lucide="arrow-right"></i></button>
-                                    <div class="dropdown-container">
-                                        <button class="tool-btn" id="btn-nav-history" title="Historial"><i data-lucide="history"></i></button>
-                                        <div class="nav-dropdown" id="dropdown-history" style="min-width: 280px; padding: 12px;">
-                                            <div class="column-header">Puntos de Estudio Recientes</div>
-                                            <div id="history-items-list" class="history-list-compact"></div>
-                                        </div>
+                        <div class="bible-toolbar-std">
+                            <!-- Grupo 1: Historial -->
+                            <div class="toolbar-group">
+                                <button class="std-tool-btn" id="btn-nav-back" title="Atrás"><i data-lucide="arrow-left"></i></button>
+                                <button class="std-tool-btn" id="btn-nav-forward" title="Adelante"><i data-lucide="arrow-right"></i></button>
+                                <div class="std-dropdown-anchor">
+                                    <button class="std-tool-btn" id="btn-nav-history" title="Historial"><i data-lucide="history"></i></button>
+                                    <div class="nav-dropdown" id="dropdown-history">
+                                        <div class="dropdown-header">Recientes</div>
+                                        <div id="history-items-list" class="history-list-compact"></div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="tool-divider"></div>
+                            <div class="std-divider"></div>
 
-                                <!-- Selección Bíblica -->
-                                <div class="inline-nav">
-                                    <!-- Selector de Versión -->
-                                    <div class="dropdown-container">
-                                        <button class="nav-trigger" id="trigger-version" title="Seleccionar Versión">
-                                            <span id="current-version">RV60</span>
-                                            <i data-lucide="chevron-down"></i>
-                                        </button>
-                                        <div class="nav-dropdown" id="dropdown-version"></div>
-                                    </div>
+                            <!-- Grupo 2: Navegación Bíblica -->
+                            <div class="toolbar-group">
+                                <div class="std-dropdown-anchor">
+                                    <button class="std-nav-btn" id="trigger-version">
+                                        <span id="current-version">RV60</span>
+                                        <i data-lucide="chevron-down"></i>
+                                    </button>
+                                    <div class="nav-dropdown" id="dropdown-version"></div>
+                                </div>
 
-                                    <div class="tool-divider"></div>
+                                <div class="std-dropdown-anchor">
+                                    <button class="std-nav-btn" id="trigger-book">
+                                        <span id="current-book">Génesis</span>
+                                        <i data-lucide="chevron-down"></i>
+                                    </button>
+                                    <div class="nav-dropdown books-dropdown-menu" id="dropdown-book"></div>
+                                </div>
 
-                                    <div class="dropdown-container">
-                                        <button class="nav-trigger" id="trigger-book" title="Seleccionar Libro">
-                                            <span id="current-book">Génesis</span>
-                                            <i data-lucide="chevron-down"></i>
-                                        </button>
-                                        <div class="nav-dropdown books-dropdown-menu" id="dropdown-book"></div>
-                                    </div>
-
-                                    <div class="tool-divider"></div>
-
-                                    <div class="dropdown-container bible-chapter-nav-wrapper">
-                                        <span class="chapter-nav-arrow" id="btn-chapter-prev" title="Capítulo anterior">&lt;</span>
-                                        <button class="nav-trigger" id="trigger-chapter" title="Seleccionar Capítulo">
+                                <div class="chapter-nav-bundle">
+                                    <span class="chapter-arrow" id="btn-chapter-prev">&lt;</span>
+                                    <div class="std-dropdown-anchor">
+                                        <button class="std-nav-btn" id="trigger-chapter">
                                             <span id="current-chapter">1</span>
                                             <i data-lucide="chevron-down"></i>
                                         </button>
-                                        <span class="chapter-nav-arrow" id="btn-chapter-next" title="Próximo capítulo">&gt;</span>
                                         <div class="nav-dropdown chapters-dropdown-menu" id="dropdown-chapter"></div>
                                     </div>
+                                    <span class="chapter-arrow" id="btn-chapter-next">&gt;</span>
+                                </div>
 
-                                    <!-- Marcador junto a los Capítulos -->
-                                    <div id="highlighter-nav-item" class="dropdown-container" style="margin-left: 8px;">
-                                        <button id="btn-highlight-picker" class="icon-btn highlight-dot-btn" title="Aplicar Marcado">
-                                            <span id="current-highlight-dot" class="color-dot yellow"></span>
-                                        </button>
-                                        <div id="highlight-palette" class="highlight-popup" style="display: none;">
-                                            <div class="palette-grid">
-                                                <!-- Dots -->
-                                                <div class="palette-dot yellow active" data-color="yellow" style="background-color: #fefcbf;"></div>
-                                                <div class="palette-dot green" data-color="green" style="background-color: #c6f6d5;"></div>
-                                                <div class="palette-dot blue" data-color="blue" style="background-color: #bee3f8;"></div>
-                                                <div class="palette-dot red" data-color="red" style="background-color: #fed7d7;"></div>
-                                                <div class="palette-dot purple" data-color="purple" style="background-color: #e9d8fd;"></div>
-                                                <div class="palette-dot orange" data-color="orange" style="background-color: #feebc8;"></div>
-                                                <div class="palette-dot clear" data-color="none" title="Limpiar Marcado">
-                                                    <i data-lucide="droplet-off" style="width: 14px; height: 14px; color: #718096;"></i>
-                                                </div>
-                                            </div>
+                                <div class="std-dropdown-anchor">
+                                    <button id="btn-highlight-picker" class="std-tool-btn marker-btn">
+                                        <span id="current-highlight-dot" class="color-dot yellow"></span>
+                                    </button>
+                                    <div id="highlight-palette" class="highlight-popup" style="display: none;">
+                                        <div class="palette-grid">
+                                            <div class="palette-dot yellow active" data-color="yellow" style="background-color: #fefcbf;"></div>
+                                            <div class="palette-dot green" data-color="green" style="background-color: #c6f6d5;"></div>
+                                            <div class="palette-dot blue" data-color="blue" style="background-color: #bee3f8;"></div>
+                                            <div class="palette-dot red" data-color="red" style="background-color: #fed7d7;"></div>
+                                            <div class="palette-dot purple" data-color="purple" style="background-color: #e9d8fd;"></div>
+                                            <div class="palette-dot orange" data-color="orange" style="background-color: #feebc8;"></div>
+                                            <div class="palette-dot clear" data-color="none" title="Limpiar"><i data-lucide="droplet-off"></i></div>
                                         </div>
                                     </div>
                                 </div>
-
-                            <!-- Controles Auxiliares Derecha -->
-                            <div class="bible-local-controls bible-adaptive-el">
-                                <button class="tool-btn" id="btn-bible-zoom-out" title="Achicar letra"><i data-lucide="minus"></i></button>
-                                <span id="bible-size-label">18</span>
-                                <button class="tool-btn" id="btn-bible-zoom-in" title="Agrandar letra"><i data-lucide="plus"></i></button>
                             </div>
 
-                                <!-- Botón '...' para Biblia -->
-                                <div class="dropdown-container" id="bible-more-container" style="display: none; margin-left: auto;">
-                                    <button class="tool-btn" id="btn-bible-more" title="Opciones adicionales">
-                                        <i data-lucide="more-horizontal"></i>
-                                    </button>
-                                    <div class="nav-dropdown" id="bible-more-dropdown" style="min-width: 180px; padding: 10px; right: 0; left: auto;">
+                            <div class="std-divider"></div>
+
+                            <!-- Grupo 3: Auxiliares -->
+                            <div class="toolbar-group right-aligned">
+                                <button class="std-tool-btn" id="btn-bible-zoom-out"><i data-lucide="minus"></i></button>
+                                <span class="std-zoom-label" id="bible-size-label">18</span>
+                                <button class="std-tool-btn" id="btn-bible-zoom-in"><i data-lucide="plus"></i></button>
+                                
+                                <div class="std-dropdown-anchor">
+                                    <button class="std-tool-btn" id="btn-bible-more"><i data-lucide="more-horizontal"></i></button>
+                                    <div class="nav-dropdown" id="bible-more-dropdown" style="right: 0; left: auto;">
                                         <div class="bible-tools-grid"></div>
                                     </div>
                                 </div>
