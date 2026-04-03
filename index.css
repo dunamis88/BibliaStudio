@@ -447,12 +447,15 @@ body {
 }
 
 .search-dropdown-menu {
-    width: 600px !important; /* Premium wide view for results */
+    width: 600px !important; 
     max-width: 90vw;
     padding: 0 !important;
     overflow: hidden;
     display: none;
     flex-direction: column;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: calc(100% + 12px) !important;
 }
 
 .search-results-list {
