@@ -1018,6 +1018,41 @@ function setupEventListeners() {
         }
     });
 
+    // Manual Save
+    const btnSave = document.getElementById('btn-save-note');
+    if (btnSave) {
+        btnSave.addEventListener('click', () => {
+            btnSave.classList.add('saving');
+            saveState(); // Triggers both local and cloud sync
+            setTimeout(() => btnSave.classList.remove('saving'), 800);
+        });
+    }
+
+    // Chapter Arrows Navigation
+    const btnPrev = document.getElementById('btn-chapter-prev');
+    const btnNext = document.getElementById('btn-chapter-next');
+
+    if (btnPrev) {
+        btnPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (state.currentChapter > 1) {
+                navigateTo(state.currentVersion, state.currentBook, state.currentChapter - 1);
+            } else {
+                // Try to go to previous book? For now just stay.
+            }
+        });
+    }
+
+    if (btnNext) {
+        btnNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const book = BOOKS.find(b => b.id === state.currentBook);
+            if (state.currentChapter < book.c) {
+                navigateTo(state.currentVersion, state.currentBook, state.currentChapter + 1);
+            }
+        });
+    }
+
     lucide.createIcons();
 }
 
