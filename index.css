@@ -240,9 +240,9 @@ body {
 .icon-btn {
     background-color: white;
     border: 1px solid var(--border-color);
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 32px; /* Standardized to match everything else */
+    height: 32px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -252,13 +252,16 @@ body {
 }
 
 .icon-btn i {
-    width: 18px;
+    width: 16px;
+    height: 16px;
 }
 
 .icon-btn:hover {
     background-color: var(--neutral);
     color: var(--primary);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.06);
 }
 
 /* Split View */
@@ -616,7 +619,7 @@ body.resizing {
 }
 
 .notes-header {
-    height: 64px;
+    height: 68px; /* Increased slightly to allow buttons to breathe */
     padding: 0 35px; /* Equalized and optimized */
     background-color: #ffffff;
     border-bottom: 1px solid var(--border-color);
@@ -1327,9 +1330,10 @@ body.resizing {
 .std-tool-btn:hover, .std-nav-btn:hover {
     background-color: #f8fafd;
     border-color: var(--primary-light);
-    transform: translateY(-2px); /* Slightly more elevation for elegance */
+    transform: translateY(-2px); /* Uniform lift */
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    z-index: 10; /* Ensures borders are never erased */
+    position: relative;
+    z-index: 10; /* Ensures no clipping on borders */
 }
 
 .std-nav-btn i, .std-tool-btn i {
