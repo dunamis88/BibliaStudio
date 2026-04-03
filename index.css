@@ -436,9 +436,9 @@ body {
 }
 
 .bible-content-wrapper {
-    max-width: 800px;
+    max-width: 850px;
     margin: 0 auto;
-    padding: 20px 40px; /* Reducido de 40px a 20px arriba */
+    padding: 20px 20px; /* Reducido de 40px a 20px a los costados */
 }
 
 .bible-header { margin-bottom: 40px; }
