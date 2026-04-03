@@ -1300,6 +1300,17 @@ body.resizing {
 }
 
 /* Image Resize Handles */
+.dropdown-container {
+    position: relative !important; /* Force all dropdowns to be an anchor */
+    display: inline-block;
+}
+
+#highlighter-nav-item {
+    position: relative !important;
+    display: flex;
+    align-items: center;
+}
+
 .image-resize-wrapper {
     position: relative;
     display: inline-block;
