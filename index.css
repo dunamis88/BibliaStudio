@@ -267,6 +267,12 @@ body {
     padding: 0;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(0);
+    cursor: grab;
+    user-select: none;
+}
+
+.grabbing {
+    cursor: grabbing !important;
 }
 
 /* 5. TOOLBARS & CAROUSELS */

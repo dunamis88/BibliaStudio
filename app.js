@@ -1539,11 +1539,25 @@ function setupCarousel(containerId, leftId, rightId) {
     if (!scrollContainer || !btnLeft || !btnRight) return;
 
     let currentX = 0;
+    let isDown = false;
+    let startX;
+    let moved = false;
+
+    const applyBoundaries = (newX) => {
+        const parentWidth = scrollContainer.parentElement.clientWidth;
+        const totalWidth = scrollContainer.scrollWidth;
+        const maxScroll = -(totalWidth - (parentWidth - 60));
+        
+        if (newX > 0) return 0;
+        if (totalWidth <= (parentWidth - 60)) return 0;
+        if (newX < maxScroll) return maxScroll;
+        return newX;
+    };
 
     const checkOverflow = () => {
         const parentWidth = scrollContainer.parentElement.clientWidth;
         const totalWidth = scrollContainer.scrollWidth;
-        const hasOverflow = totalWidth > (parentWidth - 60); // Account for arrows
+        const hasOverflow = totalWidth > (parentWidth - 60);
 
         if (hasOverflow) {
             btnLeft.style.display = currentX < 0 ? 'flex' : 'none';
@@ -1556,27 +1570,70 @@ function setupCarousel(containerId, leftId, rightId) {
         }
     };
 
+    // Trackpad Support (Wheel)
+    scrollContainer.onwheel = (e) => {
+        const delta = e.deltaX || e.deltaY; // Support horizontal or vertical wheel
+        if (Math.abs(delta) > 5) {
+            e.preventDefault();
+            scrollContainer.style.transition = 'none';
+            currentX = applyBoundaries(currentX - delta);
+            scrollContainer.style.transform = `translateX(${currentX}px)`;
+            checkOverflow();
+        }
+    };
+
+    // Mouse Drag Support
+    scrollContainer.onmousedown = (e) => {
+        isDown = true;
+        moved = false;
+        scrollContainer.classList.add('grabbing');
+        startX = e.pageX - currentX;
+        scrollContainer.style.transition = 'none';
+    };
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        moved = true;
+        const x = e.pageX - startX;
+        currentX = applyBoundaries(x);
+        scrollContainer.style.transform = `translateX(${currentX}px)`;
+        checkOverflow();
+    });
+
+    window.addEventListener('mouseup', (e) => {
+        if (!isDown) return;
+        isDown = false;
+        scrollContainer.classList.remove('grabbing');
+        scrollContainer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        // Prevent accidental clicks if moved significantly
+        if (moved) {
+            const preventClick = (event) => {
+                event.stopImmediatePropagation();
+                window.removeEventListener('click', preventClick, true);
+            };
+            window.addEventListener('click', preventClick, true);
+        }
+        checkOverflow();
+    });
+
     btnLeft.onclick = (e) => {
         e.stopPropagation();
-        currentX += 200;
-        if (currentX > 0) currentX = 0;
+        scrollContainer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        currentX = applyBoundaries(currentX + 200);
         scrollContainer.style.transform = `translateX(${currentX}px)`;
         checkOverflow();
     };
 
     btnRight.onclick = (e) => {
         e.stopPropagation();
-        const parentWidth = scrollContainer.parentElement.clientWidth;
-        const totalWidth = scrollContainer.scrollWidth;
-        const maxScroll = -(totalWidth - (parentWidth - 60));
-        
-        currentX -= 200;
-        if (currentX < maxScroll) currentX = maxScroll;
+        scrollContainer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        currentX = applyBoundaries(currentX - 200);
         scrollContainer.style.transform = `translateX(${currentX}px)`;
         checkOverflow();
     };
 
-    // Re-check on parent changes
     const obs = new ResizeObserver(checkOverflow);
     obs.observe(scrollContainer.parentElement);
 }
