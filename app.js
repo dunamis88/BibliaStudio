@@ -1679,22 +1679,27 @@ function performBibleSearch(query) {
     if (results.length === 0) {
         dropdown.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--secondary); font-size: 13px;">No hay resultados</div>';
     } else {
-        const header = `<div class="search-dropdown-header">${results.length} Versículos encontrados</div>`;
-        const items = results.map(v => {
-            const bId = parseInt(v[bKey]);
-            const cId = parseInt(v[cKey]);
-            const vId = parseInt(v[vKey]);
-            const bookName = BOOKS.find(b => b.id === bId)?.n || "Libro";
-            const cleanTextVal = cleanText(v[tKey], state.currentVersion);
-            
-            return `
-                <div class="search-item" onclick="jumpToVerse(${bId}, ${cId}, ${vId}); document.getElementById('bible-search-dropdown').classList.remove('show');">
-                    <div class="search-item-ref">${bookName} ${cId}:${vId}</div>
-                    <div class="search-item-text">${cleanTextVal}</div>
-                </div>
-            `;
-        }).join('');
-        dropdown.innerHTML = header + items;
+        dropdown.innerHTML = `
+            <div class="column-header" style="background: var(--neutral); padding: 8px 12px; border-bottom: 1px solid var(--border-color);">
+                ${results.length} resultados encontrados
+            </div>
+            <div class="search-results-list">
+                ${results.map(v => {
+                    const bId = parseInt(v[bKey]);
+                    const cId = parseInt(v[cKey]);
+                    const vId = parseInt(v[vKey]);
+                    const bookName = BOOKS.find(b => b.id === bId)?.n || "Libro";
+                    const cleanTextVal = cleanText(v[tKey], state.currentVersion);
+                    
+                    return `
+                        <div class="search-result-item" onclick="jumpToVerse(${bId}, ${cId}, ${vId}); document.getElementById('bible-search-dropdown').classList.remove('show');">
+                            <div class="search-result-ref">${bookName} ${cId}:${vId}</div>
+                            <div class="search-result-text">${cleanTextVal}</div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
     }
 
     dropdown.classList.add('show');
@@ -1721,5 +1726,3 @@ function jumpToVerse(bookId, chapterId, verseId) {
         }
     }, 500);
 }
-
-init();
