@@ -856,19 +856,24 @@ function setupEventListeners() {
         });
     });
 
-    // Special Quote Button
     const btnQuote = document.getElementById('btn-insert-quote');
     if (btnQuote) {
-        btnQuote.addEventListener('click', () => {
+        btnQuote.onclick = () => {
             const selection = window.getSelection();
-            if (selection.toString().length > 0) {
-                document.execCommand('formatBlock', false, 'blockquote');
-            } else {
-                const quoteHTML = `<blockquote>Escribe tu cita aquí...</blockquote><p><br></p>`;
-                document.execCommand('insertHTML', false, quoteHTML);
-            }
+            let selectedText = selection.toString();
+            
+            const quoteContent = selectedText.length > 0 ? selectedText : "Escribe tu cita aquí...";
+            const quoteHTML = `
+                <div class="academic-quote" contenteditable="true">
+                    "${quoteContent}"
+                    <span class="quote-source" contenteditable="true"> — Nombre del Autor o Comentario</span>
+                </div>
+                <p><br></p>
+            `;
+            
+            document.execCommand('insertHTML', false, quoteHTML);
             editor.focus();
-        });
+        };
     }
 
     // Word-style Table Selector

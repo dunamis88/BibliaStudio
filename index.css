@@ -421,7 +421,39 @@ body {
     overflow-y: auto;
 }
 
-/* 8. DROPDOWNS & POPUPS (THE POPUP SYSTEM) */
+/* 8. ACADEMIC COMPONENTS */
+.academic-quote {
+    border-left: 3px solid var(--border-color);
+    padding: 10px 20px;
+    margin: 15px 0;
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    color: var(--primary);
+    background-color: #fcfcfc;
+    line-height: 1.8;
+    position: relative;
+}
+
+.academic-quote::before {
+    content: '"';
+    font-size: 40px;
+    position: absolute;
+    left: 5px;
+    top: -10px;
+    opacity: 0.1;
+    font-family: serif;
+}
+
+.quote-source {
+    display: block;
+    font-style: normal;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    color: var(--secondary);
+    opacity: 0.8;
+}
 .nav-dropdown, .search-dropdown-menu, .highlight-popup {
     position: absolute;
     top: calc(100% + 5px);
