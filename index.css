@@ -109,9 +109,8 @@ body {
     flex-shrink: 0;
 }
 
-/* 5. TOP HEADER & SEARCH */
 .app-header {
-    height: 72px !important; /* Slightly more height for the main bar */
+    height: 72px !important;
     padding: 0 40px !important;
     background-color: var(--neutral);
     border-bottom: 2px solid var(--neutral-dark);
@@ -120,13 +119,21 @@ body {
     justify-content: space-between;
 }
 
+.app-header-left {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Strong gap for side-by-side */
+    flex: 1;
+}
+
 .main-logo-text {
     font-family: 'Outfit', sans-serif;
     font-size: 28px;
     font-weight: 800;
     color: var(--primary);
     margin: 0;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
+    white-space: nowrap;
 }
 
 .search-bar {
@@ -138,7 +145,8 @@ body {
     align-items: center;
     gap: 12px;
     height: 42px;
-    width: 400px;
+    width: 100%;
+    max-width: 420px;
     transition: var(--transition-fast);
     box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
