@@ -288,14 +288,18 @@ body {
     min-width: 300px;
 }
 
-.bible-header-sticky {
-    height: 64px;
-    padding: 0 35px; /* Reduced from 50 to leave room for tools */
+.bible-header-sticky, .notes-header {
+    height: 68px;
+    padding: 0 35px;
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(12px);
     z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    box-sizing: border-box;
+    /* Eliminamos overflow: hidden para permitir elevación de botones */
 }
 
 .bible-scroll-area {
@@ -618,21 +622,12 @@ body.resizing {
     vertical-align: super;
 }
 
-.notes-header {
-    height: 68px; /* Increased slightly to allow buttons to breathe */
-    padding: 0 35px; /* Equalized and optimized */
-    background-color: #ffffff;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    position: relative;
-    box-sizing: border-box;
-}
+/* .notes-header now unified with .bible-header-sticky above */
 
-.editor-toolbar {
+.editor-toolbar, .bible-toolbar-std {
     display: flex;
     align-items: center;
-    gap: 8px; /* Slightly tighter for consistency */
+    gap: 8px;
     flex-wrap: nowrap;
     position: relative;
     flex: 1;
@@ -641,9 +636,10 @@ body.resizing {
     scrollbar-width: none;
     scroll-behavior: smooth;
     white-space: nowrap;
+    padding: 10px 0; /* Add vertical padding so transform doesn't clip */
 }
 
-.editor-toolbar::-webkit-scrollbar { display: none; }
+.editor-toolbar::-webkit-scrollbar, .bible-toolbar-std::-webkit-scrollbar { display: none; }
 
 .toolbar-group {
     display: flex;
