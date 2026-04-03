@@ -420,11 +420,18 @@ body {
     background-color: var(--secondary);
 }
 
-.bible-content-wrapper { max-width: 750px; margin: 0 auto; }
+.bible-content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 40px 60px 40px;
+}
 
-.bible-header { margin-bottom: 40px; }
-.bible-header h1 { font-family: 'Libre Baskerville', serif; font-size: 42px; color: var(--primary); margin: 10px 0; }
-.bible-header h2 { font-family: 'Outfit', sans-serif; font-size: 18px; color: var(--secondary); font-weight: 400; }
+.bible-header {
+    margin-bottom: 25px;
+    text-align: left;
+}
+.bible-header h1 { font-family: 'Libre Baskerville', serif; font-size: 42px; color: var(--primary); margin: 0 0 5px 0; }
+.bible-header h2 { font-family: 'Outfit', sans-serif; font-size: 18px; color: var(--secondary); font-weight: 400; margin: 0; }
 
 .verse {
     padding: 8px 12px;
@@ -444,7 +451,11 @@ body {
 
 /* 7. NOTE EDITOR STYLING */
 .notes-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.active-note-context { padding: 30px 40px; }
+.active-note-context {
+    padding: 15px 40px 10px 40px; /* Restaurado padding lateral a 40px */
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
 .active-note-context h2 { font-family: 'Outfit', sans-serif; font-size: 38px; font-weight: 800; color: var(--primary); outline: none; }
 .verse-ref { font-size: 16px; color: var(--secondary); margin-top: 8px; outline: none; }
 
