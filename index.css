@@ -273,12 +273,11 @@ body {
     align-items: center;
     gap: 8px;
     flex: 1;
-    overflow-x: auto;
-    scrollbar-width: none;
-    scroll-behavior: smooth;
+    /* Unificado: No usar overflow-x para permitir que los dropdowns respiren */
+    overflow: visible !important; 
     white-space: nowrap;
-    padding: 10px 0;
-    overflow-y: visible !important;
+    height: 100%;
+    padding: 0;
 }
 
 .editor-toolbar::-webkit-scrollbar, .bible-toolbar-std::-webkit-scrollbar { display: none; }
