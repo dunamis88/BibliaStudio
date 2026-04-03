@@ -117,53 +117,43 @@
                                     </button>
                                     <div id="highlight-palette" class="highlight-popup" style="display: none;">
                                         <div class="palette-grid">
+                                            <div class="palette-dot yellow active" data-color="yellow" style="background-color: #fefcbf;"></div>
+                                            <div class="palette-dot green" data-color="green" style="background-color: #c6f6d5;"></div>
                                             <div class="palette-dot blue" data-color="blue" style="background-color: #bee3f8;"></div>
                                             <div class="palette-dot red" data-color="red" style="background-color: #fed7d7;"></div>
                                             <div class="palette-dot purple" data-color="purple" style="background-color: #e9d8fd;"></div>
                                             <div class="palette-dot orange" data-color="orange" style="background-color: #feebc8;"></div>
                                             <div class="palette-dot clear" data-color="none" title="Limpiar"><i data-lucide="droplet-off"></i></div>
-                                           <!-- Bible Panel -->
-                <section class="bible-panel" id="bible-panel">
-                    <div class="bible-header-sticky">
-                        <button id="btn-bible-scroll-left" class="std-scroll-btn left" title="Anterior"><i data-lucide="chevron-left"></i></button>
-                        <div class="bible-toolbar-std" id="bible-toolbar-scrollable">
-                            <!-- Historial -->
-                            <div class="toolbar-group">
-                                <button class="std-nav-btn" id="btn-bible-back"><i data-lucide="arrow-left"></i></button>
-                                <button class="std-nav-btn" id="btn-bible-forward"><i data-lucide="arrow-right"></i></button>
-                            </div>
-                            <div class="std-divider"></div>
-                            <!-- Navegación -->
-                            <div class="toolbar-group">
-                                <button class="std-tool-btn" id="btn-open-selector"><span id="current-version-display">RV60</span><i data-lucide="chevron-down" style="width:12px;margin-left:4px"></i></button>
-                                <button class="std-tool-btn" id="btn-open-book-selector"><span id="current-book-display">Génesis</span><i data-lucide="chevron-down" style="width:12px;margin-left:4px"></i></button>
-                                <div class="inline-nav">
-                                    <button class="nav-arrow" id="btn-prev-chapter"><i data-lucide="chevron-left"></i></button>
-                                    <button class="std-tool-btn" id="btn-open-chapter-selector"><span id="current-chapter-display">1</span></button>
-                                    <button class="nav-arrow" id="btn-next-chapter"><i data-lucide="chevron-right"></i></button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
                             <div class="std-divider"></div>
-                            <!-- Auxiliares -->
+
+                            <!-- Grupo 3: Auxiliares -->
                             <div class="toolbar-group">
-                                <button class="std-tool-btn" id="btn-browse-highlights"><i data-lucide="highlighter"></i></button>
-                                <div class="zoom-controls">
-                                    <button class="zoom-btn" id="btn-zoom-out"><i data-lucide="minus"></i></button>
-                                    <span class="zoom-level" id="zoom-value">18</span>
-                                    <button class="zoom-btn" id="btn-zoom-in"><i data-lucide="plus"></i></button>
-                                </div>
+                                <button class="std-tool-btn" id="btn-bible-zoom-out"><i data-lucide="minus"></i></button>
+                                <span class="std-zoom-label" id="bible-size-label">18</span>
+                                <button class="std-tool-btn" id="btn-bible-zoom-in"><i data-lucide="plus"></i></button>
                             </div>
                         </div>
-                        <button id="btn-bible-scroll-right" class="std-scroll-btn right" title="Siguiente"><i data-lucide="chevron-right"></i></button>
+
+                        <!-- Botón de scroll Derecho -->
+                        <button id="btn-bible-scroll-right" class="std-scroll-btn right" title="Ver más herramientas"><i data-lucide="chevron-right"></i></button>
                     </div>
+
+                    <!-- Scrollable Area -->
                     <div class="bible-scroll-area">
                         <div class="bible-content-wrapper">
-                            <div class="bible-header">
+                            <div class="bible-header" style="margin-top: 0;">
                                 <span class="subtitle">Libro</span>
                                 <h1 id="bible-book-title">Libro</h1>
                                 <h2 id="bible-chapter-title">Capítulo 1</h2>
                             </div>
-                            <div class="bible-verses" id="bible-verses-container"></div>
+                            <div class="bible-verses" id="bible-verses-container">
+                                <div class="loading">Cargando Biblia...</div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -175,56 +165,120 @@
 
                 <!-- Notes Panel -->
                 <section class="notes-panel" id="notes-panel">
-                    <div class="notes-header-sticky">
-                        <button id="btn-notes-scroll-left" class="std-scroll-btn left"><i data-lucide="chevron-left"></i></button>
-                        <div class="notes-toolbar-std" id="notes-toolbar-scrollable">
-                            <div class="editor-toolbar">
-                                <div class="tool-group">
-                                    <button class="tool-btn" id="btn-new-note-quick"><i data-lucide="file-plus"></i></button>
-                                    <button class="tool-btn" data-command="undo"><i data-lucide="rotate-ccw"></i></button>
-                                    <button class="tool-btn" data-command="redo"><i data-lucide="rotate-cw"></i></button>
-                                </div>
+                    <div class="notes-header">
+                        <!-- Flechas de scroll Notas -->
+                        <button id="btn-notes-scroll-left" class="std-scroll-btn left" title="Ver más"><i data-lucide="chevron-left"></i></button>
+                        
+                        <div class="editor-toolbar" id="notes-toolbar-scrollable">
+                            <!-- Grupo 1: Gestión de Nota -->
+                            <div class="tool-group">
+                                <button class="tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
+                                <button class="tool-btn" id="btn-save-note" title="Forzar Guardado (Ctrl+S)"><i data-lucide="save"></i></button>
                                 <div class="tool-divider"></div>
-                                <div class="tool-group">
-                                    <button class="tool-btn" data-command="bold"><i data-lucide="bold"></i></button>
-                                    <button class="tool-btn" data-command="italic"><i data-lucide="italic"></i></button>
-                                    <button class="tool-btn" data-command="underline"><i data-lucide="underline"></i></button>
+                                <button class="tool-btn" title="Deshacer" data-command="undo"><i data-lucide="rotate-ccw"></i></button>
+                                <button class="tool-btn" title="Rehacer" data-command="redo"><i data-lucide="rotate-cw"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 2: Estilo de Texto -->
+                            <div class="tool-group">
+                                <button class="tool-btn" title="Negrita" data-command="bold"><i data-lucide="bold"></i></button>
+                                <button class="tool-btn" title="Itálica" data-command="italic"><i data-lucide="italic"></i></button>
+                                <button class="tool-btn" title="Subrayado" data-command="underline"><i data-lucide="underline"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 3: Fuente y Tamaño -->
+                            <div class="tool-group">
+                                <select class="tool-select" id="select-font-family" title="Fuente">
+                                    <option value="Inter">Sans</option>
+                                    <option value="Libre Baskerville">Serif</option>
+                                    <option value="Outfit">Modern</option>
+                                </select>
+                                <select class="tool-select" id="select-font-size" title="Tamaño">
+                                    <option value="9px">9</option>
+                                    <option value="10px">10</option>
+                                    <option value="11px">11</option>
+                                    <option value="12px">12</option>
+                                    <option value="13px">13</option>
+                                    <option value="14px">14</option>
+                                    <option value="16px" selected>16</option>
+                                    <option value="18px">18</option>
+                                    <option value="20px">20</option>
+                                    <option value="24px">24</option>
+                                    <option value="28px">28</option>
+                                    <option value="32px">32</option>
+                                    <option value="36px">36</option>
+                                    <option value="40px">40</option>
+                                    <option value="44px">44</option>
+                                    <option value="48px">48</option>
+                                    <option value="54px">54</option>
+                                    <option value="60px">60</option>
+                                    <option value="66px">66</option>
+                                    <option value="70px">70</option>
+                                </select>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 4: Alineación y Listas -->
+                            <div class="tool-group">
+                                <div style="position: relative;">
+                                    <button class="tool-btn" title="Alineación" id="btn-align"><i data-lucide="align-left"></i></button>
+                                    <div id="align-popup" class="tool-popup" style="display: none;">
+                                        <button class="tool-btn" data-command="justifyLeft"><i data-lucide="align-left"></i></button>
+                                        <button class="tool-btn" data-command="justifyCenter"><i data-lucide="align-center"></i></button>
+                                        <button class="tool-btn" data-command="justifyRight"><i data-lucide="align-right"></i></button>
+                                        <button class="tool-btn" data-command="justifyFull"><i data-lucide="align-justify"></i></button>
+                                    </div>
                                 </div>
+                                <button class="tool-btn" title="Lista Viñetas" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <div class="tool-group">
+                                <button class="tool-btn" title="Cita" id="btn-insert-quote"><i data-lucide="quote"></i></button>
+                                <button class="tool-btn" title="Versículo" id="btn-import-verse"><i data-lucide="book-open"></i></button>
                                 <div class="tool-divider"></div>
-                                <div class="tool-group">
-                                    <select class="tool-select" id="select-font-family">
-                                        <option value="Inter">Sans</option>
-                                        <option value="Outfit">Modern</option>
-                                    </select>
-                                    <select class="tool-select" id="select-font-size">
-                                        <option value="14px">14</option>
-                                        <option value="16px" selected>16</option>
-                                        <option value="18px">18</option>
-                                    </select>
-                                </div>
-                                <div class="tool-divider"></div>
-                                <div class="tool-group">
-                                    <button class="tool-btn" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
-                                    <button class="tool-btn" id="btn-insert-quote"><i data-lucide="quote"></i></button>
-                                    <button class="tool-btn" id="btn-import-verse"><i data-lucide="book-open"></i></button>
-                                    <button class="tool-btn" id="btn-insert-table"><i data-lucide="table"></i></button>
-                                </div>
-                                <div class="tool-divider"></div>
-                                <div class="tool-group">
-                                    <button class="tool-btn" id="btn-insert-image"><i data-lucide="image"></i></button>
-                                    <button class="tool-btn" id="btn-insert-youtube"><i data-lucide="video"></i></button>
-                                    <button class="tool-btn" id="btn-print-note"><i data-lucide="printer"></i></button>
+                                <button class="tool-btn" title="Limpiar Formato" id="btn-clear-format"><i data-lucide="eraser"></i></button>
+                            </div>
+                            <div class="tool-divider"></div>
+
+                            <!-- Grupo 6: Multimedia e Impresión -->
+                            <div class="tool-group">
+                                <button class="tool-btn" title="Insertar Enlace" data-command="createLink"><i data-lucide="link"></i></button>
+                                <button class="tool-btn" title="Insertar Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
+                                
+                                <button class="tool-btn" title="YouTube" id="btn-insert-youtube">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube-custom"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 2-2h15a2 2 0 0 1 2 2 24.12 24.12 0 0 1 0 10 2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2Z"/><path d="m10 15 5-3-5-3z"/></svg>
+                                </button>
+                                
+                                <button class="tool-btn" title="Iframe Web" id="btn-insert-web"><i data-lucide="globe"></i></button>
+                                <button class="tool-btn" title="Imprimir Nota" id="btn-print-note"><i data-lucide="printer"></i></button>
+                            </div>
+                            
+                            <!-- Botón '...' para herramientas ocultas -->
+                            <div class="dropdown-container" id="toolbar-more-container" style="display: none; margin-left: auto;">
+                                <button class="tool-btn" id="btn-toolbar-more" title="Más herramientas">
+                                    <i data-lucide="more-horizontal"></i>
+                                </button>
+                                <div class="nav-dropdown" id="toolbar-more-dropdown" style="min-width: 180px; padding: 10px; right: 0; left: auto;">
+                                    <div class="more-tools-grid"></div>
                                 </div>
                             </div>
                         </div>
-                        <button id="btn-notes-scroll-right" class="std-scroll-btn right"><i data-lucide="chevron-right"></i></button>
                     </div>
                     <div class="notes-content">
                         <div class="active-note-context">
-                            <h2 id="active-note-title" contenteditable="true">Título...</h2>
-                            <div id="active-note-subtitle" contenteditable="true" class="verse-ref">Referencia...</div>
+                            <h2 id="active-note-title" contenteditable="true" placeholder="Escribe el título aquí...">Escribe el título aquí...</h2>
+                            <div id="active-note-subtitle" contenteditable="true" class="verse-ref" placeholder="Escribe el subtítulo aquí...">Escribe el subtítulo aquí...</div>
                         </div>
-                        <div id="editor" contenteditable="true" class="rich-editor"></div>
+                        <div id="editor" contenteditable="true" class="rich-editor">
+                            <!-- Content injected here -->
+                        </div>
+                    </div>
+                    <!-- Selection Toolbar for floating menu -->
+                    <div class="selection-fab" id="selection-fab" style="display: none;">
+                        <i data-lucide="plus"></i>
                     </div>
                 </section>
             </div>
