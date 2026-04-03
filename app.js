@@ -503,31 +503,45 @@ function setNoteFontSize(size) {
     const editorEl = document.getElementById('editor');
     if (!editorEl) return;
 
-    // Standard high-reliability method
-    document.execCommand('styleWithCSS', false, true);
-    
+    const range = selection.getRangeAt(0);
+
+    // MODO A: Solo el cursor (sin texto seleccionado)
     if (selection.isCollapsed) {
-        // Mode A: Focus only - Create a styled span for new typing
-        const range = selection.getRangeAt(0);
         const span = document.createElement('span');
         span.style.fontSize = size;
-        span.innerHTML = '&#8203;'; // Invisible holder
+        span.innerHTML = '&#8203;'; // Espacio invisible para "anclar" el estilo
         range.insertNode(span);
         
+        // Posicionar el cursor dentro del nuevo estilo
         const newRange = document.createRange();
         newRange.setStart(span.firstChild, 1);
         newRange.collapse(true);
         selection.removeAllRanges();
         selection.addRange(newRange);
-    } else {
-        // Mode B: Selection - Apply size
-        document.execCommand('fontSize', false, '7'); 
-        const markers = editorEl.querySelectorAll('span[style*="font-size: xxx-large"]');
-        markers.forEach(m => {
-            m.style.fontSize = size;
-            // Clean internal conflicting sizes
-            m.querySelectorAll('span[style*="font-size"]').forEach(inner => inner.style.fontSize = 'inherit');
-        });
+    } 
+    // MODO B: Texto seleccionado (Envoltura directa)
+    else {
+        const span = document.createElement('span');
+        span.style.fontSize = size;
+        
+        try {
+            // Extraemos y envolvemos el contenido exacto
+            const fragment = range.extractContents();
+            span.appendChild(fragment);
+            range.insertNode(span);
+            
+            // Limpieza: Evitar anidación infinita de tamaños
+            span.querySelectorAll('span[style*="font-size"]').forEach(child => {
+                child.style.fontSize = 'inherit';
+            });
+        } catch (e) {
+            // Fallback: Si el rango es muy complejo, forzamos vía execCommand CSS
+            document.execCommand('styleWithCSS', false, true);
+            document.execCommand('fontSize', false, '7');
+            editorEl.querySelectorAll('span[style*="xxx-large"]').forEach(m => {
+                m.style.fontSize = size;
+            });
+        }
     }
     
     saveState();
