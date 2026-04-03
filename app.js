@@ -731,6 +731,11 @@ function setupEventListeners() {
         });
     }
 
+    const btnNewNote = document.getElementById('btn-new-note-quick');
+    if (btnNewNote) {
+        btnNewNote.onclick = () => createNewNote();
+    }
+
     const btnClearFormat = document.getElementById('btn-clear-format');
     if (btnClearFormat) {
         btnClearFormat.addEventListener('click', () => {
@@ -1089,18 +1094,8 @@ function renderNotesBrowser(query = "") {
         </div>
     `;
     newBtn.onclick = () => {
-        const id = 'note-' + Date.now();
-        state.notes[id] = {
-            title: "Escribe el título aquí...",
-            subtitle: "Escribe el subtítulo aquí...",
-            content: "",
-            date: new Date().toLocaleDateString()
-        };
-        state.currentNoteId = id;
-        saveState();
-        loadCurrentNote();
+        createNewNote();
         document.getElementById('notes-overlay').style.display = 'none';
-        document.getElementById('active-note-title').focus();
     };
     list.appendChild(newBtn);
 
@@ -1760,4 +1755,31 @@ function closeAllDropdowns() {
     
     const palette = document.querySelector('.highlight-palette');
     if (palette) palette.classList.remove('show');
+}
+
+function createNewNote() {
+    const id = 'note-' + Date.now();
+    state.notes[id] = {
+        title: "Nueva Reflexión",
+        subtitle: "Añadir subtítulo...",
+        content: "",
+        date: new Date().toLocaleDateString()
+    };
+    state.currentNoteId = id;
+    saveState();
+    loadCurrentNote();
+    
+    // Auto-focus title for immediate writing
+    setTimeout(() => {
+        const titleEl = document.getElementById('active-note-title');
+        if (titleEl) {
+            titleEl.focus();
+            // Select all text for easy replacement
+            const range = document.createRange();
+            range.selectNodeContents(titleEl);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    }, 150);
 }
