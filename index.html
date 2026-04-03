@@ -173,108 +173,69 @@
                 <!-- Notes Panel -->
                 <section class="notes-panel" id="notes-panel">
                     <div class="notes-header" style="position: relative;">
-                        <!-- Botón de scroll Izquierdo -->
+                        <!-- Botones de scroll Universales -->
                         <button id="btn-notes-scroll-left" class="std-scroll-btn left" title="Anterior"><i data-lucide="chevron-left"></i></button>
                         
                         <div class="editor-toolbar" id="notes-toolbar-scrollable">
                             <!-- Grupo 1: Gestión de Nota -->
-                            <div class="tool-group">
-                                <button class="tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
-                                <div class="tool-divider"></div>
-                                <button class="tool-btn" title="Deshacer" data-command="undo"><i data-lucide="rotate-ccw"></i></button>
-                                <button class="tool-btn" title="Rehacer" data-command="redo"><i data-lucide="rotate-cw"></i></button>
+                            <div class="toolbar-group">
+                                <button class="std-tool-btn" id="btn-new-note-quick" title="Nueva Reflexión"><i data-lucide="file-plus-2"></i></button>
+                                <div class="std-divider"></div>
+                                <button class="std-tool-btn" title="Deshacer" data-command="undo"><i data-lucide="rotate-ccw"></i></button>
+                                <button class="std-tool-btn" title="Rehacer" data-command="redo"><i data-lucide="rotate-cw"></i></button>
                             </div>
-                            <div class="tool-divider"></div>
+                            <div class="std-divider"></div>
 
                             <!-- Grupo 2: Estilo de Texto -->
-                            <div class="tool-group">
-                                <button class="tool-btn" title="Negrita" data-command="bold"><i data-lucide="bold"></i></button>
-                                <button class="tool-btn" title="Itálica" data-command="italic"><i data-lucide="italic"></i></button>
-                                <button class="tool-btn" title="Subrayado" data-command="underline"><i data-lucide="underline"></i></button>
+                            <div class="toolbar-group">
+                                <button class="std-tool-btn" title="Negrita" data-command="bold"><i data-lucide="bold"></i></button>
+                                <button class="std-tool-btn" title="Itálica" data-command="italic"><i data-lucide="italic"></i></button>
+                                <button class="std-tool-btn" title="Subrayado" data-command="underline"><i data-lucide="underline"></i></button>
                             </div>
-                            <div class="tool-divider"></div>
+                            <div class="std-divider"></div>
 
                             <!-- Grupo 3: Fuente y Tamaño -->
-                            <div class="tool-group">
-                                <select class="tool-select" id="select-font-family" title="Fuente">
+                            <div class="toolbar-group">
+                                <select class="std-tool-select" id="select-font-family" title="Fuente">
                                     <option value="Inter">Sans</option>
                                     <option value="Libre Baskerville">Serif</option>
                                     <option value="Outfit">Modern</option>
                                 </select>
-                                <select class="tool-select" id="select-font-size" title="Tamaño">
+                                <select class="std-tool-select" id="select-font-size" title="Tamaño">
                                     <option value="9px">9</option>
-                                    <option value="10px">10</option>
-                                    <option value="11px">11</option>
-                                    <option value="12px">12</option>
-                                    <option value="13px">13</option>
-                                    <option value="14px">14</option>
                                     <option value="16px" selected>16</option>
-                                    <option value="18px">18</option>
                                     <option value="20px">20</option>
                                     <option value="24px">24</option>
-                                    <option value="28px">28</option>
                                     <option value="32px">32</option>
-                                    <option value="36px">36</option>
-                                    <option value="40px">40</option>
-                                    <option value="44px">44</option>
                                     <option value="48px">48</option>
-                                    <option value="54px">54</option>
-                                    <option value="60px">60</option>
-                                    <option value="66px">66</option>
-                                    <option value="70px">70</option>
                                 </select>
                             </div>
-                            <div class="tool-divider"></div>
+                            <div class="std-divider"></div>
 
                             <!-- Grupo 4: Alineación y Listas -->
-                            <div class="tool-group">
-                                <div style="position: relative;">
-                                    <button class="tool-btn" title="Alineación" id="btn-align"><i data-lucide="align-left"></i></button>
-                                    <div id="align-popup" class="tool-popup" style="display: none;">
-                                        <button class="tool-btn" data-command="justifyLeft"><i data-lucide="align-left"></i></button>
-                                        <button class="tool-btn" data-command="justifyCenter"><i data-lucide="align-center"></i></button>
-                                        <button class="tool-btn" data-command="justifyRight"><i data-lucide="align-right"></i></button>
-                                        <button class="tool-btn" data-command="justifyFull"><i data-lucide="align-justify"></i></button>
-                                    </div>
-                                </div>
-                                <button class="tool-btn" title="Lista Viñetas" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
+                            <div class="toolbar-group">
+                                <button class="std-tool-btn" title="Alineación Izquierda" data-command="justifyLeft"><i data-lucide="align-left"></i></button>
+                                <button class="std-tool-btn" title="Alineación Central" data-command="justifyCenter"><i data-lucide="align-center"></i></button>
+                                <button class="std-tool-btn" title="Lista Viñetas" data-command="insertUnorderedList"><i data-lucide="list"></i></button>
                             </div>
-                            <div class="tool-divider"></div>
+                            <div class="std-divider"></div>
 
-                            <div class="tool-group">
-                                <button class="tool-btn" title="Cita" id="btn-insert-quote"><i data-lucide="quote"></i></button>
-                                <button class="tool-btn" title="Versículo" id="btn-import-verse"><i data-lucide="book-open"></i></button>
-                                <div class="tool-divider"></div>
-                                <button class="tool-btn" title="Limpiar Formato" id="btn-clear-format"><i data-lucide="eraser"></i></button>
+                            <!-- Grupo 5: Herramientas Académicas -->
+                            <div class="toolbar-group">
+                                <button class="std-tool-btn" title="Insertar Cita" id="btn-insert-quote"><i data-lucide="quote"></i></button>
+                                <button class="std-tool-btn" title="Importar Versículo" id="btn-import-verse"><i data-lucide="book-open"></i></button>
+                                <div class="std-divider"></div>
+                                <button class="std-tool-btn" title="Limpiar Formato" id="btn-clear-format"><i data-lucide="eraser"></i></button>
                             </div>
-                            <div class="tool-divider"></div>
+                            <div class="std-divider"></div>
 
-                            <!-- Grupo 6: Multimedia e Impresión (Adaptativo) -->
-                            <div class="tool-group adaptive-group">
-                                <button class="tool-btn" title="Insertar Tabla" id="btn-insert-table"><i data-lucide="table"></i></button>
-                                <div id="table-selector-popup" class="table-grid-popup" style="display: none;">
-                                    <div class="table-grid-container" id="table-grid"></div>
-                                    <div class="table-grid-status">Insertar tabla <span id="table-dim">1x1</span></div>
-                                </div>
-                                <button class="tool-btn" title="Insertar Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
-                                <input type="file" id="image-upload" accept="image/*" style="display: none;">
-                                
-                                <button class="tool-btn" title="YouTube" id="btn-insert-youtube">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube-custom"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 2-2h15a2 2 0 0 1 2 2 24.12 24.12 0 0 1 0 10 2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2Z"/><path d="m10 15 5-3-5-3z"/></svg>
-                                </button>
-                                
-                                <button class="tool-btn" title="Iframe Web" id="btn-insert-web"><i data-lucide="globe"></i></button>
-                                <button class="tool-btn" title="Imprimir Nota" id="btn-print-note"><i data-lucide="printer"></i></button>
-                            </div>
-                            
-                            <!-- Botón '...' para herramientas ocultas -->
-                            <div class="dropdown-container" id="toolbar-more-container" style="display: none; margin-left: auto;">
-                                <button class="tool-btn" id="btn-toolbar-more" title="Más herramientas">
-                                    <i data-lucide="more-horizontal"></i>
-                                </button>
-                                <div class="nav-dropdown" id="toolbar-more-dropdown" style="min-width: 180px; padding: 10px; right: 0; left: auto;">
-                                    <div class="more-tools-grid"></div>
-                                </div>
+                            <!-- Grupo 6: Multimedia e Impresión -->
+                            <div class="toolbar-group">
+                                <button class="std-tool-btn" title="Insertar Tabla" id="btn-insert-table"><i data-lucide="table"></i></button>
+                                <button class="std-tool-btn" title="Insertar Imagen" id="btn-insert-image"><i data-lucide="image"></i></button>
+                                <button class="std-tool-btn" title="Insertar YouTube" id="btn-insert-youtube"><i data-lucide="video"></i></button>
+                                <div class="std-divider"></div>
+                                <button class="std-tool-btn" title="Imprimir Nota" id="btn-print-note"><i data-lucide="printer"></i></button>
                             </div>
                         </div>
                         

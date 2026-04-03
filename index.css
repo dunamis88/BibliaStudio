@@ -612,37 +612,53 @@ body.resizing {
     vertical-align: super;
 }
 
-/* Editor Toolbar */
 .notes-header {
     height: 64px;
     padding: 0 50px;
+    background-color: #ffffff;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     position: relative;
     overflow: hidden !important;
-    background-color: #ffffff;
     box-sizing: border-box;
 }
 
 .editor-toolbar {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px; /* Aumentado para forzar carrusel en más casos */
     flex-wrap: nowrap;
     position: relative;
-    width: 100%;
-    min-width: 0;
     flex: 1;
+    min-width: 0;
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: none;
     scroll-behavior: smooth;
     white-space: nowrap;
-    padding: 0 10px;
 }
 
 .editor-toolbar::-webkit-scrollbar { display: none; }
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.std-tool-select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    font-size: 13px;
+    color: var(--primary);
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+}
 
 .tool-group {
     display: flex;
