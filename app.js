@@ -1597,6 +1597,16 @@ function renderHighlightsBrowser(sortBy = 'book') {
         // Fetch the actual verse text for the list
         let verseText = "Cargando texto...";
         const bible = bibleLibrary[h.version];
+
+        // Format Date elegantly
+        let dateStr = "Marcado recientemente";
+        if (h.time && h.time > 0) {
+            dateStr = new Date(h.time).toLocaleDateString('es-ES', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+        }
         if (bible) {
             const first = bible.data[0] || {};
             const keys = Object.keys(first);
@@ -1620,7 +1630,7 @@ function renderHighlightsBrowser(sortBy = 'book') {
             <div class="h-item-details">
                 <div class="h-item-header">
                     <span class="h-item-ref">${book ? book.n : 'Libro'} ${h.chapter}:${h.verse}</span>
-                    <span class="h-item-meta">${h.version} • ${h.time ? new Date(h.time).toLocaleDateString() : 'Fecha desconocida'}</span>
+                    <span class="h-item-meta">${h.version} • ${dateStr}</span>
                 </div>
                 <div class="h-item-text">"${verseText}"</div>
             </div>
