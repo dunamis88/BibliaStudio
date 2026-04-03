@@ -1012,29 +1012,27 @@ function setupEventListeners() {
         });
     }
 
-    // Chapter Arrows Navigation
+    // Chapter Arrows Navigation (Corrected for single trigger)
     const btnPrev = document.getElementById('btn-chapter-prev');
     const btnNext = document.getElementById('btn-chapter-next');
 
     if (btnPrev) {
-        btnPrev.addEventListener('click', (e) => {
+        btnPrev.onclick = (e) => {
             e.stopPropagation();
             if (state.currentChapter > 1) {
                 navigateTo(state.currentVersion, state.currentBook, state.currentChapter - 1);
-            } else {
-                // Try to go to previous book? For now just stay.
             }
-        });
+        };
     }
 
     if (btnNext) {
-        btnNext.addEventListener('click', (e) => {
+        btnNext.onclick = (e) => {
             e.stopPropagation();
             const book = BOOKS.find(b => b.id === state.currentBook);
             if (state.currentChapter < book.c) {
                 navigateTo(state.currentVersion, state.currentBook, state.currentChapter + 1);
             }
-        });
+        };
     }
 
     lucide.createIcons();
