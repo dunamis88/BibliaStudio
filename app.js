@@ -746,19 +746,22 @@ function setupEventListeners() {
     // Selection change toolbar update
     document.addEventListener('selectionchange', updateEditorToolbarState);
 
-    // Editor Dropdowns
     const triggerFont = document.getElementById('trigger-font-family');
     if (triggerFont) triggerFont.onclick = (e) => {
         e.stopPropagation();
+        const target = document.getElementById('dropdown-font-family');
+        const isShow = target.classList.contains('show');
         closeAllDropdowns();
-        document.getElementById('dropdown-font-family').classList.add('show');
+        if (!isShow) target.classList.add('show');
     };
 
     const triggerSize = document.getElementById('trigger-font-size');
     if (triggerSize) triggerSize.onclick = (e) => {
         e.stopPropagation();
+        const target = document.getElementById('dropdown-font-size');
+        const isShow = target.classList.contains('show');
         closeAllDropdowns();
-        document.getElementById('dropdown-font-size').classList.add('show');
+        if (!isShow) target.classList.add('show');
     };
 
     // Keyboard Shortcuts
@@ -795,18 +798,20 @@ function setupEventListeners() {
         alignPopup.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // Global click closer
+    // Global click closer (Consolidated)
     document.addEventListener('click', (e) => {
-        if (alignPopup) alignPopup.style.display = 'none';
-        const tablePopup = document.getElementById('table-selector-popup');
-        if (tablePopup) tablePopup.style.display = 'none';
-        
-        document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('show'));
-        
-        // Close search dropdown if click is outside
-        if (bibleSearchDropdown && !e.target.closest('.bible-search-main')) {
-            bibleSearchDropdown.classList.remove('show');
+        if (!e.target.closest('.std-dropdown-anchor') && 
+            !e.target.closest('.nav-dropdown') && 
+            !e.target.closest('.bible-search-main') &&
+            !e.target.closest('.highlight-palette-wrapper') &&
+            !e.target.closest('#btn-align')) {
+            closeAllDropdowns();
         }
+        
+        // Specific popups that don't use .nav-dropdown class yet
+        if (alignPopup && !e.target.closest('#btn-align')) alignPopup.style.display = 'none';
+        const tablePopup = document.getElementById('table-selector-popup');
+        if (tablePopup && !e.target.closest('#btn-insert-table')) tablePopup.style.display = 'none';
     });
     
     // Bible Search
@@ -1744,4 +1749,15 @@ function jumpToVerse(bookId, chapterId, verseId) {
             setTimeout(() => target.classList.remove('flash-highlight'), 2000);
         }
     }, 500);
+}
+
+function closeAllDropdowns() {
+    const dropdowns = document.querySelectorAll('.nav-dropdown');
+    dropdowns.forEach(d => d.classList.remove('show'));
+    
+    const searchDropdown = document.getElementById('bible-search-dropdown');
+    if (searchDropdown) searchDropdown.classList.remove('show');
+    
+    const palette = document.querySelector('.highlight-palette');
+    if (palette) palette.classList.remove('show');
 }
