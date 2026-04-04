@@ -1051,7 +1051,7 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* 14. RESPONSIVE MOBILE ARCHITECTURE */
+/* 14. RESPONSIVE MOBILE ARCHITECTURE (REFINED) */
 @media (max-width: 768px) {
     .resizer { display: none !important; }
     
@@ -1068,6 +1068,16 @@ body {
         transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Reducción radical de márgenes movil */
+    .bible-verses-container {
+        padding: 5px 15px 40px 15px !important;
+    }
+    .document-page {
+        margin: 5px !important;
+        padding: 15px !important;
+        border-radius: 8px;
+    }
+
     /* Estado: Solo Biblia */
     .view-bible .bible-panel { transform: translateX(0); }
     .view-bible .notes-panel { transform: translateX(100%); display: none; }
@@ -1076,22 +1086,57 @@ body {
     .view-notes .bible-panel { transform: translateX(-100%); display: none; }
     .view-notes .notes-panel { transform: translateX(0); display: block !important; }
 
-    /* Nav adjustments */
+    /* Header Mobile Refinado */
     .app-header {
-        padding: 5px 12px;
-        height: 55px;
+        padding: 5px 8px;
+        height: auto;
+        flex-direction: column;
+        gap: 8px;
     }
     
-    .main-logo-text { display: none; } /* Ocultar logo en móvil para dar espacio */
+    .app-header-left {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .main-logo-text { 
+        font-size: 16px; 
+        white-space: nowrap;
+    }
     
-    .search-bar { width: 100% !important; }
+    .search-bar { 
+        width: 100% !important; 
+        max-width: none;
+    }
+
+    /* Ajuste Dropdown de búsqueda móvil */
+    .search-dropdown-menu {
+        position: fixed;
+        left: 2.5vw !important;
+        width: 95vw !important;
+        max-height: 70vh;
+        top: 100px !important;
+        z-index: 3000;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Overlays a ancho completo */
+    .explorer-overlay .modal-content {
+        width: 95% !important;
+        margin: 10px auto;
+        padding: 15px;
+    }
     
     .notes-toolbar-scrollable, .bible-toolbar-std {
-        gap: 6px;
+        gap: 4px;
     }
     
-    .std-nav-btn span { display: none; } /* Solo iconos en botones nav de móvil */
-    .std-nav-btn { min-width: 40px; padding: 0 8px; }
+    .std-nav-btn span, .std-tool-btn span { display: none; } 
+    .std-nav-btn { min-width: 38px; padding: 0 4px; font-size: 12px; }
 }
 
 /* Print Styles */
