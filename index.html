@@ -211,9 +211,11 @@
 
                             <!-- Grupo 4: Alineación -->
                             <div class="toolbar-group">
-                                <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('justifyLeft');"><i data-lucide="align-left"></i></button>
-                                <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('justifyCenter');"><i data-lucide="align-center"></i></button>
-                                <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('insertUnorderedList');"><i data-lucide="list"></i></button>
+                                <button class="std-tool-btn" title="Izquierda" onmousedown="event.preventDefault(); document.execCommand('justifyLeft');"><i data-lucide="align-left"></i></button>
+                                <button class="std-tool-btn" title="Centro" onmousedown="event.preventDefault(); document.execCommand('justifyCenter');"><i data-lucide="align-center"></i></button>
+                                <button class="std-tool-btn" title="Derecha" onmousedown="event.preventDefault(); document.execCommand('justifyRight');"><i data-lucide="align-right"></i></button>
+                                <button class="std-tool-btn" title="Justificado" onmousedown="event.preventDefault(); document.execCommand('justifyFull');"><i data-lucide="align-justify"></i></button>
+                                <button class="std-tool-btn" title="Lista" onmousedown="event.preventDefault(); document.execCommand('insertUnorderedList');"><i data-lucide="list"></i></button>
                             </div>
                         </div>
                         <button id="btn-notes-scroll-right" class="std-scroll-btn right"><i data-lucide="chevron-right"></i></button>
