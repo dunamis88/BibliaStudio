@@ -1810,10 +1810,19 @@ function performBibleSearch(query) {
                     const bookName = BOOKS.find(b => b.id === bId)?.n || "Libro";
                     const cleanTextVal = cleanText(v[tKey], state.currentVersion);
                     
+                    // --- NUEVO MOTOR DE RESALTADO ---
+                    let highlightedText = cleanTextVal;
+                    const q = query.trim();
+                    if (q.length >= 2) {
+                        const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                        highlightedText = cleanTextVal.replace(regex, '<mark class="bible-mark">$1</mark>');
+                    }
+                    
                     return `
                         <div class="search-result-item" onclick="jumpToVerse(${bId}, ${cId}, ${vId}); document.getElementById('bible-search-dropdown').classList.remove('show');">
                             <div class="search-result-ref">${bookName} ${cId}:${vId}</div>
-                            <div class="search-result-text">${cleanTextVal}</div>
+                            <div class="search-result-text">${highlightedText}</div>
                         </div>
                     `;
                 }).join('')}

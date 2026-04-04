@@ -1109,3 +1109,13 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+/* 13. SEARCH HIGHLIGHTING */
+.bible-mark {
+    background-color: #ffd966; /* Oro ámbar sutil para resalte premium */
+    color: #1a1a1a;
+    padding: 0 3px;
+    border-radius: 3px;
+    font-weight: 700;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
