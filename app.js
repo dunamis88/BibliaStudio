@@ -400,37 +400,49 @@ document.getElementById('active-note-subtitle').addEventListener('input', (e) =>
 
 // --- EDITOR LOGIC ---
 const editor = document.getElementById('editor');
-editor.addEventListener('input', () => {
-    if (!state.currentNoteId) return;
-    state.notes[state.currentNoteId].content = editor.innerHTML;
-    saveState();
-});
+if (editor) {
+    editor.addEventListener('input', () => {
+        if (!state.currentNoteId) return;
+        state.notes[state.currentNoteId].content = editor.innerHTML;
+        saveState();
+    });
 
-editor.addEventListener('paste', (e) => {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf("image") !== -1) {
-            const blob = items[i].getAsFile();
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const imgHTML = `<img src="${event.target.result}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`;
-                document.execCommand('insertHTML', false, imgHTML);
-            };
-            reader.readAsDataURL(blob);
+    editor.addEventListener('paste', (e) => {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") !== -1) {
+                const blob = items[i].getAsFile();
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const imgHTML = `<img src="${event.target.result}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`;
+                    document.execCommand('insertHTML', false, imgHTML);
+                };
+                reader.readAsDataURL(blob);
+            }
         }
-    }
-});
+    });
 
-// Show handles on image click
-editor.addEventListener('click', (e) => {
-    if (e.target.tagName === 'IMG') {
-        currentEditingImage = e.target;
-        setupImageResizeHandles(e.target);
-        e.stopPropagation();
-    } else if (!e.target.closest('.resize-handle')) {
-        removeImageResizeHandles();
-    }
-});
+    // Autocorrección Profesional (Solo PC)
+    editor.addEventListener('keydown', (e) => {
+        if (window.innerWidth > 768) {
+            const triggers = [' ', '.', ',', ';', 'Enter', '!', '?'];
+            if (triggers.includes(e.key)) {
+                setTimeout(() => handleAutocorrect(editor), 10);
+            }
+        }
+    });
+
+    // Show handles on image click
+    editor.addEventListener('click', (e) => {
+        if (e.target.tagName === 'IMG') {
+            currentEditingImage = e.target;
+            setupImageResizeHandles(e.target);
+            e.stopPropagation();
+        } else if (!e.target.closest('.resize-handle')) {
+            removeImageResizeHandles();
+        }
+    });
+}
 
 function setupImageResizeHandles(img) {
     removeImageResizeHandles();
@@ -489,10 +501,75 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Implementation for resizing removed - handles now used
-document.addEventListener('DOMContentLoaded', () => {
-    // Buttons for Notes Deletion logic
-});
+
+
+// --- MOTOR DE AUTOCORRECCIÓN PARA PC ---
+const COMMON_TYPOS = {
+    "haci": "así",
+    "tambien": "también",
+    "corijio": "corrigió",
+    "quie": "que",
+    "esten": "están",
+    "biblia": "Biblia",
+    "estudio": "estudio",
+    "senyor": "Señor",
+    "dios": "Dios",
+    "jesu": "Jesús",
+    "espiritu": "Espíritu",
+    "israel": "Israel",
+    "moise": "Moisés",
+    "david": "David",
+    "profeta": "profeta",
+    "apostol": "apóstol",
+    "evangelio": "evangelio",
+    "predicacion": "predicación",
+    "oracion": "oración",
+    "perdon": "perdón",
+    "bendicion": "bendición",
+    "proposito": "propósito",
+    "caracter": "carácter",
+    "etica": "ética",
+    "teologia": "teología"
+};
+
+function handleAutocorrect(editor) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    const textNode = range.startContainer;
+    
+    // Solo actuamos si estamos en un nodo de texto
+    if (textNode.nodeType !== 3) return;
+
+    const text = textNode.textContent;
+    const cursorOffset = range.startOffset;
+    
+    // Obtener la última palabra antes del cursor
+    const textBeforeCursor = text.substring(0, cursorOffset);
+    const words = textBeforeCursor.trim().split(/\s+/);
+    if (words.length === 0) return;
+
+    const lastWord = words[words.length - 1].toLowerCase().replace(/[.,;:!]/g, '');
+    const replacement = COMMON_TYPOS[lastWord];
+
+    if (replacement) {
+        // Encontrar la posición exacta de la palabra para reemplazarla
+        const lastWordPos = textBeforeCursor.lastIndexOf(words[words.length - 1]);
+        const newText = text.substring(0, lastWordPos) + 
+                        replacement + 
+                        text.substring(lastWordPos + words[words.length - 1].length);
+        
+        textNode.textContent = newText;
+        
+        // Reposicionar el cursor al final de la palabra corregida
+        const newRange = document.createRange();
+        newRange.setStart(textNode, lastWordPos + replacement.length);
+        newRange.setEnd(textNode, lastWordPos + replacement.length);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+    }
+}
 
 // --- EDITOR HELPERS ---
 function updateEditorToolbarState() {
