@@ -322,14 +322,6 @@ function handleVerseClick(e, vNum) {
     
     state.selectedVerses.sort((a, b) => a - b);
     renderBible(false);
-    
-    // Control de visibilidad del botón de captura
-    const btnCapture = document.getElementById('btn-capture-verse');
-    if (btnCapture) {
-        btnCapture.style.display = state.selectedVerses.length > 0 ? 'flex' : 'none';
-        btnCapture.onclick = () => sendSelectionToNote();
-    }
-    
     saveState();
 }
 

@@ -209,11 +209,15 @@
                             </div>
                             <div class="std-divider"></div>
 
-                            <!-- Grupo 4: Alineación -->
+                            <!-- Grupo 4: Alineación y Captura -->
                             <div class="toolbar-group">
                                 <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('justifyLeft');"><i data-lucide="align-left"></i></button>
                                 <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('justifyCenter');"><i data-lucide="align-center"></i></button>
                                 <button class="std-tool-btn" onmousedown="event.preventDefault(); document.execCommand('insertUnorderedList');"><i data-lucide="list"></i></button>
+                                <div class="std-divider"></div>
+                                <button class="std-tool-btn" title="Importar Versículo Seleccionado" onmousedown="event.preventDefault(); sendSelectionToNote();">
+                                    <i data-lucide="book-open"></i>
+                                </button>
                             </div>
                         </div>
                         <button id="btn-notes-scroll-right" class="std-scroll-btn right"><i data-lucide="chevron-right"></i></button>
@@ -230,16 +234,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Selection Toolbar for floating menu -->
-                    <div class="selection-fab" id="selection-fab" style="display: none;">
-                        <i data-lucide="plus"></i>
-                    </div>
-
-                    <!-- Botón de Captura Elegante -->
-                    <button id="btn-capture-verse" class="capture-fab" style="display: none;">
-                        <i data-lucide="send"></i>
-                        <span>ENVIAR A NOTA</span>
-                    </button>
                 </section>
             </div>
         </main>
