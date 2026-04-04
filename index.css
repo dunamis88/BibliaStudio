@@ -1051,6 +1051,49 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* 14. RESPONSIVE MOBILE ARCHITECTURE */
+@media (max-width: 768px) {
+    .resizer { display: none !important; }
+    
+    .split-view {
+        flex-direction: row;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    .bible-panel, .notes-panel {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        height: 100%;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Estado: Solo Biblia */
+    .view-bible .bible-panel { transform: translateX(0); }
+    .view-bible .notes-panel { transform: translateX(100%); display: none; }
+
+    /* Estado: Solo Notas */
+    .view-notes .bible-panel { transform: translateX(-100%); display: none; }
+    .view-notes .notes-panel { transform: translateX(0); display: block !important; }
+
+    /* Nav adjustments */
+    .app-header {
+        padding: 5px 12px;
+        height: 55px;
+    }
+    
+    .main-logo-text { display: none; } /* Ocultar logo en móvil para dar espacio */
+    
+    .search-bar { width: 100% !important; }
+    
+    .notes-toolbar-scrollable, .bible-toolbar-std {
+        gap: 6px;
+    }
+    
+    .std-nav-btn span { display: none; } /* Solo iconos en botones nav de móvil */
+    .std-nav-btn { min-width: 40px; padding: 0 8px; }
+}
+
 /* Print Styles */
 @media print {
     .app-header, .bible-panel, .resizer, .notes-header { display: none !important; }

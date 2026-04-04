@@ -82,6 +82,12 @@ async function init() {
 
     // Initial history anchor
     navigateTo(state.currentVersion, state.currentBook, state.currentChapter);
+
+    // Mobile View Initialization (Default to Bible)
+    if (window.innerWidth <= 768) {
+        document.getElementById('main-split').classList.add('view-bible');
+        setupMobileGestures();
+    }
 }
 
 function loadState() {
@@ -1902,4 +1908,48 @@ function applyAlign(command, iconName) {
     }
     closeAllDropdowns();
     editor.focus();
+}
+
+// --- MOBILE GESTURES SUPPORT ---
+function setupMobileGestures() {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    const gestureArea = document.getElementById('main-split');
+    if (!gestureArea) return;
+
+    gestureArea.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+
+    gestureArea.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+
+    function handleSwipe() {
+        const threshold = 100; // Pixels needed
+        const diff = touchEndX - touchStartX;
+
+        if (diff < -threshold) {
+            // Swipe Left (←): Show Notes
+            switchToView('notes');
+        } else if (diff > threshold) {
+            // Swipe Right (→): Show Bible
+            switchToView('bible');
+        }
+    }
+}
+
+function switchToView(view) {
+    const split = document.getElementById('main-split');
+    if (!split) return;
+
+    if (view === 'notes') {
+        split.classList.remove('view-bible');
+        split.classList.add('view-notes');
+    } else {
+        split.classList.remove('view-notes');
+        split.classList.add('view-bible');
+    }
 }
