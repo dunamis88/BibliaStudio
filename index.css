@@ -1057,3 +1057,55 @@ body {
     .split-view { border: none; box-shadow: none; margin: 0; }
     .notes-panel { width: 100% !important; border: none; }
 }
+
+/* 12. VERSE CAPTURE SYSTEM */
+.capture-fab {
+    position: fixed;
+    bottom: 30px;
+    left: 21%; /* Cerca de la biblia */
+    transform: translateX(-50%);
+    background-color: var(--primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    z-index: 2000;
+    transition: var(--transition-fast);
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.capture-fab:hover {
+    transform: translateX(-50%) translateY(-5px);
+    background-color: var(--primary-light);
+}
+
+/* El rectángulo elegante en la nota */
+.verse-badge-note {
+    background-color: #f8f1e9; /* Tono papel antiguo elegante */
+    border-left: 4px solid var(--primary);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    font-family: 'Libre Baskerville', serif;
+    position: relative;
+    line-height: 1.6;
+}
+
+.verse-badge-note .ref {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 12px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

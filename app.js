@@ -307,8 +307,8 @@ function renderBible(resetScroll = true) {
 }
 
 // --- INTERACTION ---
+// --- INTERACTION ---
 function handleVerseClick(e, vNum) {
-    // Primary Action: Toggle Selection (for marking colors OR importing to notes)
     const idx = state.selectedVerses.indexOf(vNum);
     if (idx > -1) {
         state.selectedVerses.splice(idx, 1);
@@ -321,8 +321,61 @@ function handleVerseClick(e, vNum) {
     }
     
     state.selectedVerses.sort((a, b) => a - b);
-    renderBible(false); // Do not jump to top when just selecting/deselecting a verse
+    renderBible(false);
+    
+    // Control de visibilidad del botón de captura
+    const btnCapture = document.getElementById('btn-capture-verse');
+    if (btnCapture) {
+        btnCapture.style.display = state.selectedVerses.length > 0 ? 'flex' : 'none';
+        btnCapture.onclick = () => sendSelectionToNote();
+    }
+    
     saveState();
+}
+
+function sendSelectionToNote() {
+    if (state.selectedVerses.length === 0) return;
+    
+    const bible = bibleLibrary[state.currentVersion];
+    if (!bible) return;
+
+    const bookName = BOOKS.find(b => b.id === state.currentBook)?.n || "Libro";
+    const refStr = `${bookName} ${state.currentChapter}:${state.selectedVerses.join(',')} (${state.currentVersion})`;
+
+    // Recolectar textos
+    const first = bible.data[0] || {};
+    const keys = Object.keys(first);
+    const vKey = bible.type === 'sqlite' ? 'Verse' : (keys.find(k => k.toLowerCase().includes('verse') || k.toLowerCase().includes('versiculo') || k.toLowerCase().includes('id3')) || keys[2]);
+    const tKey = bible.type === 'sqlite' ? 'Scripture' : (keys.find(k => k.toLowerCase().includes('scripture') || k.toLowerCase().includes('texto') || k.toLowerCase().includes('text') || k.toLowerCase().includes('vtext')) || keys[3]);
+
+    const texts = bible.data
+        .filter(v => parseInt(v[bible.type === 'sqlite' ? 'Book' : (keys[0])]) === state.currentBook && 
+                     parseInt(v[bible.type === 'sqlite' ? 'Chapter' : (keys[1])]) === state.currentChapter &&
+                     state.selectedVerses.includes(parseInt(v[vKey])))
+        .sort((a, b) => parseInt(a[vKey]) - parseInt(b[vKey]))
+        .map(v => `<span style="font-weight:700; font-size: 0.9em; margin-right:4px;">${v[vKey]}</span>${cleanText(v[tKey], state.currentVersion)}`)
+        .join(' ');
+
+    const cardHTML = `
+        <div class="verse-badge-note" contenteditable="false">
+            <span class="ref">${refStr}</span>
+            ${texts}
+        </div>
+        <p><br></p>
+    `;
+
+    const editor = document.getElementById('editor');
+    editor.focus();
+    
+    // Inyectar al final o en la selección actual
+    document.execCommand('insertHTML', false, cardHTML);
+    
+    // Limpiar selección para feedback visual
+    state.selectedVerses = [];
+    renderBible(false);
+    document.getElementById('btn-capture-verse').style.display = 'none';
+    
+    saveEditorState();
 }
 
 function loadCurrentNote() {
