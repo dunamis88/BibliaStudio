@@ -2007,6 +2007,20 @@ function deleteNote(id) {
     loadCurrentNote();
 }
 
+function printNote() {
+    const note = state.notes[state.currentNoteId];
+    if (!note) return;
+    
+    const originalTitle = document.title;
+    // Establecer el título del documento para que aparezca correctamente en el PDF/Impresión
+    document.title = `BibliaStudio - ${note.title || 'Reflexión'}`;
+    
+    window.print();
+    
+    // Restaurar título original
+    document.title = originalTitle;
+}
+
 function applyAlign(command, iconName) {
     document.execCommand(command, false, null);
     const icon = document.getElementById('current-align-icon');

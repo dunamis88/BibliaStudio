@@ -941,6 +941,7 @@ body {
     color: var(--secondary);
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1141,9 +1142,12 @@ body {
 
 /* Print Styles */
 @media print {
-    .app-header, .bible-panel, .resizer, .notes-header { display: none !important; }
-    .split-view { border: none; box-shadow: none; margin: 0; }
-    .notes-panel { width: 100% !important; border: none; }
+    .app-header, .bible-panel, .resizer, .notes-header, .std-scroll-btn, .icon-btn, .overlay, .floating-menu { display: none !important; }
+    .split-view { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; overflow: visible !important; height: auto !important; }
+    .notes-panel { width: 100% !important; border: none !important; overflow: visible !important; height: auto !important; }
+    .notes-content { padding: 0 !important; background: white !important; overflow: visible !important; height: auto !important; }
+    .document-page { box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+    body { background: white !important; overflow: visible !important; height: auto !important; }
 }
 
 /* 12. VERSE CAPTURE SYSTEM */
