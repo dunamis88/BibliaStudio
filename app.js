@@ -2021,6 +2021,49 @@ function printNote() {
     document.title = originalTitle;
 }
 
+async function forceCloudSync() {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Debes iniciar sesión con Google para sincronizar tus notas en la nube.");
+        return;
+    }
+    
+    const btn = document.getElementById('btn-cloud-sync');
+    if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        const icon = btn.querySelector('i');
+        const originalIcon = icon.getAttribute('data-lucide');
+        icon.setAttribute('data-lucide', 'refresh-cw');
+        icon.classList.add('sync-spin'); // Let's add this class for spin
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+        try {
+            await syncNotesToCloud();
+            // Mostrar éxito brevemente
+            setTimeout(() => {
+                icon.setAttribute('data-lucide', 'check');
+                icon.classList.remove('sync-spin');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                
+                setTimeout(() => {
+                    icon.setAttribute('data-lucide', originalIcon);
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }, 1500);
+            }, 500);
+        } catch (error) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            icon.classList.remove('sync-spin');
+            alert("Error al sincronizar: " + error.message);
+        }
+    } else {
+        await syncNotesToCloud();
+    }
+}
+
 function applyAlign(command, iconName) {
     document.execCommand(command, false, null);
     const icon = document.getElementById('current-align-icon');
