@@ -219,27 +219,36 @@ function cleanText(text, version) {
     if (!text) return "";
     let clean = String(text);
     
-    // RTF cleanup
+    // 1. Decodificar caracteres RTF específicos (acentos y ñ)
     clean = clean.replace(/\\'e1/g, "á").replace(/\\'e9/g, "é").replace(/\\'ed/g, "í")
                 .replace(/\\'f3/g, "ó").replace(/\\'fa/g, "ú").replace(/\\'f1/g, "ñ")
                 .replace(/\\'d1/g, "Ñ").replace(/\\'c1/g, "Á").replace(/\\'c9/g, "É")
                 .replace(/\\'cd/g, "Í").replace(/\\'d3/g, "Ó").replace(/\\'da/g, "Ú");
 
+    // 2. Eliminar marcadores de referencia en superíndice (RVR60, NVI, etc.)
+    // Elimina bloques como {\super\cf6 (A)} o {\cf5\super [1]}
+    clean = clean.replace(/\{[^{}]*\\super[^{}]*[^}]+\}/g, "");
+    
+    // 3. Eliminar paréntesis que contienen referencias bibliográficas (ej: (Mr. 1.1))
+    // Cubre libros desde (G) hasta (Lamentaciones)
+    const bibleRefPattern = /\((?:[1-3]\s*)?[A-ZÁÉÍÓÚñÑ][a-zñáéíóú]{0,15}\.?\s*[0-9.:,;\-\s]+\)/g;
+    clean = clean.replace(bibleRefPattern, "");
+
+    // 4. Limpieza de etiquetas RTF y HTML (llaves y comandos \par, \b, etc.)
     clean = clean.replace(/\{|\}/g, "");
     clean = clean.replace(/\\[a-z]+[0-9]* ?/g, "");
     clean = clean.replace(/<[^>]*>/g, ""); 
     
-    // Reference extraction: Find patterns like (Jn 3:16) or [Jn 3:16]
-    // Common book abbreviations can vary, but usually they are 2-4 letters followed by space and chapter:verse
-    const refRegex = /\(([^)]+)\)|\[([^\]]+)\]/g;
-    clean = clean.replace(refRegex, (match, p1, p2) => {
-        const ref = p1 || p2;
-        // Basic check if it looks like a Bible ref (has a colon)
-        if (ref.includes(':')) {
-            return `<span class="ref-link" data-ref="${ref}">(${ref})</span>`;
-        }
-        return match;
-    });
+    // 5. Eliminar marcadores sueltos (A), (B), [a], [1] y asteriscos de notas (NVI)
+    clean = clean.replace(/\s\([A-Z0-9]\)/g, ""); // " (A)" o " (1)"
+    clean = clean.replace(/\([A-Z0-9]\)/g, "");    // "(A)"
+    clean = clean.replace(/\s\[[a-z0-9]\]/g, ""); // " [a]" o " [1]"
+    clean = clean.replace(/\[[a-z0-9]\]/g, "");    // "[a]"
+    clean = clean.replace(/\*/g, "");             // Asteriscos de notas en NVI
+
+    // 6. Mejora estética: corregir apertura de exclamación (!! -> ¡)
+    // El formato original usa !! para simular el carácter ¡
+    clean = clean.replace(/!!\s?/g, "¡");
     
     return clean.replace(/\s+/g, ' ').trim();
 }
