@@ -45,7 +45,7 @@ let state = {
     notes: {
         'initial': { title: "", subtitle: "", content: "", date: new Date().toLocaleDateString() }
     }, 
-    activeNoteId: 'initial',
+    currentNoteId: 'initial',
     highlights: {}, // Key: version_book_chapter_verse, Value: colorCode
     selectedHighlightColor: 'yellow',
     splitPos: 50, // Percentage
@@ -719,11 +719,11 @@ async function loadNotesFromCloud(user) {
             if (data.highlights) state.highlights = data.highlights;
             
             saveState(); // Update local storage too
-            renderNotesList();
+            renderNotesBrowser();
             renderBibleViewer(); // Refresh highlights
             
-            if (state.activeNoteId && state.notes[state.activeNoteId]) {
-                openNote(state.activeNoteId);
+            if (state.currentNoteId && state.notes[state.currentNoteId]) {
+                loadCurrentNote();
             }
         }
     } catch (error) {
@@ -1966,7 +1966,8 @@ function createNewNote() {
         title: "Nueva Reflexión",
         subtitle: "Añadir subtítulo...",
         content: "",
-        date: new Date().toLocaleDateString()
+        date: new Date().toLocaleDateString(),
+        updatedAt: Date.now()
     };
     state.currentNoteId = id;
     saveState();
@@ -1985,6 +1986,25 @@ function createNewNote() {
             sel.addRange(range);
         }
     }, 150);
+}
+
+function deleteNote(id) {
+    if (!state.notes[id]) return;
+    
+    const remainingIds = Object.keys(state.notes).filter(nid => nid !== id);
+    delete state.notes[id];
+
+    if (state.currentNoteId === id) {
+        if (remainingIds.length > 0) {
+            state.currentNoteId = remainingIds[remainingIds.length - 1];
+        } else {
+            createNewNote();
+            return;
+        }
+    }
+    
+    saveState();
+    loadCurrentNote();
 }
 
 function applyAlign(command, iconName) {
