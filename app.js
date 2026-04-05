@@ -225,29 +225,31 @@ function cleanText(text, version) {
                 .replace(/\\'d1/g, "Ñ").replace(/\\'c1/g, "Á").replace(/\\'c9/g, "É")
                 .replace(/\\'cd/g, "Í").replace(/\\'d3/g, "Ó").replace(/\\'da/g, "Ú");
 
-    // 2. Eliminar marcadores de referencia en superíndice (RVR60, NVI, etc.)
+    // 2. Eliminar bloques centrados (habitualmente son títulos o subtítulos que no son parte del texto bíblico)
+    // En RVR60 estos bloques están marcados con \qc { ... }
+    clean = clean.replace(/\\qc\s*\{[^}]+\}/g, "");
+
+    // 3. Eliminar marcadores de referencia en superíndice (RVR60, NVI, etc.)
     // Elimina bloques como {\super\cf6 (A)} o {\cf5\super [1]}
     clean = clean.replace(/\{[^{}]*\\super[^{}]*[^}]+\}/g, "");
     
-    // 3. Eliminar paréntesis que contienen referencias bibliográficas (ej: (Mr. 1.1))
-    // Cubre libros desde (G) hasta (Lamentaciones)
+    // 4. Eliminar paréntesis que contienen referencias bibliográficas sueltas
     const bibleRefPattern = /\((?:[1-3]\s*)?[A-ZÁÉÍÓÚñÑ][a-zñáéíóú]{0,15}\.?\s*[0-9.:,;\-\s]+\)/g;
     clean = clean.replace(bibleRefPattern, "");
 
-    // 4. Limpieza de etiquetas RTF y HTML (llaves y comandos \par, \b, etc.)
+    // 5. Limpieza de etiquetas RTF y HTML restantes
     clean = clean.replace(/\{|\}/g, "");
     clean = clean.replace(/\\[a-z]+[0-9]* ?/g, "");
     clean = clean.replace(/<[^>]*>/g, ""); 
     
-    // 5. Eliminar marcadores sueltos (A), (B), [a], [1] y asteriscos de notas (NVI)
-    clean = clean.replace(/\s\([A-Z0-9]\)/g, ""); // " (A)" o " (1)"
-    clean = clean.replace(/\([A-Z0-9]\)/g, "");    // "(A)"
-    clean = clean.replace(/\s\[[a-z0-9]\]/g, ""); // " [a]" o " [1]"
-    clean = clean.replace(/\[[a-z0-9]\]/g, "");    // "[a]"
-    clean = clean.replace(/\*/g, "");             // Asteriscos de notas en NVI
+    // 6. Eliminar marcadores sueltos (A), (B), [a], [1] y asteriscos
+    clean = clean.replace(/\s\([A-Z0-9]\)/g, ""); 
+    clean = clean.replace(/\([A-Z0-9]\)/g, "");   
+    clean = clean.replace(/\s\[[a-z0-9]\]/g, ""); 
+    clean = clean.replace(/\[[a-z0-9]\]/g, "");   
+    clean = clean.replace(/\*/g, "");             
 
-    // 6. Mejora estética: corregir apertura de exclamación (!! -> ¡)
-    // El formato original usa !! para simular el carácter ¡
+    // 7. Mejora estética: corregir apertura de exclamación (!! -> ¡)
     clean = clean.replace(/!!\s?/g, "¡");
     
     return clean.replace(/\s+/g, ' ').trim();
